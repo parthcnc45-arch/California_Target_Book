@@ -1,0 +1,78 @@
+@import '../variables';
+
+
+@mixin btn-mixin($color) {
+  background-color: $color;
+  border-color: darken($color, 7%) !important;
+  color: rgba(255,255,255,0.9);
+
+  &:hover {
+    background-color: lighten($color, 5%);;
+  }
+  &:active,
+  &:focus {
+    background-color: lighten($color, 7%);
+  }
+  &:disabled,
+  &.disabled {
+    background-color: lighten($color, 10%);;
+  }
+}
+  // for specificity
+html body * {
+
+  .btn {
+    border-radius: 4px;
+    // border: 1px solid;
+    // border-bottom-width: 3px;
+    border: 0;
+    box-shadow: none;
+    margin: 0;
+    cursor: pointer;
+    color: #fff;
+    //padding-top: 5px;
+    //padding-bottom: 5px;
+    padding: 4px 24px;
+    outline: none !important;
+    position: relative;
+    font-family: $font-family-serif;
+    letter-spacing: 1px;
+    transition: all 150ms ease 0s;
+    text-decoration: none;
+    font-style: normal;
+
+    &:disabled,
+    &.disabled {
+      cursor: not-allowed;
+    }
+
+    &.btn-primary { @include btn-mixin($brand-primary) }
+    &.btn-success { @include btn-mixin($brand-success) }
+    &.btn-info { @include btn-mixin($brand-info) }
+    &.btn-default { @include btn-mixin(#ccc) }
+
+    &.is-loading {
+      color: transparent;
+
+      &:before {
+        content: '';
+        box-sizing: border-box;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin-top: -10px;
+        margin-left: -10px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        border-top-color: $red;
+        animation: spinner .6s linear infinite;
+      }
+    }
+  }
+}
+
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}

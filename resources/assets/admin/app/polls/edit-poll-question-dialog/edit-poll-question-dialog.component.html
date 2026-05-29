@@ -1,0 +1,49 @@
+
+<form [formGroup]="pollForm" (submit)="onSubmit(pollForm)" action="javascript:void(0)">
+
+  <h2 *ngIf="isNewQuestion" mat-dialog-title>Create Poll Question</h2>
+  <h2 *ngIf="!isNewQuestion" mat-dialog-title>Edit Poll Question</h2>
+
+  <mat-dialog-content>
+
+    <div class="row">
+
+      <mat-form-field>
+        <textarea autocomplete="off" matInput placeholder="Question Text" formControlName="text"></textarea>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-select formControlName="type" placeholder="Question Type">
+          <!--<mat-option value="range">Range (Agree/Disagree)</mat-option>-->
+          <mat-option value="multiple_choice">Multiple Choice</mat-option>
+          <mat-option value="open">Open Ended</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="col s12" *ngIf="pollForm.get('type').value !== 'open'">
+        <h5>Answer Options</h5>
+        <mat-form-field *ngFor="let ao of pollForm.get('responses').controls; let i = index">
+          <input autocomplete="off" matInput [placeholder]="'Answer #' + (i + 1)" [formControl]="ao">
+          <a class="text-red" matSuffix  (click)="removeAnswerOption(i)">
+            <mat-icon>close</mat-icon>
+          </a>
+        </mat-form-field>
+        <a (click)="addAnswerOption()">
+          Add Answer Option
+        </a>
+      </div>
+
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button type="button" class="btn btn-default" mat-button mat-dialog-close>Cancel</button>
+
+    <ctb-loader classes="small" *ngIf="isLoading"></ctb-loader>
+
+    <button *ngIf="isNewQuestion" type="submit" class="btn btn-primary" mat-button>Create</button>
+    <button *ngIf="!isNewQuestion"type="submit" class="btn btn-primary" mat-button>Save</button>
+
+  </mat-dialog-actions>
+</form>
+

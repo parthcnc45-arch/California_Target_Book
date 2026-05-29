@@ -1,0 +1,53 @@
+<mat-menu #cycleMenu="matMenu">
+  <ng-template matMenuContent let-cycle="cycle">
+    <a *ngIf="cycle.invoice_id" mat-menu-item [href]="cycle.invoice_id | stripeLink" target="_blank">
+      View In Stripe
+    </a>
+    <button (click)="edit(cycle)" mat-menu-item>Edit</button>
+    <button *ngIf="cycle.isPending" (click)="markPaid(cycle)" mat-menu-item>Mark Paid</button>
+  </ng-template>
+</mat-menu>
+
+<mat-list class="cycle-table">
+  <mat-list-item *ngFor="let cycle of cycles">
+    <div mat-list-icon matTooltip="Upcoming" class="icon icon-gray" *ngIf="cycleStatus(cycle) === 'upcoming'">
+      <mat-icon>event</mat-icon>
+    </div>
+    <div mat-list-icon matTooltip="Active" class="icon icon-green" *ngIf="cycleStatus(cycle) === 'active'">
+      <mat-icon>check</mat-icon>
+    </div>
+    <div mat-list-icon matTooltip="Expired" class="icon icon-red" *ngIf="cycleStatus(cycle) === 'expired'">
+      <mat-icon>hourglass_empty</mat-icon>
+    </div>
+
+    <h4 mat-line>
+      From <b>{{ (cycle.starts_on | date) || 'TBD' }}</b>
+      to <b>{{ (cycle.ends_on | date) || 'TBD' }}</b>
+    </h4>
+
+    <div mat-line>
+      <p *ngIf="cycle.payment_method" class="sub mt-n">
+        Paid by {{ cycle.payment_method }}
+        on {{ cycle.created_at | date:'mediumDate' }}
+      </p>
+
+      <div *ngIf="cycle.invoice; let invoice">
+        <table class="table striped">
+          <tr *ngFor="let line of invoice.lines.data">
+            <td>{{ line.description }}</td>
+            <td>{{ line.amount | stripeCost | currency }}</td>
+          </tr>
+          <tr>
+            <th>Total</th>
+            <th>{{ invoice.amount_due | stripeCost | currency }}</th>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <a [matMenuTriggerData]="{cycle: cycle}" [matMenuTriggerFor]="cycleMenu" class="edit-cycle right">
+      <mat-icon>more_vert</mat-icon>
+    </a>
+  </mat-list-item>
+
+</mat-list>

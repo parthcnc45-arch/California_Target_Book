@@ -1,0 +1,217 @@
+@import '../variables';
+
+.dist-side-nav {
+  position: fixed;
+  padding-top: 102px;
+  top:0;
+  left:0;
+  bottom: 0;
+  width: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background: #fff;
+  border-right: 1px solid #ddd;
+
+  h3 {
+    margin-top: 12px;
+  }
+
+  ul {
+    padding: 0;
+    list-style: none;
+    li {
+      border-top: 1px solid #eee;
+      clear: both;
+      a {
+        display: block;
+        position: relative;
+        color: $copy;
+        transition: all 0s ease 0s;
+
+        &.active {
+          border-right: 5px solid $red;
+          background: #fcfcfc;
+        }
+        &:hover {
+          text-decoration: none;
+          background: rgb(252, 252, 252);
+        }
+      }
+
+      .dropdown-menu {
+        width: 100%;
+        max-width: 100%;
+        position: relative;
+        left: 0;
+        box-shadow: none;
+        border: 0;
+        border-radius: 0;
+        max-height: 300px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        background: #f6f6f6;
+        margin: 0;
+        * {
+          font-size: 14px;
+        }
+        .dropdown-menu {
+          background: #eee;
+          padding-left: 10px;
+          li {
+            border-color: #d9d9d9;
+          }
+        }
+      }
+
+      &.open {
+        > .dropdown-menu {
+          display:block;
+        }
+      }
+    }
+  }
+
+  > ul > li > a {
+    display: block;
+    padding: 10px;
+  }
+}
+.dist-side-nav li  {
+  > a[href="#"]:after {
+    content: "\F105";
+    position: absolute;
+    right: 10px;
+    top: 28%;
+    pointer-events: none;
+    font: normal normal normal 20px/1 FontAwesome;
+    color: $red;
+  }
+  &.open {
+    >a[href="#"]:after {
+      content: "\F107";
+    }
+  }
+  .dropdown-menu {
+    >a[href="#"]:after {
+      font-size: 16px;
+    }
+  }
+
+}
+@media (max-width: 992px) {
+  .center-block-mobile {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+@media (min-width: 992px) {
+  .dist-content {
+    position: relative;
+    left: 200px;
+    width: calc(100vw - 200px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+}
+@media (max-width: 768px) {
+  .tabs nav ul li {
+    width: 50%;
+    flex: none;
+    text-align: left;
+    float: left;
+  }
+}
+
+.dist-head {
+  *:not(h1) {
+    color: $light-copy;
+  }
+  a, i {
+    text-decoration: none !important;
+    display: block;
+    margin-top: 36px;
+    i {
+      color: $red;
+    }
+  }
+
+}
+
+.dist-content {
+  .tabs {
+    width: 100%;
+    background: $dark-gray;
+  }
+  .tabs-style-bar nav ul {
+    border: 0;
+    li {
+      a {
+        margin: 0;
+        background: none;
+        padding: 12px 0;
+        line-height: normal;
+        text-decoration: none !important;
+        &:hover, &:active, &:focus {
+          background: lighten($dark-gray, 5%);
+        }
+      }
+
+      &.tab-current {
+        a {
+          background: $blue;
+          &:hover, &:active, &:focus {
+            background: lighten($blue, 5%);
+          }
+        }
+      }
+    }
+  }
+}
+.overlaps {
+  a:before {
+    content: " ";
+    display: block;
+  }
+}
+.org-table {
+  table {
+    float: right;
+  }
+  td, th {
+    text-align: left !important;
+  }
+}
+.table-striped {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 25px;
+
+  tbody > tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+  }
+
+  thead > tr > th,
+  thead > tr > td,
+  tbody > tr > th,
+  tbody > tr > td,
+  tfoot > tr > th,
+  tfoot > tr > td {
+    padding: 8px;
+    line-height: 1.6;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+  }
+}
+
+
+.vote-tables {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  > div {
+    display: flex;
+    flex: 1 1;
+    flex-basis: 33%;
+  }
+}

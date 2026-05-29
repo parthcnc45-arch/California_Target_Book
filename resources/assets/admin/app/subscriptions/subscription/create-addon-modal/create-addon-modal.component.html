@@ -1,0 +1,67 @@
+
+
+<form [formGroup]="addonForm"
+    (submit)="onSubmit(addonForm)">
+
+  <h3 mat-dialog-title>Create Addon Account</h3>
+
+  <mat-dialog-content>
+
+    <mat-form-field>
+      <input id="first_name"
+          matInput
+          placeholder="First Name"
+          formControlName="first_name"
+          autocomplete="off"
+          type="text" />
+
+      <mat-error *ngIf="get('first_name').errors?.server" [innerHtml]="get('first_name').errors.server.join('<br/>')"></mat-error>
+    </mat-form-field>
+
+
+    <mat-form-field>
+      <input id="last_name"
+          placeholder="Last Name"
+          formControlName="last_name"
+          matInput
+          autocomplete="off"
+          type="text" />
+
+      <mat-error *ngIf="get('last_name').errors?.server" [innerHtml]="get('last_name').errors?.server.join('<br/>')"></mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input id="email"
+          placeholder="Email"
+          formControlName="email"
+          matInput
+          required
+          autocomplete="off"
+          type="email" />
+
+      <mat-error *ngIf="get('email').errors?.required">This field is required</mat-error>
+      <mat-error *ngIf="get('email').errors?.email">This is not a valid email</mat-error>
+      <mat-error *ngIf="get('email').errors?.server" [innerHtml]="get('email').errors?.server.join('<br/>')"></mat-error>
+    </mat-form-field>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+
+    <button mat-button mat-dialog-close class="btn z-depth-0 waves-effect waves-light blue-grey lighten-5 blue-grey-text left"
+        (click)="cancel()"
+        type="submit">
+      Cancel
+    </button>
+
+    <ctb-loader class="right" classes="small" *ngIf="formIsLoading"></ctb-loader>
+    <button mat-button type="submit"
+        [disabled]="addonForm.invalid || formIsLoading"
+        class="waves-effect waves-light btn right right">
+      Create
+    </button>
+
+  </mat-dialog-actions>
+
+</form>
+

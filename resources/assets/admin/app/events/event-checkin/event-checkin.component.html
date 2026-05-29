@@ -1,0 +1,88 @@
+<div class="row page-heading">
+  <h1 class="left">{{ event.name }}</h1>
+</div>
+
+<div class="pt-md">
+  <div class="row">
+
+    <div class="col s3 l2 xl2">
+      <div class="card-panel stats-panel clearfix">
+        <div class="col s12 title teal lighten-1">
+          <h4>Checked In</h4>
+        </div>
+        <div class="col s12 stat">
+          <h4>{{stats.checkedIn}}</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col s3 l2 xl2">
+      <div class="card-panel  stats-panel clearfix">
+        <div class="col s12 title red lighten-1">
+          <h4>Not Yet Arrived</h4>
+        </div>
+        <div class="col s12 stat">
+          <h4>{{stats.waiting}}</h4>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col s12">
+      <mat-card class="p-n">
+        <mat-card-header class="p-sm">
+
+          <div class="input-field col s12">
+            <i class="material-icons prefix">search</i>
+
+            <label for="query">Search</label>
+            <input id="query"
+                class="mb-n"
+                (keyup)="applyFilter($event.target.value)"
+                type="text" />
+          </div>
+
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-table #table [dataSource]="eventData" matSort>
+
+            <ng-container matColumnDef="checked_in">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Checked In</mat-header-cell>
+              <mat-cell *matCellDef="let ticket">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                    (change)="$event ? toggleTicket(ticket) : null"
+                    [checked]="ticket.checked_in_at">
+                </mat-checkbox>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="holders_name">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Holder's Name</mat-header-cell>
+              <mat-cell *matCellDef="let ticket"> {{ticket.holders_name}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="buyerCompany">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Company</mat-header-cell>
+              <mat-cell *matCellDef="let ticket">
+                {{ ticket.buyerCompany }}
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+            <mat-row *matRowDef="let ticket; columns: columns"
+                (click)="toggleTicket(ticket)"
+                [id]="ticket?.id">
+            </mat-row>
+
+          </mat-table>
+        </mat-card-content>
+
+
+      </mat-card>
+
+    </div>
+  </div>
+</div>

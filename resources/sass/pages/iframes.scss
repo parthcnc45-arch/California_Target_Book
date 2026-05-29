@@ -1,0 +1,69 @@
+
+.resultscontainer {
+  * {
+    text-shadow: none;
+  }
+  .thickborder {
+    border: 1px solid #ddd;
+  }
+  .rescon, .othcon, .rescont {
+    background: #fff;
+  }
+}
+
+.vdetail {
+
+  #inccontain {
+    margin: 20px auto;
+    display: block;
+    position: relative;
+    float: none;
+    width: 90%;
+    .incad {
+      float: none;
+    }
+  }
+
+  h1 {
+    display: block;
+    float: none;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  > .jumbotron {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .rescont {
+    width: 45%;
+    float: none;
+    padding-top: 10px;
+    background: #fff;
+    margin: 20px auto;
+    padding: 20px;
+    display: inline-block;
+    min-width: 400px;
+    border: 1px solid #ddd;
+    p {
+      font-size: 18px;
+    }
+    .indresult > div {
+      color: #7d7d7d;
+    }
+  }
+
+}
+
+.vparty {
+  .rescon {
+    float: none;
+    width: 95%;
+    display: block;
+    margin: 0 auto 36px;
+    background: #fff;
+    min-width: 1200px;
+  }
+}

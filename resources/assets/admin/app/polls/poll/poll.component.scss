@@ -1,0 +1,37 @@
+
+.details-card {
+  td {
+    //text-align: right;
+  }
+}
+
+.row {
+  margin-bottom: 48px;
+}
+
+h4 {
+  font-size: 18px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.respondents .mat-expansion-panel-header-description {
+  justify-content: flex-end;
+}
+.user-company {
+  font-style: italic;
+  color: rgba(0,0,0,0.5);
+}
+
+.question-label {
+  width: 18px;
+  height: 18px;
+  background: gray;
+  display: block;
+  margin: 0 auto;
+}
+.q-doughnut {
+  max-height: 250px;
+  max-width: 250px;
+  margin: 0 auto;
+}

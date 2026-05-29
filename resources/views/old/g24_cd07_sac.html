@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precinct Election Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        #map { height: 90vh; }
+        #info { background: white; padding: 10px; position: absolute; top: 10px; right: 10px; z-index: 1000; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="info">Click a precinct for details</div>
+    
+    <script>
+        let map = L.map('map').setView([38.5, -121.5], 9);  // Adjusted to Sacramento area
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        
+        let precincts = {};
+
+        console.log('Loading Precincts');
+        // Load GeoJSON
+        fetch('g24_sacramento_precincts.json')
+            .then(response => response.json())
+            .then(data => {
+                precincts = data.features.reduce((acc, feature) => {
+                    let key = feature.properties.PRECINCTNO;
+                    acc[key] = feature;
+                    return acc;
+                }, {});
+                loadCSV();
+            });
+
+        console.log('Loading CSV Results');
+        function loadCSV() {
+            fetch('g24_sacto_cd07.csv')
+                .then(response => response.text())
+                .then(csvText => {
+                    Papa.parse(csvText, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: function(results) {
+                            processResults(results.data);
+                        }
+                    });
+                });
+        }
+
+        function processResults(data) {
+            data.forEach(row => {
+                let key = (row.PRECINCT.trim()).replace(/\s+/g, '_');
+                if (precincts[key]) {
+                    precincts[key].properties.results = groupResults(row);
+                }
+            });
+            drawMap();
+        }
+
+        function groupResults(row) {
+            console.log('Grouping Results...');
+            let groupedResults = {
+                presidential: {
+                    PRSDEM: Number(row.PRSDEM) || 0,
+                    PRSREP: Number(row.PRSREP) || 0,
+                    PRSAIP: Number(row.PRSAIP) || 0,
+                    PRSGRN: Number(row.PRSGRN) || 0,
+                    PRSLIB: Number(row.PRSLIB) || 0,
+                    PRSPAF: Number(row.PRSPAF) || 0,
+                    PRSWI: Number(row.PRSWI) || 0
+                },
+                senate: {
+                    USSDEM: Number(row.USSDEM) || 0,
+                    USSREP: Number(row.USSREP) || 0
+                },
+                propositions: {},
+                congressional: {
+                    CNGDEM: Number(row.CNGDEM) || 0,
+                    CNGREP: Number(row.CNGREP) || 0
+                }
+            };
+
+            // Loop through all the possible proposition fields and add them to the grouped results
+            for (let key in row) {
+                if (key.startsWith('PR') && key.length === 5 && key.includes('_')) {
+                    let propNum = key.substring(2, 4);
+                    let voteType = key.substring(4);
+                    if (!groupedResults.propositions[propNum]) {
+                        groupedResults.propositions[propNum] = { Y: 0, N: 0 };
+                    }
+                    groupedResults.propositions[propNum][voteType] += Number(row[key]) || 0;
+                }
+            }
+            console.log(groupedResults);
+            return groupedResults;
+        }
+
+        function calculatePercentages(results) {
+            // Presidential race
+            console.log('Calculating Percentages' + results);
+            let presTotal = Object.values(results.presidential).reduce((sum, val) => sum + val, 0);
+            let presPercentages = {};
+            for (let key in results.presidential) {
+                presPercentages[key] = (results.presidential[key] / presTotal * 100) || 0;
+            }
+
+            // Senate race
+            let senateTotal = results.senate.USSDEM + results.senate.USSREP;
+            let senatePercentages = {};
+            for (let key in results.senate) {
+                senatePercentages[key] = (results.senate[key] / senateTotal * 100) || 0;
+            }
+
+            // Propositions
+            let propositionPercentages = {};
+            for (let prop in results.propositions) {
+                let propTotal = results.propositions[prop].Y + results.propositions[prop].N;
+                propositionPercentages[prop] = {
+                    Y: (results.propositions[prop].Y / propTotal * 100) || 0,
+                    N: (results.propositions[prop].N / propTotal * 100) || 0
+                };
+            }
+
+            // Congressional race
+            let cngTotal = results.congressional.CNGDEM + results.congressional.CNGREP;
+            let cngPercentages = {
+                CNGDEM: (results.congressional.CNGDEM / cngTotal * 100) || 0,
+                CNGREP: (results.congressional.CNGREP / cngTotal * 100) || 0
+            };
+
+            return { presPercentages, senatePercentages, propositionPercentages, cngPercentages };
+        }
+
+        function drawMap() {
+            Object.values(precincts).forEach(feature => {
+                let props = feature.properties;
+                let results = props.results;
+
+                // Only draw precincts with results
+                if (!results) return;
+
+                // Calculate the percentages for the contest
+                let { presPercentages, senatePercentages, propositionPercentages, cngPercentages } = calculatePercentages(results);
+
+                // Calculate the shading based on the difference between Congressional and Presidential percentages
+                let prsDiff = presPercentages.PRSDEM - presPercentages.PRSREP;
+                let cngDiff = cngPercentages.CNGDEM - cngPercentages.CNGREP;
+
+                // Determine the shading color (Green/Red logic)
+                let color = cngDiff > prsDiff ? `rgb(0,255,0)` : `rgb(255,0,0)`;
+
+                let layer = L.geoJSON(feature, {
+                    style: { color: 'black', weight: 1, fillColor: color, fillOpacity: 0.6 },
+                    onEachFeature: function (feature, layer) {
+                        layer.on('click', function () {
+                            document.getElementById('info').innerHTML = `<b>PrecinctNo:</b> ${props.PRECINCTNO}<br>
+                                <b>Presidential Race: </b> ${getWinner(presPercentages)} (${Math.abs(presPercentages.PRSDEM - presPercentages.PRSREP).toFixed(2)}%)<br>
+                                <b>Senate Race: </b> ${getWinner(senatePercentages)} (${Math.abs(senatePercentages.USSDEM - senatePercentages.USSREP).toFixed(2)}%)<br>
+                                <b>Congressional Race: </b> ${getWinner(cngPercentages)} (${Math.abs(cngPercentages.CNGDEM - cngPercentages.CNGREP).toFixed(2)}%)<br>
+                                <b>Propositions:</b><br>
+                                ${Object.entries(propositionPercentages).map(([prop, votes]) => 
+                                `<b>Proposition ${prop}:</b><br>
+                                 Yes: ${votes.Y.toFixed(2)}%<br>
+                                 No: ${votes.N.toFixed(2)}%`).join('<br>')}
+                            `;
+                        });
+                    }
+                }).addTo(map);
+            });
+        }
+
+        function getWinner(percentageResults) {
+            let maxParty = 'DEM';
+            let maxPercentage = percentageResults[`${maxParty}DEM`] || 0;
+            let secondParty = 'REP';
+            let secondPercentage = percentageResults[`${secondParty}REP`] || 0;
+
+            if (maxPercentage < secondPercentage) {
+                maxParty = 'REP';
+                maxPercentage = secondPercentage;
+                secondParty = 'DEM';
+                secondPercentage = percentageResults[`${secondParty}DEM`] || 0;
+            }
+
+            return `${maxParty}+${(maxPercentage - secondPercentage).toFixed(2)}%`;
+        }
+    </script>
+</body>
+</html>

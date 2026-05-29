@@ -1,0 +1,39 @@
+@import "~theme/_vars";
+
+
+a.edit-cycle {
+  display: block;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  border-radius: 50%;
+  &:hover {
+    background: #edf0f2;
+  }
+}
+
+.mat-list-icon {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+p {
+  color: #888;
+}
+
+
+.mat-list .mat-list-item {
+  height: auto;
+  min-height: 52px;
+}
+
+/deep/ .cycle-table .mat-list-item .mat-list-item-content {
+  align-items: end !important;
+}
+
+table {
+  margin-bottom: 24px;
+  td, th {
+    padding: 4px !important;
+  }
+}

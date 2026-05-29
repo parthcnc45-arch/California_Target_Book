@@ -1,0 +1,43 @@
+
+
+<form [formGroup]="renewalForm"
+    (submit)="onSubmit(renewalForm)">
+
+  <h3 mat-dialog-title>Create Renewal</h3>
+
+  <mat-dialog-content>
+
+
+    <mat-form-field>
+      <mat-select formControlName="length" placeholder="Subscription Length">
+        <mat-option [value]="12"> 12 Months </mat-option>
+        <mat-option [value]="24"> 24 Months </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input placeholder="Start Cycle On" formControlName="startDate" matInput [matDatepicker]="pickerStart">
+      <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+      <mat-datepicker #pickerStart></mat-datepicker>
+    </mat-form-field>
+
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+
+    <button mat-button mat-dialog-close class="btn z-depth-0 waves-effect waves-light blue-grey lighten-5 blue-grey-text left">
+      Cancel
+    </button>
+
+    <ctb-loader class="right" classes="small" *ngIf="isLoading"></ctb-loader>
+    <button mat-button type="submit"
+        [disabled]="renewalForm.invalid || isLoading"
+        class="waves-effect waves-light btn right right">
+      Renew
+    </button>
+
+  </mat-dialog-actions>
+
+</form>
+

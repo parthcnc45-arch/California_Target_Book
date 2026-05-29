@@ -1,0 +1,149 @@
+<div class="row page-heading">
+  <h1 class="left">{{ event.name }}</h1>
+</div>
+
+<div class="pt-md">
+  <div class="row">
+
+    <div class="col s3 l2 xl2">
+      <div class="card-panel stats-panel clearfix">
+        <div class="col s12 title teal lighten-1">
+          <h4>Total</h4>
+        </div>
+        <div class="col s12 stat">
+          <h4>{{stats.total}}</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col s3 l2 xl2">
+      <div class="card-panel  stats-panel clearfix">
+        <div class="col s12 title green lighten-1">
+          <h4>Paid</h4>
+        </div>
+        <div class="col s12 stat">
+          <h4>{{stats.paid}}</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col s3 l2 xl2">
+      <div class="card-panel stats-panel clearfix">
+        <div class="col s12 title red lighten-1 ">
+          <h4>Unpaid</h4>
+        </div>
+        <div class="col s12 stat">
+          <h4>{{stats.unpaid}}</h4>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="row">
+    <div class="col s12">
+      <!--<a routerLink="check-in" class="pull-right btn btn-info">Check In</a>-->
+      <button class="pull-right btn btn-primary" (click)="export()">Export</button>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col s12">
+      <mat-card class="p-n">
+        <mat-card-header class="p-sm">
+
+          <div class="input-field col s12">
+            <i class="material-icons prefix">search</i>
+
+            <label for="query">Search</label>
+            <input id="query"
+                class="mb-n"
+                (keyup)="applyFilter($event.target.value)"
+                type="text" />
+          </div>
+
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-table #table [dataSource]="eventData" matSort>
+
+            <ng-container matColumnDef="is_paid_for">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="statusCell">Paid</mat-header-cell>
+              <mat-cell *matCellDef="let ticket" class="statusCell">
+
+                <mat-select placeholder="Paid" [(value)]="ticket.is_paid_for" (change)="onPaymentChange(ticket)">
+                  <mat-select-trigger>
+                    <i class="material-icons"
+                        [innerHTML]="ticket.is_paid_for ? 'check' : 'error'"
+                        [ngClass]="{'green-text': ticket.is_paid_for, 'red-text': !ticket.is_paid_for}">
+                    </i>
+                  </mat-select-trigger>
+                  <mat-option [value]="false">
+                    <span>
+                      <i class="material-icons red-text">error</i>
+                    </span>
+                  </mat-option>
+                  <mat-option [value]="true">
+                    <span>
+                      <i class="material-icons green-text">check</i>
+                    </span>
+                  </mat-option>
+                </mat-select>
+
+                <!--<span class="circle"-->
+                    <!--[ngclass]="{'green': ticket.is_paid_for, 'red': !ticket.is_paid_for}">-->
+                <!--</span>-->
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="holders_name">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Holder's Name</mat-header-cell>
+              <mat-cell *matCellDef="let ticket"> {{ticket.holders_name}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="buyerName">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Buyer</mat-header-cell>
+              <mat-cell *matCellDef="let ticket">
+                <a [routerLink]="['/contacts', ticket.buyer_id]">
+                  {{ ticket.buyerName }}
+                </a>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="buyerCompany">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Company</mat-header-cell>
+              <mat-cell *matCellDef="let ticket">
+                  {{ ticket.buyerCompany }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="invoice_id">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Stripe Invoice</mat-header-cell>
+              <mat-cell *matCellDef="let ticket">
+                <a [href]="ticket.invoice_id | stripeLink" target="_blank">
+                  <i class="material-icons">link</i>
+                </a>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="created_at">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Bought On </mat-header-cell>
+              <mat-cell *matCellDef="let ticket"> {{ticket.created_at | date}} </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+            <mat-row *matRowDef="let ticket; columns: columns"
+                [id]="ticket?.id">
+            </mat-row>
+
+          </mat-table>
+        </mat-card-content>
+
+
+      </mat-card>
+
+    </div>
+  </div>
+</div>

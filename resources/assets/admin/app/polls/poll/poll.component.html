@@ -1,0 +1,122 @@
+<div class="row page-heading">
+  <h3>
+    Poll
+    <small>{{ pollId }}</small>
+  </h3>
+</div>
+
+<div>
+
+  <div *ngIf="poll$ | async; let poll">
+
+    <div class="row">
+      <div class="col s12">
+        <div class="ctb-title">
+          <h4>Details</h4>
+        </div>
+        <div class="card details-card">
+
+          <div class="card-content">
+
+            <button class="btn btn-primary right" (click)="editPoll(poll)">Edit</button>
+
+            <h6 class="card-title"> {{ poll.title }} </h6>
+            <p>Starts on <b>{{ poll.starts_on | date:'shortDate' }}</b></p>
+            <p>Ends on <b>{{ poll.ends_on | date:'shortDate' }}</b></p>
+            <p>
+              <b> {{ poll.questions[0]?.responses?.length || '0' }} </b>
+              responses so far. </p>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+    <div class="row">
+      <div class="col s12">
+        <div class="ctb-title">
+          <h4 class="inline-block">Responses</h4>
+          <button class="right btn btn-primary" (click)="editQuestion()">
+            Add Question
+          </button>
+        </div>
+        <mat-accordion [multi]="true">
+          <mat-expansion-panel *ngFor="let q of poll.questions; let i = index">
+            <mat-expansion-panel-header>
+              <mat-panel-title>Question #{{i+1}}</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <h6>{{ q.text }}</h6>
+            <div class="row" *ngIf="q | questionData; let qData">
+              <div class="col s6">
+                <table class="table bordered striped responsive-table m-n">
+                  <colgroup>
+                    <col style="width: 10%"/>
+                    <col style="width: 80%"/>
+                    <col style="width: 10%"/>
+                  </colgroup>
+
+                  <tbody>
+                  <tr *ngFor="let lab of qData.labels; let j = index">
+                    <td>
+                      <span class="question-label"
+                          [ngStyle]="{ 'background-color': qData.colors[0]?.backgroundColor[j] }"></span>
+                    </td>
+                    <td>{{ lab }}</td>
+                    <td>{{ qData.data[j] }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+
+                <button class="btn btn-primary btn-small mt-md" (click)="editQuestion(q)">
+                  Edit Question
+                </button>
+              </div>
+              <div class="col s6">
+                <canvas baseChart class="q-doughnut" width="300" height="300" [legend]="false" [data]="qData.data"
+                    [labels]="qData.labels" [colors]="qData.colors" [options]="questionChartOptions"
+                    chartType="doughnut"></canvas>
+              </div>
+            </div>
+
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+
+    <div class="row respondents">
+      <div class="col s12">
+        <div class="ctb-title">
+          <h4 class="inline-block">Respondents</h4>
+          <button class="right btn btn-primary" [disabled]="!(respondents$ | async)" (click)="exportRespondents()">
+            Export
+          </button>
+        </div>
+        <mat-accordion [multi]="true">
+          <mat-expansion-panel *ngFor="let u of respondents$ | async; let i = index;">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ u.first_name }} {{ u.last_name }}
+                <i class="user-company" *ngIf="u.company?.name"> ({{ u.company?.name }}) </i>
+              </mat-panel-title>
+              <mat-panel-description>
+                {{ u.responseDate | date:'fullTime' }}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <ol>
+              <li *ngFor="let res of u.responses">
+                <p><b>{{ res.question }}</b></p>
+                <p>{{ res.response }}</p>
+              </li>
+            </ol>
+
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+
+  </div>
+</div>

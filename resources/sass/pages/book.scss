@@ -1,0 +1,142 @@
+@import '../_variables.scss';
+// For the book layout
+
+body.book-page {
+  main {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 100vh;
+    background: #fff;
+
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+    overscroll-behavior: auto;
+    scroll-behavior: smooth;
+  }
+
+  .book-page-head {
+    background: #fff;
+    border-bottom: 1px solid #dadada;
+    height: 74px;
+    padding: 18px 12px;
+
+    .dist-arrows {
+      margin-top: -6px;
+      a {
+        text-align: center;
+        margin: 0 6px;
+        display: inline-block;
+        font-size: 14px;
+        span { display: block; }
+      }
+    }
+    .dist-head-incumbent {
+      float: left;
+      margin: 2px 24px;
+      h3 {
+        font-size: 16px;
+        text-align: left;
+        color: $light-copy;
+      }
+    }
+  }
+
+  .page-nav {
+    padding: 0;
+    margin: 0;
+    ul {
+      padding: 0;
+      margin: 0;
+      border-bottom: 1px solid #dadada;
+      list-style: none;
+
+      li {
+        margin-right: 24px;
+        float:left;
+        margin-bottom: -1px;
+        a {
+          font-size: 12px;
+          padding: 8px 4px;
+          display: block;
+          border-bottom: 2px solid transparent;
+          text-decoration: none !important;
+          color: #777;
+
+          i {
+            font-size: 18px;
+            vertical-align: text-bottom;
+          }
+
+          &:hover {
+            color: $indigo;
+            i { color: $indigo; }
+          }
+        }
+
+        &.active a {
+          color: $indigo;
+          i { color: $indigo; }
+          border-bottom: 2px solid $indigo;
+        }
+      }
+    }
+  }
+
+  .sub-page-nav {
+    li a {
+      padding: 3px;
+      background: #eee;
+      border: #ccc;
+    }
+  }
+
+  .content-wrap section {
+    display: none;
+    &.active {
+      display: block;
+    }
+  }
+}
+
+//table {
+// td {
+//   text-align: right !important;
+// }
+//}
+.prop-no {
+  color: $brand-danger;
+}
+.prop-yes {
+  color: $brand-success;
+}
+
+
+.book-overview header {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.book-chapter-overview {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  max-width: 800px;
+  margin: 24px auto;
+  > div {
+    margin: -1px;
+  }
+  @media (max-width: 768px) {
+    > div {
+      flex-grow: 1;
+    }
+  }
+}
+
+#hotsheet {
+  img {
+    max-width: 100%;
+    border: 0;
+    margin: 0 auto;
+    display: block;
+  }
+}

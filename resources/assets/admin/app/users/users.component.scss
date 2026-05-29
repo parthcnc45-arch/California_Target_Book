@@ -1,0 +1,12 @@
+
+mat-row {
+  cursor: pointer;
+  &:hover {
+    background: #fafafa;
+  }
+}
+
+.statusCell {
+  flex: 0.3;
+}
+

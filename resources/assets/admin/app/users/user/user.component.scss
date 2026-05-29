@@ -1,0 +1,40 @@
+
+@import "~theme/_vars";
+
+.go-arrow {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.address {
+  p {
+    margin: 0;
+  }
+}
+
+.cycles {
+  .collection-item {
+    border-left: 5px solid darken($red, 5%);
+
+    a {
+      cursor: pointer;
+    }
+
+    &.active-cycle {
+      border-left-color: #4caf50;
+    }
+  }
+}
+
+.account-card {
+  input {
+    margin: 0;
+    padding: 5px;
+    height: auto;
+  }
+}
+input {
+  width: auto !important;
+}

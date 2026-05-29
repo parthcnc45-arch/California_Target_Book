@@ -1,0 +1,129 @@
+<div class="row page-heading">
+  <h3>
+    Subscription
+    <small>{{ (sub$ | async)?.company?.name }}</small>
+  </h3>
+</div>
+
+<div>
+
+  <div *ngIf="sub$ | async; let sub">
+
+    <div class="row" >
+      <div class="col s12">
+
+        <mat-card>
+          <mat-card-title>
+            <h5 class="left">{{ sub.company.name }}</h5>
+            <button class="waves-effect waves-light btn right mt-sm" (click)="editCompany(sub)">
+                Edit
+            </button>
+          </mat-card-title>
+          <mat-card-content>
+            <div>
+              <p *ngIf="sub.company.address; let addr">
+                {{ addr.line1 }} <br/>
+                {{ addr.line2 }} <br *ngIf="addr.line2"/>
+                {{ addr.city }}, {{ addr.state }} {{ addr.zip_code }}
+              </p>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-title>
+            <h5 class="left">Subscription Cycles</h5>
+
+            <button class="waves-effect waves-light btn right mt-sm"
+                (click)="createRenewal(sub)">
+              Create
+            </button>
+          </mat-card-title>
+          <mat-card-content>
+            <ctb-cycles-table [cycles]="sub.cycles"></ctb-cycles-table>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-title>
+            <h5 class="left">Subscribers</h5>
+
+            <button class="waves-effect waves-light btn right mt-sm"
+                (click)="createAddon()">
+              Create
+            </button>
+          </mat-card-title>
+          <mat-card-content>
+            <mat-list>
+
+              <mat-list-item *ngFor="let u of sub.users">
+                <div mat-list-icon matTooltip="Subscriber" class="icon icon-blue" *ngIf="u.pivot?.role === 'subscriber'">
+                  <mat-icon>person</mat-icon>
+                </div>
+                <div mat-list-icon matTooltip="Addon" class="icon icon-gray" *ngIf="u.pivot?.role === 'addon'">
+                  <mat-icon>person_add</mat-icon>
+                </div>
+
+                <h4 mat-line>
+                  {{u.first_name}} {{u.last_name}}
+                </h4>
+                <p class="sub" mat-line>
+                  <a [href]="'mailto:' + u.email">{{u.email}}</a>
+                </p>
+
+                <a class="subscriber-link right" [routerLink]="['/contacts', u.id]" matTooltip="Go To Subscriber">
+                  <mat-icon>link</mat-icon>
+                </a>
+                <a *ngIf="u.pivot?.role === 'addon'" (click)="removeAddon(u)" matTooltip="Remove Addon" class="subscriber-link right">
+                  <mat-icon>remove_circle</mat-icon>
+                </a>
+
+              </mat-list-item>
+
+            </mat-list>
+          </mat-card-content>
+
+        </mat-card>
+
+        <mat-card>
+          <mat-card-title>
+            <h5 class="left">Book Subscriptions</h5>
+            <button mat-flat-button color="accent" class="right mt-sm"
+                (click)="upsertBookSubscription(sub)">
+              Create
+            </button>
+         </mat-card-title>
+          <mat-card-content>
+            <mat-list>
+              <ng-container *ngFor="let b of sub.bookSubscriptions">
+
+                <mat-list-item>
+
+                  <p mat-line>{{b.address.line1}}</p>
+                  <p mat-line class="light" [hidden]="!b.address.line2">{{b.address.line2}}</p>
+                  <p mat-line class="light">
+                    {{b.address.city}},
+                    {{b.address.state}}
+                    {{b.address.zip_code}}
+                  </p>
+
+                  <p mat-line class="light">{{b.address.special_instructions || 'N/A'}}</p>
+                  <div mat-line class="right-align book-subscription-controls">
+                    <button mat-button color="primary" (click)="promptBookSubscriptionDelete(sub, b)">Delete</button>
+                    <button mat-button (click)="upsertBookSubscription(sub, b)">Edit</button>
+                  </div>
+
+                </mat-list-item>
+                <mat-divider></mat-divider>
+
+              </ng-container>
+            </mat-list>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </div>
+
+  </div>
+</div>

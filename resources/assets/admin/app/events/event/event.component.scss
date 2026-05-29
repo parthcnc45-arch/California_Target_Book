@@ -1,0 +1,15 @@
+
+.statusCell {
+  flex: 0.5;
+
+  mat-select {
+    max-width: 44px;
+    min-width: 44px;
+  }
+}
+
+/deep/ .mat-option-text span {
+  display: block;
+  text-align: center;
+  line-height: 1rem;
+}

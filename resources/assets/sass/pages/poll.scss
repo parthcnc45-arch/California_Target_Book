@@ -1,0 +1,28 @@
+
+.page-poll {
+  label {
+    font-weight: 400;
+  }
+  ul.multiple-choice {
+    list-style: none;
+  }
+  ol.questions {
+    padding-left: 12px;
+    > li {
+      margin-bottom: 24px;
+      > p {
+        font-size: 16px;
+        white-space: pre-wrap;
+      }
+      ul.multiple-choice {
+        font-size: 14px;
+        label {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  th {
+    text-align: center;
+  }
+}

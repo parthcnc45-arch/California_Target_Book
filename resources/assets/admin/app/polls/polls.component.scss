@@ -1,0 +1,27 @@
+@import "../../theme/_vars";
+
+.mat-column-id,
+.mat-column-resonse_count {
+  flex: 0.4;
+}
+.mat-column-title {
+  flex: 3;
+}
+mat-row {
+  cursor: pointer;
+  &:hover {
+    background: rgba(0,0,0,0.05);
+  }
+  &.is-current {
+    background: rgba($green, 0.2);
+    &:hover {
+      background: rgba($green, 0.3);
+    }
+  }
+}
+.no-polls h6 {
+  font-size: 18px;
+  color: $light-copy;
+  font-style: italic;
+  text-align: center;
+}

@@ -1,0 +1,39 @@
+@import '../variables';
+
+* {
+  &.rep, &.republican, &.red, &.redme {
+    color: $republican !important;
+    &:hover, &:active, &:focus {
+      color: darken($republican, 10%);
+    }
+  }
+
+  &.rep-bg, &.red-bg {
+    background: $republican !important;
+    color: #fff;
+    * { color: #fff; }
+  }
+  &.rep-table {
+    thead th {
+      border-color: $republican !important;
+    }
+  }
+
+  &.dem, &.democrat, &.blue, &.blueme {
+    color: $democrat !important;
+    &:hover, &:active, &:focus {
+      color: darken($democrat, 10%);
+    }
+  }
+  &.dem-bg, &.dem-bg {
+    background: $democrat !important;
+    color: #fff;
+    * { color: #fff; }
+  }
+  &.dem-table {
+    thead th {
+      border-color: $democrat !important;
+    }
+  }
+
+}

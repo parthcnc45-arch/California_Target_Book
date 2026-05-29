@@ -1,0 +1,261 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "~theme/_vars";
+
+// Vendor
+@import "~normalize.css";
+
+@import "~materialize-css/sass/components/color";
+@import "~materialize-css/sass/components/variables";
+@import "~materialize-css/sass/components/normalize";
+@import "~materialize-css/sass/components/global";
+@import "~materialize-css/sass/components/badges";
+@import "~materialize-css/sass/components/icons-material-design";
+@import "~materialize-css/sass/components/grid";
+@import "~materialize-css/sass/components/navbar";
+@import "~materialize-css/sass/components/roboto";
+@import "~materialize-css/sass/components/typography";
+//@import "~materialize-css/sass/components/transitions";
+@import "~materialize-css/sass/components/cards";
+@import "~materialize-css/sass/components/toast";
+@import "~materialize-css/sass/components/tabs";
+//@import "~materialize-css/sass/components/tooltip";
+@import "~materialize-css/sass/components/buttons";
+@import "~materialize-css/sass/components/dropdown";
+@import "~materialize-css/sass/components/waves";
+//@import "~materialize-css/sass/components/modal";
+@import "~materialize-css/sass/components/collapsible";
+@import "~materialize-css/sass/components/chips";
+@import "~materialize-css/sass/components/materialbox";
+//@import "~materialize-css/sass/components/forms/formS";
+@import "~materialize-css/sass/components/table_of_contents";
+@import "~materialize-css/sass/components/sideNav";
+
+@import "~theme/_theme";
+//@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~node-snackbar/dist/snackbar.min.css";
+@import url('//fonts.googleapis.com/css?family=Open+Sans:300,400,600|Material+Icons');
+
+@import "../sass/helpers";
+
+html {
+  height: 100%;
+  font-family: 'Open Sans', GillSans, Calibri, Trebuchet, sans-serif;
+  //background: #fafafa;
+  //overflow: hidden;
+  background-color: #F7F9FC;
+}
+body {
+  min-height: 100%;
+  line-height: 1.4em;
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: 300;
+  // font-family: Bellefair, serif;
+}
+
+.light {
+  font-weight: 300;
+  color: #333;
+}
+
+.page-heading {
+  padding: 24px .75rem 12px;
+  position: relative;
+  margin-bottom: 0;
+
+  .btn-floating {
+    position: absolute;
+    right: 10%;
+    bottom: -28px;
+  }
+}
+
+small {
+  color: $brand-primary;
+  display: block;
+}
+.mat-dialog-title {
+  font-weight: 400;
+}
+
+a {
+  color: $red;
+  cursor: pointer !important;
+  &:not(.btn) {
+    &:hover, &:active, &:focus {
+      color: lighten($red, 5%);
+    }
+  }
+}
+
+.card-panel {
+  //box-shadow: none;
+}
+
+.circle {
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+}
+
+.stats-panel {
+  padding: 0;
+  border-radius: 4px;
+  box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+  text-align: center;
+  overflow: hidden;
+
+  * {
+    font-family: 'Open Sans';
+    font-weight: 300;
+    color: rgba(255,255,255,0.9);
+    font-size: 1.38rem !important;
+  }
+  .stat {
+    text-align: center;
+    * {
+      color: rgba(0, 0, 0, 0.58) !important;
+    }
+  }
+}
+
+.ctb-title {
+
+  &:before {
+    content: '';
+    display: block;
+    position: relative;
+    width: 30px;
+    height: 4px;
+    background: $red;
+  }
+
+  &.sm {
+    &:before {
+      height: 2px;
+    }
+  }
+}
+.collection-item {
+  position: relative;
+}
+
+.row {
+  position: relative;
+}
+.error {
+  color: #F44336;
+  margin: -10px 0 10px;
+  font-size: 12px;
+}
+.keep-whitespace {
+  white-space: pre-line;
+}
+
+a.brand {
+  background: $brand-primary;
+  &:hover {
+    background: lighten($brand-primary, 5%);
+  }
+  &:active, &:focus {
+    background: lighten($brand-primary, 10%);
+  }
+}
+
+.clickable-row {
+  cursor: pointer;
+  &:hover {
+    background: rgba(0,0,0,0.05);
+  }
+}
+
+.mat-dialog-actions {
+  justify-content: space-between;
+}
+
+.clearfix {
+  overflow: auto;
+  &::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.btn-default {
+  @extend .z-depth-0, .waves-effect, .waves-light, .blue-grey, .lighten-5, .blue-grey-text;
+}
+.inline-block {
+  display: inline-block;
+
+}
+h1 {
+  font-size: 3em;
+}
+
+mat-card {
+  margin-bottom: 24px;
+}
+mat-card-content {
+  clear: both;
+}
+
+
+.icon {
+  width: 24px !important;
+  height: 24px !important;
+  padding: 4px;
+  border-radius: 50%;
+
+  &.icon-red {
+    background: lighten($red, 30%);
+    mat-icon {
+      color: $red;
+    }
+  }
+  &.icon-green {
+    background: lighten($green, 30%);
+    mat-icon { color: darken($green, 10%) }
+  }
+  &.icon-red {
+    background: lighten($gray, 30%);
+    mat-icon { color: $gray; }
+  }
+  &.icon-blue {
+    background: lighten($blue, 20%);
+    mat-icon { color: darken($blue, 10%) }
+  }
+  &.icon-gray {
+    background: lighten($gray, 30%);
+    mat-icon { color: $gray; }
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+mat-dialog-container {
+  padding: 0 !important;
+  overflow: hidden;
+
+  .mat-dialog-title {
+    margin: 0 !important;
+    padding: 24px;
+  }
+  .mat-dialog-content {
+    margin: 0 !important;
+  }
+  .mat-dialog-actions {
+    background: #eee;
+    padding: 12px;
+    margin: 0 !important;
+  }
+}

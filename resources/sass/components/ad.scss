@@ -1,0 +1,52 @@
+@import "../variables";
+
+.ctb-banner {
+  width: 100%;
+  //border-radius: 4px;
+  padding: 24px ;
+  background: #2d5591;
+  margin-bottom: 32px !important;
+
+  &.banner-dark {
+    background: $dark-gray;
+  }
+
+  &.text-left {
+    a {
+      position: absolute;
+      right: 38px;
+      bottom: 52px;
+    }
+  }
+
+  *:not(.row) {
+    //max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  * {
+    color: rgba(255,255,255,0.9);
+  }
+  h5, p {
+    color: rgba(255,255,255,0.7);
+  }
+  p {
+    font-weight: 300;
+  }
+
+  @media (max-width: 768px) {
+    padding: 12px;
+    * {
+      text-align: center;
+    }
+    a.btn {
+      margin: 24px auto 12px;
+      display: block;
+      text-align: center;
+      position: relative;
+      right: 0;
+      bottom: 0;
+    }
+  }
+
+}

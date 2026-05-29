@@ -1,0 +1,76 @@
+
+
+.card {
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px 0 rgba(50,50,93,.1);
+  display: block;
+  transition: all 250ms ease 0s;
+  text-decoration: none !important;
+  font-style: normal;
+  overflow: hidden;
+  background: #fff;
+  margin: 0 auto 32px;
+  max-width: 240px;
+
+  &:hover {
+    box-shadow: 0 2px 8px 0 rgba(50,50,93,.2);
+  }
+
+  .card-head {
+    padding: 16px;
+    background: #eee;
+    .icon * {
+      fill: rgba(255,255,255,0.7) !important
+    }
+  }
+  .card-body {
+    padding: 16px 12px;
+    p {
+      margin-bottom: 0;
+    }
+  }
+
+  &.card-red {
+    .card-head {
+      background: $red;
+    }
+  }
+  &.card-blue {
+    .card-head {
+      background: $blue;
+    }
+  }
+  &.card-indigo {
+    .card-head {
+      background: #7c69b0;
+    }
+  }
+  &.card-dark-blue {
+    .card-head {
+      background: #33658A;
+    }
+  }
+  &.card-green {
+    .card-head {
+      background: $green;
+    }
+  }
+  &.card-yellow {
+    .card-head {
+      background: $yellow;
+    }
+  }
+  &.card-teal {
+    .card-head {
+      background: #4db6ac;
+    }
+  }
+  &.card-copper {
+    .card-head {
+      background: #d9ab67;
+    }
+  }
+
+}

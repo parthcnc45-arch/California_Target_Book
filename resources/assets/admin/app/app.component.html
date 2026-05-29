@@ -1,0 +1,20 @@
+<div class="content container">
+  <div class="row m-n">
+    <aside>
+      <ctb-side-nav></ctb-side-nav>
+    </aside>
+
+    <main>
+
+      <div class="progress light-blue lighten-4 m-n" *ngIf="loading">
+          <div class="indeterminate light-blue"></div>
+      </div>
+
+      <div class="">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+
+</div>
+

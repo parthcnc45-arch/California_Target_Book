@@ -1,0 +1,134 @@
+<div class="row page-heading">
+  <h1>
+    Subscriber
+    <small>{{ (user$ | async)?.name }}</small>
+  </h1>
+</div>
+
+<div>
+  <div class="row" [hidden]="user$ | async">
+    <div class="preloader-wrapper active m-auto fn block">
+      <div class="spinner-layer spinner-red-only">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div>
+        <div class="gap-patch">
+          <div class="circle"></div>
+        </div>
+        <div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div [hidden]="!(user$ | async)">
+
+    <div class="row">
+      <div class="col s12">
+        <div class="ctb-title">
+          <h4>Account</h4>
+        </div>
+        <div class="card account-card">
+
+          <div *ngIf="user$ | async; let user" class="card-content">
+            <table class="bordered responsive-table m-n">
+              <tbody>
+              <tr>
+                <th>Name</th>
+                <td>
+                  {{ user.name }}
+                </td>
+                <th>Email</th>
+                <td>
+                  <a [href]="'mailto:' + user.email">
+                    {{ user.email }}
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <th>Password</th>
+                <td>
+                  <span *ngIf="user.has_password">******</span>
+                  <i *ngIf="!user.has_password">None Set</i>
+
+                  <a (click)="changePassword()">
+                    <i class="material-icons right">mode_edit</i>
+                  </a>
+                </td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <th>Subscribed On</th>
+                <td>{{ user.subscribedOn }} </td>
+                <th>Account Type</th>
+                <td class="capitalize">
+                  {{ user.role }}
+                </td>
+              </tr>
+
+              <tr>
+                <th>Company</th>
+                <td>
+                  <a [routerLink]="['/subscriptions', user.subscriptions[0].id]">
+                    {{ user.company }}
+                  </a>
+                </td>
+                <th>Phone Number</th>
+                <td>
+                  {{ user.phone_number }}
+                </td>
+              </tr>
+
+              <tr>
+                <th>Stripe Customer ID</th>
+                <td>
+                  <a [href]="user.stripe_id | stripeLink" target="_blank">
+                    {{ user.stripe_id }}
+                  </a>
+                </td>
+                <th>Account Id</th>
+                <td>{{ user.id }} </td>
+              </tr>
+
+              <tr *ngIf="user.subscriptions[0]">
+                <th>Subscription ID</th>
+                <td>
+                  <a [routerLink]="['/subscriptions', user.subscriptions[0].id]">
+                    {{ user.subscriptions[0].id }}
+                  </a>
+                </td>
+              </tr>
+
+              </tbody>
+            </table>
+            <table>
+              <tr>
+                <th>Notes</th>
+              </tr>
+              <tr>
+                <td class="pt-n pb-n">
+                  <p class="keep-whitespace">
+                    {{ user.notes }}
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="card-action right-align">
+
+            <button mat-flat-button color="primary" (click)="editUser()" type="button">
+              Edit
+            </button>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

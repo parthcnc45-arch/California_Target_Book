@@ -1,0 +1,20 @@
+<div class="sidebar">
+  <div class="sidebar-header">
+    <a href="/">
+      <img src="/img/ctb_logo.png" width="93" height="93">
+    </a>
+  </div>
+
+  <div class="nav-links mt-md">
+    <h6 class="pl-sm">NAVIGATION</h6>
+    <ul>
+      <li *ngFor="let v of views">
+        <a [routerLink]="v.path" routerLinkActive="active">
+          <i class="material-icons">{{v.icon}}</i>
+          <span>{{v.name}}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+</div>

@@ -1,0 +1,24 @@
+
+<h2 mat-dialog-title *ngIf="!data.bookSubscription">Create Hard Copy Subscription</h2>
+<h2 mat-dialog-title *ngIf="data.bookSubscription">Edit Hard Copy Subscription</h2>
+
+<form [formGroup]="bookForm" (submit)="onSubmit(bookForm)">
+
+  <div mat-dialog-content>
+    <div class="row">
+      <div class="col s12">
+        <h6>Address</h6>
+        <ctb-address-form [formGroup]="bookForm.get('address')"></ctb-address-form>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions>
+    <button type="button" mat-button mat-dialog-close>Cancel</button>
+    <button type="submit" [disabled]="isLoading" color="primary" mat-button>Save</button>
+  </div>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+</form>
+

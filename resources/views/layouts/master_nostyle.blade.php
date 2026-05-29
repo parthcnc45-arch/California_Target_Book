@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+
+        <title>@yield('title')</title>
+        <link rel="shortcut icon" href="/ctb_logo.ico" />
+
+        <meta name="author" content="California Target Book">
+        <meta name="keywords" content="Political Campaign, California Election Spending, Political, Political Consulting, Political Consultant, California Non-Partisan, California Voter Guide, Strategist, Political Analyst">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="api_token" content="{{ Auth::user()->api_token }}">
+
+        @include('components.analytics')
+
+        <link href="/css/ctb_styles.css" rel="stylesheet">
+
+        @yield('styles')
+
+
+        <script>
+            window.STRIPE_PUB_KEY = "{{ env('STRIPE_PUB_KEY') }}";
+
+            @auth
+            window.user = {
+              id: "{{ Auth::id() }}",
+              email: "{{ Auth::user()->email }}",
+            };
+            @endauth
+
+            window.globals = {
+                STRIPE_PUB_KEY: "{{ env('STRIPE_PUB_KEY') }}",
+                ENV: "{{ env('APP_ENV') }}",
+                RELEASE: "{{ config('sentry.release') }}",
+
+                SUBSCRIPTION_COST_1YR: {{Globals::SUBSCRIPTION_COST_1YR / 100}},
+                SUBSCRIPTION_COST_2YR: {{Globals::SUBSCRIPTION_COST_2YR / 100}},
+                ADDON_COST_1YR: {{Globals::ADDON_COST / 100}},
+                ADDON_COST_2YR: {{Globals::ADDON_COST / 100}},
+                BOOK_COST: {{Globals::BOOK_COST / 100}},
+
+                getBookCountForSubscription: function (yrCount) {
+                    var yr = (new Date()).getFullYear();
+                    var mth = (new Date()).getMonth();
+
+                    var bookDeliveries = {
+                        /* (odd/even year): [monthDelivered] */
+                        0: [3, 5, 10],
+                        1: [5, 11],
+                    };
+
+                    // Cycle through months to see how many deliveries line up.
+                    var bookCount = 0;
+                    for (var m = mth, b = yr % 2; m < (yrCount * 12); m++) {
+                       if (m % 12 === 0 && m !== 0) b = (b+1) % 2;
+                       if (~bookDeliveries[b].indexOf(m % 12)) bookCount++;
+                    }
+
+                    return bookCount;
+                }
+            };
+        </script>
+
+    </head>
+
+    <body class="{{ Auth::check() && Auth::user()->isAdmin() ? 'admin' : '' }}" id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+        <div id="app">
+
+            @include('components.nav')
+
+            <main v-cloak>
+                @yield('content')
+            </main>
+
+
+            <footer>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p class="text-center m-n">
+                                ©2018 California Target Book. All Rights Reserved. |
+                                <a href="copyright.php">Copyright</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+
+        @yield('scripts-dependencies')
+        <script src="https://js.stripe.com/v3/"></script>
+        <script src="{{ mix('js/app.js') }}"></script>
+
+        <script type="text/javascript" src="/js/jquery.smartmenus.bootstrap.js"></script>
+        <script src="/js/jquery.quicksearch.js"></script>
+        <script src="/js/jquery-listnav.min.js"></script>
+        <script src="/js/jquery.tablesorter.min.js"></script>
+
+        <script src="/js/ctb.js"></script>
+
+        @yield('scripts')
+
+
+
+    </body>
+</html>

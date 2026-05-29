@@ -1,0 +1,52 @@
+
+@import "~theme/_vars";
+$sidebar-bg: #F7F9FC;
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  //left: 0;
+  bottom: 0;
+  min-height: 100%;
+  //border-right: 1px solid #ddd;
+  //background: $sidebar-bg;
+  width: 200px;
+
+  * {
+    //color: rgba(0,0,0,0.68);
+    color: rgba(80, 90, 100, 0.88);
+  }
+
+  .sidebar-header {
+    padding: 10px 0;
+
+    img {
+      display: inline-block;
+    }
+  }
+
+  .nav-links {
+    ul {
+      list-style: none;
+      li a {
+        padding: 10px;
+        display: block;
+        span {
+          display: inline-block;
+          padding-left: 12px;
+        }
+        span, i {
+          vertical-align: middle;
+        }
+        &:hover {
+          background: darken($sidebar-bg, 3%);
+        }
+
+        border-left: 3px solid transparent;
+        &.active {
+          border-left: 3px solid $red;
+        }
+      }
+    }
+  }
+}

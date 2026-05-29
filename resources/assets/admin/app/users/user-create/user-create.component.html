@@ -1,0 +1,641 @@
+
+<div class="row page-heading">
+  <h1>Add Subscriber</h1>
+</div>
+
+
+<div class="">
+  <form class="form"
+    action="javascript:void(0)"
+    [formGroup]="subscriberForm"
+    novalidate
+    (submit)="onSubmit(subscriberForm)">
+
+    <div class="row">
+      <div class="ctb-title">
+        <h5>Account Info</h5>
+      </div>
+      <div class="card-panel col m12 pt-md">
+        <div class="row">
+          <div class="input-field col m6">
+            <label for="first_name">First Name</label>
+            <input id="first_name"
+                formControlName="first_name"
+                required
+                [ngClass]="{'valid': isValid('first_name'), 'invalid': isInvalid('first_name')}"
+                type="text" />
+
+            <div *ngIf="get('first_name').errors && isInvalid('first_name')">
+              <p class="error" *ngIf="get('first_name').errors.required">This field is required.</p>
+              <p class="error" *ngIf="get('first_name').errors.server" [innerHtml]="get('first_name').errors.server.join('<br/>')"></p>
+            </div>
+          </div>
+
+          <div class="input-field col m6">
+            <label for="last_name">Last Name</label>
+            <input id="last_name"
+                formControlName="last_name"
+                required
+                [ngClass]="{'valid': isValid('last_name'), 'invalid': isInvalid('last_name')}"
+                type="text" />
+
+            <div *ngIf="get('last_name').errors && isInvalid('last_name')">
+              <p class="error" *ngIf="get('last_name').errors.server" [innerHtml]="get('last_name').errors.server.join('<br/>')"></p>
+              <p class="error" *ngIf="get('last_name').errors.required">This field is required.</p>
+            </div>
+          </div>
+
+          <div class="input-field col m6 clear">
+            <label for="email">Email</label>
+            <input id="email"
+                formControlName="email"
+                required
+                [ngClass]="{'valid': isValid('email'), 'invalid': isInvalid('email')}"
+                type="email" />
+
+            <div *ngIf="get('email').errors && isInvalid('email')">
+              <p class="error" *ngIf="get('email').errors.required">This field is required.</p>
+              <p class="error" *ngIf="get('email').errors.email">Email is not Valid</p>
+              <p class="error" *ngIf="get('email').errors.server" [innerHtml]="get('email').errors.server.join('<br/>')"></p>
+            </div>
+
+          </div>
+
+
+          <div class="input-field col m6">
+            <label for="last_name">Phone Number</label>
+            <input id="phone_number"
+                formControlName="phone_number"
+                [ngClass]="{'valid': isValid('phone_number'), 'invalid': isInvalid('phone_number')}"
+                type="text" />
+
+            <div *ngIf="get('phone_number').errors && isInvalid('phone_number')">
+              <p class="error" *ngIf="get('phone_number').errors.server" [innerHtml]="get('phone_number').errors.server.join('<br/>')"></p>
+            </div>
+          </div>
+
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="ctb-title">
+        <h5>Organization</h5>
+      </div>
+      <div class="card-panel col m12 pt-md" formGroupName="company">
+        <div class="row">
+          <div class="input-field col m12">
+            <label for="company">Organization</label>
+            <input id="company"
+                formControlName="name"
+                [ngClass]="{'valid': isValid('company.name'), 'invalid': isInvalid('company.name')}"
+                type="text" />
+
+            <div *ngIf="get('company.name').errors && isInvalid('company.name')">
+              <p class="error" *ngIf="get('company.name').errors.server" [innerHtml]="get('company.name').errors.server.join('<br/>')"></p>
+            </div>
+          </div>
+
+          <div formGroupName="address">
+            <div class="input-field col m6">
+              <label for="company_address_line1">Address Line 1</label>
+              <input id="company_address_line1"
+                  formControlName="line1"
+                  required
+                  type="text" />
+
+              <div *ngIf="get('company.address.line1').errors && isInvalid(get('company.address.line1'))">
+                <p class="error" *ngIf="get('company.address.line1').errors.server" [innerHtml]="get('company.address.line1').errors.server.join('<br/>')"></p>
+                <p class="error" *ngIf="get('company.address.line1').errors.required">This field is required.</p>
+              </div>
+            </div>
+
+            <div class="input-field col m6">
+              <label for="company_address_line2">Address Line 2</label>
+              <input id="company_address_line2"
+                  formControlName="line2"
+                  type="text" />
+            </div>
+
+            <div class="input-field col m4 clear">
+              <label for="company_city">City</label>
+              <input id="company_city"
+                  formControlName="city"
+                  required
+                  type="text" />
+
+              <div *ngIf="get('company.address.city').errors && isInvalid(get('company.address.city'))">
+                <p class="error" *ngIf="get('company.address.city').errors.server" [innerHtml]="get('company.address.city').errors.server.join('<br/>')"></p>
+                <p class="error" *ngIf="get('company.address.city').errors.required">This field is required.</p>
+              </div>
+            </div>
+
+            <div class=" col m4">
+              <label for="company_state">State</label>
+              <select id="company_state"
+                  class="browser-default block"
+                  formControlName="state"
+                  required>
+
+                <option value="AL">Alabama</option>
+                <option value="AK">Alaska</option>
+                <option value="AZ">Arizona</option>
+                <option value="AR">Arkansas</option>
+                <option value="CA" selected>California</option>
+                <option value="CO">Colorado</option>
+                <option value="CT">Connecticut</option>
+                <option value="DE">Delaware</option>
+                <option value="DC">District Of Columbia</option>
+                <option value="FL">Florida</option>
+                <option value="GA">Georgia</option>
+                <option value="HI">Hawaii</option>
+                <option value="ID">Idaho</option>
+                <option value="IL">Illinois</option>
+                <option value="IN">Indiana</option>
+                <option value="IA">Iowa</option>
+                <option value="KS">Kansas</option>
+                <option value="KY">Kentucky</option>
+                <option value="LA">Louisiana</option>
+                <option value="ME">Maine</option>
+                <option value="MD">Maryland</option>
+                <option value="MA">Massachusetts</option>
+                <option value="MI">Michigan</option>
+                <option value="MN">Minnesota</option>
+                <option value="MS">Mississippi</option>
+                <option value="MO">Missouri</option>
+                <option value="MT">Montana</option>
+                <option value="NE">Nebraska</option>
+                <option value="NV">Nevada</option>
+                <option value="NH">New Hampshire</option>
+                <option value="NJ">New Jersey</option>
+                <option value="NM">New Mexico</option>
+                <option value="NY">New York</option>
+                <option value="NC">North Carolina</option>
+                <option value="ND">North Dakota</option>
+                <option value="OH">Ohio</option>
+                <option value="OK">Oklahoma</option>
+                <option value="OR">Oregon</option>
+                <option value="PA">Pennsylvania</option>
+                <option value="RI">Rhode Island</option>
+                <option value="SC">South Carolina</option>
+                <option value="SD">South Dakota</option>
+                <option value="TN">Tennessee</option>
+                <option value="TX">Texas</option>
+                <option value="UT">Utah</option>
+                <option value="VT">Vermont</option>
+                <option value="VA">Virginia</option>
+                <option value="WA">Washington</option>
+                <option value="WV">West Virginia</option>
+                <option value="WI">Wisconsin</option>
+                <option value="WY">Wyoming</option>
+
+              </select>
+
+              <div class="mt-md" *ngIf="get('company.address.state').errors && isInvalid(get('company.address.state'))">
+                <p class="error" *ngIf="get('company.address.state').errors.server" [innerHtml]="get('company.address.state').errors.server.join('<br/>')"></p>
+                <p class="error" *ngIf="get('company.address.state').errors.required">This field is required.</p>
+              </div>
+            </div>
+
+            <div class="input-field col m4">
+              <label for="company_zip_code">Zip Code</label>
+              <input id="company_zip_code"
+                  formControlName="zip_code"
+                  required
+                  type="text" />
+
+              <div *ngIf="get('company.address.zip_code').errors && isInvalid(get('company.address.zip_code'))">
+                <p class="error" *ngIf="get('company.address.zip_code').errors.server" [innerHtml]="get('company.address.zip_code').errors.server.join('<br/>')"></p>
+                <p class="error" *ngIf="get('company.address.zip_code').errors.required">This field is required.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="ctb-title">
+        <h5>Subscription</h5>
+      </div>
+      <div class="card-panel col s12 pt-md">
+
+        <div class="section row">
+          <div class="ctb-title sm col s12">
+            <h6>Length</h6>
+          </div>
+
+          <div class="col m6">
+            <p>
+              <input id="freq12"
+                required
+                value="12"
+                formControlName="subscription_length"
+                type="radio" />
+              <label for="freq12">12 Month Subscription</label>
+            </p>
+            <p>
+              <input id="freq24"
+                required
+                value="24"
+                formControlName="subscription_length"
+                checked
+                type="radio" />
+              <label for="freq24">24 Month Subscription</label>
+            </p>
+
+            <div *ngIf="get('subscription_length').errors && isInvalid('subscription_length')">
+              <p class="error" *ngIf="get('subscription_length').errors.server" [innerHtml]="get('subscription_length').errors.server.join('<br/>')"></p>
+              <p class="error" *ngIf="get('subscription_length').errors.required">This field is required.</p>
+            </div>
+
+          </div>
+
+          <div class="col m6">
+
+              <div class="input-field cost-field">
+                <i class="material-icons prefix">attach_money</i>
+                <input id="subscription_cost"
+                  type="number"
+                  formControlName="subscription_cost"
+                  required
+                  min="0"
+                  [ngClass]="{'valid': isValid('subscription_cost'), 'invalid': isInvalid('subscription_cost')}" />
+                <label for="icon_prefix" class="active">Subscription Cost</label>
+
+                <div *ngIf="get('subscription_cost').errors && isInvalid('subscription_cost')">
+                  <p class="error" *ngIf="get('subscription_cost').errors.server" [innerHtml]="get('subscription_cost').errors.server.join('<br/>')"></p>
+                  <p class="error" *ngIf="get('subscription_cost').errors.required">This field is required.</p>
+                  <p class="error" *ngIf="get('subscription_cost').errors.min">Must be at least 0.</p>
+                </div>
+              </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="section row">
+          <div class="ctb-title sm col s12">
+            <h6>Hard Copy Subscriptions</h6>
+          </div>
+
+          <div class="col m6">
+            <div class="counter indigo lighten-1 mt-md">
+              <span class="dec" (click)="decrement('book_count')">-</span>
+              <input type="text"
+                formControlName="book_count"
+                pattern="[0-9]+"
+                required />
+              <span class="inc" (click)="increment('book_count')">+</span>
+            </div>
+            <div *ngIf="get('book_count').errors && isInvalid('book_count')" class="mt-md">
+              <p class="error" *ngIf="get('book_count').errors.server" [innerHtml]="get('book_count').errors.server.join('<br/>')"></p>
+              <p class="error" *ngIf="get('book_count').errors.required">This field is required.</p>
+              <p class="error" *ngIf="get('book_count').errors.min">Must be at least 0.</p>
+            </div>
+          </div>
+
+          <div class="col m6">
+
+              <div class="input-field cost-field">
+                <i class="material-icons prefix">attach_money</i>
+                <input id="book_cost"
+                  type="number"
+                  formControlName="book_cost"
+                  required
+                  min="0"
+                  [ngClass]="{'valid': isValid('book_cost'), 'invalid': isInvalid('book_cost')}" />
+                <label for="icon_prefix" class="active">Book Cost</label>
+
+                <div *ngIf="get('book_cost').errors && isInvalid('book_cost')">
+                  <p class="error" *ngIf="get('book_cost').errors.server" [innerHtml]="get('book_cost').errors.server.join('<br/>')"></p>
+                  <p class="error" *ngIf="get('book_cost').errors.required">This field is required.</p>
+                  <p class="error" *ngIf="get('book_cost').errors.min">Must be at least 0.</p>
+                </div>
+              </div>
+
+          </div>
+
+          <div class="col s12" [hidden]="!book_addresses?.controls?.length">
+            <ul class="collection" formArrayName="book_addresses">
+              <li class="collection-item row mb-n"
+                *ngFor="let b of book_addresses?.controls; let i=index"
+                [formGroupName]="i">
+
+                <div class="input-field col m6">
+                  <label for="address_line1">Address Line 1</label>
+                  <input id="address_line1"
+                    formControlName="line1"
+                    required
+                    type="text" />
+
+                    <div *ngIf="b.get('line1').errors && isInvalid(b.get('line1'))">
+                      <p class="error" *ngIf="b.get('line1').errors.server" [innerHtml]="b.get('line1').errors.server.join('<br/>')"></p>
+                    <p class="error" *ngIf="b.get('line1').errors.required">This field is required.</p>
+                  </div>
+                </div>
+
+                <div class="input-field col m6">
+                  <label for="address_line2">Address Line 2</label>
+                  <input id="address_line2"
+                    formControlName="line2"
+                    type="text" />
+                </div>
+
+                <div class="input-field col m4 clear">
+                  <label for="city">City</label>
+                  <input id="city"
+                    formControlName="city"
+                    required
+                    type="text" />
+
+                    <div *ngIf="b.get('city').errors && isInvalid(b.get('city'))">
+                      <p class="error" *ngIf="b.get('city').errors.server" [innerHtml]="get('city').errors.server.join('<br/>')"></p>
+                    <p class="error" *ngIf="b.get('city').errors.required">This field is required.</p>
+                  </div>
+                </div>
+
+                <div class=" col m4">
+                  <label for="state">State</label>
+                  <select id="state"
+                    class="browser-default block"
+                    formControlName="state"
+                    required>
+
+                    <option value="AL">Alabama</option>
+                    <option value="AK">Alaska</option>
+                    <option value="AZ">Arizona</option>
+                    <option value="AR">Arkansas</option>
+                    <option value="CA" selected>California</option>
+                    <option value="CO">Colorado</option>
+                    <option value="CT">Connecticut</option>
+                    <option value="DE">Delaware</option>
+                    <option value="DC">District Of Columbia</option>
+                    <option value="FL">Florida</option>
+                    <option value="GA">Georgia</option>
+                    <option value="HI">Hawaii</option>
+                    <option value="ID">Idaho</option>
+                    <option value="IL">Illinois</option>
+                    <option value="IN">Indiana</option>
+                    <option value="IA">Iowa</option>
+                    <option value="KS">Kansas</option>
+                    <option value="KY">Kentucky</option>
+                    <option value="LA">Louisiana</option>
+                    <option value="ME">Maine</option>
+                    <option value="MD">Maryland</option>
+                    <option value="MA">Massachusetts</option>
+                    <option value="MI">Michigan</option>
+                    <option value="MN">Minnesota</option>
+                    <option value="MS">Mississippi</option>
+                    <option value="MO">Missouri</option>
+                    <option value="MT">Montana</option>
+                    <option value="NE">Nebraska</option>
+                    <option value="NV">Nevada</option>
+                    <option value="NH">New Hampshire</option>
+                    <option value="NJ">New Jersey</option>
+                    <option value="NM">New Mexico</option>
+                    <option value="NY">New York</option>
+                    <option value="NC">North Carolina</option>
+                    <option value="ND">North Dakota</option>
+                    <option value="OH">Ohio</option>
+                    <option value="OK">Oklahoma</option>
+                    <option value="OR">Oregon</option>
+                    <option value="PA">Pennsylvania</option>
+                    <option value="RI">Rhode Island</option>
+                    <option value="SC">South Carolina</option>
+                    <option value="SD">South Dakota</option>
+                    <option value="TN">Tennessee</option>
+                    <option value="TX">Texas</option>
+                    <option value="UT">Utah</option>
+                    <option value="VT">Vermont</option>
+                    <option value="VA">Virginia</option>
+                    <option value="WA">Washington</option>
+                    <option value="WV">West Virginia</option>
+                    <option value="WI">Wisconsin</option>
+                    <option value="WY">Wyoming</option>
+
+                  </select>
+
+                  <div class="mt-md" *ngIf="b.get('state').errors && isInvalid(b.get('state'))">
+                    <p class="error" *ngIf="b.get('state').errors.server" [innerHtml]="get('state').errors.server.join('<br/>')"></p>
+                    <p class="error" *ngIf="b.get('state').errors.required">This field is required.</p>
+                  </div>
+                </div>
+
+                <div class="input-field col m4">
+                  <label for="zip_code">Zip Code</label>
+                  <input id="zip_code"
+                    formControlName="zip_code"
+                    required
+                    type="text" />
+
+                  <div *ngIf="b.get('zip_code').errors && isInvalid(b.get('zip_code'))">
+                    <p class="error" *ngIf="b.get('zip_code').errors.server" [innerHtml]="get('zip_code').errors.server.join('<br/>')"></p>
+                    <p class="error" *ngIf="b.get('zip_code').errors.required">This field is required.</p>
+                  </div>
+                </div>
+
+                <div class="input-field col s12 clear">
+                  <label for="special_instructions">Special Instructions</label>
+                  <textarea id="special_instructions"
+                    formControlName="special_instructions"
+                    class="materialize-textarea">
+                  </textarea>
+                </div>
+
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+
+        <div class="section row">
+          <div class="ctb-title sm col s12">
+            <h6>Addons</h6>
+          </div>
+
+          <div class="col m6">
+            <div class="counter indigo lighten-1 mt-md">
+              <span class="dec" (click)="decrement('addon_count')">-</span>
+              <input type="text"
+                formControlName="addon_count"
+                pattern="[0-9]+"
+                required />
+              <span class="inc" (click)="increment('addon_count')">+</span>
+            </div>
+
+            <div *ngIf="get('addon_count').errors && isInvalid('addon_count')" class="mt-md">
+              <p class="error" *ngIf="get('addon_count').errors.server" [innerHtml]="get('addon_count').errors.server.join('<br/>')"></p>
+              <p class="error" *ngIf="get('addon_count').errors.required">This field is required.</p>
+              <p class="error" *ngIf="get('addon_count').errors.min">Must be at least 0.</p>
+            </div>
+          </div>
+
+          <div class="col m6">
+
+              <div class="input-field cost-field">
+                <i class="material-icons prefix">attach_money</i>
+                <input id="addon_cost"
+                  type="number"
+                  formControlName="addon_cost"
+                  required
+                  min="0"
+                  [ngClass]="{'valid': isValid('addon_cost'), 'invalid': isInvalid('addon_cost')}" />
+                <label for="icon_prefix" class="active">Addon Cost</label>
+
+                <div *ngIf="get('addon_cost').errors && isInvalid('addon_cost')">
+                  <p class="error" *ngIf="get('addon_cost').errors.server" [innerHtml]="get('addon_cost').errors.server.join('<br/>')"></p>
+                  <p class="error" *ngIf="get('addon_cost').errors.required">This field is required.</p>
+                  <p class="error" *ngIf="get('addon_cost').errors.min">Must be at least 0.</p>
+                </div>
+              </div>
+
+          </div>
+
+          <div class="col s12" [hidden]="!addons?.controls.length">
+            <ul class="collection" formArrayName="addons">
+              <li class="collection-item row mb-n"
+                *ngFor="let addon of addons?.controls; let i = index">
+
+                <div class="input-field">
+                  <label>Addon Email #{{i+1}}</label>
+                  <input [formControlName]="i"
+                    type="email" />
+
+                  <div *ngIf="get('addons.' + i).errors && isInvalid('addons.' + i)">
+                    <p class="error" *ngIf="get('addons.' + i).errors.server" [innerHtml]="get('addons.' + i).errors.server.join('<br/>')"></p>
+                    <p class="error" *ngIf="get('addons.' + i).errors.required">This field is required.</p>
+                    <p class="error" *ngIf="get('addons.' + i).errors.email">Email is not valid.</p>
+                  </div>
+                </div>
+
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="ctb-title col s12">
+        <h5>Payment</h5>
+      </div>
+
+      <div class="card-panel col s12">
+        <div class="row">
+          <div class="col m12 l12 xl6 pt-md mb-lg">
+            <div class="ctb-title sm">
+              <h6>Payment Method</h6>
+            </div>
+            <p>
+              <input id="pay_stripe"
+                value="stripe"
+                formControlName="payment_method"
+                type="radio" />
+              <label for="pay_stripe">Paying By Credit Card</label>
+            </p>
+            <p>
+              <input id="pay_check"
+                value="check"
+                formControlName="payment_method"
+                type="radio" />
+              <label for="pay_check">Paying By Check</label>
+            </p>
+
+            <div class="input-field mt-sm"
+              [hidden]="subscriberForm.value.payment_method !== 'stripe'">
+              <ctb-stripe-input
+                required
+                [class.valid]="get('stripe_token').value && !get('stripe_token').errors"
+                [class.invalid]="get('stripe_token').touched && get('stripe_token').errors"
+                formControlName="stripe_token"
+              ></ctb-stripe-input>
+
+              <div *ngIf="get('stripe_token').errors" class="mt-md">
+                <p class="error" *ngIf="get('stripe_token').errors.server" [innerHtml]="get('stripe_token').errors.server.join('<br/>')"></p>
+                <p class="error" *ngIf="get('stripe_token').errors.stripe">{{stripe_token.errors.stripe}}</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="col m12 l12 xl6 pt-md mb-lg">
+            <div class="ctb-title sm">
+              <h6>Paid Up</h6>
+            </div>
+            <p>
+              Check this box to mark the subscriber as paid.
+              This will make their subscription active.
+              This will not charge them.
+            </p>
+            <div class="form-group">
+              <input type="checkbox"
+                id="is_paid_for"
+                formControlName="is_paid_for" />
+              <label for="is_paid_for">Is Paid For</label>
+            </div>
+
+            <div class="form-group">
+              <input type="checkbox"
+                id="send_invoice"
+                formControlName="send_invoice" />
+              <label for="send_invoice">Email Invoice</label>
+            </div>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="ctb-title col s12">
+        <h5>Summary</h5>
+      </div>
+
+      <div class="card-panel col s12 p-n">
+        <table class="bordered">
+          <tr>
+            <th>Base Subscription</th>
+            <td>${{totals.base}}</td>
+          </tr>
+          <tr>
+            <th>Hard Copies</th>
+            <td>${{totals.books}}</td>
+          </tr>
+          <tr>
+            <th>Addons</th>
+            <td>${{totals.addons}}</td>
+          </tr>
+          <tr class="blue-grey lighten-5">
+            <th>Total</th>
+            <td>${{totals.total}}</td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <ctb-loader class="left" classes="small" *ngIf="formIsLoading"></ctb-loader>
+
+      <button type="submit"
+          [disabled]="subscriberForm.invalid || formIsLoading"
+          class="waves-effect waves-light btn right">
+        Submit
+      </button>
+    </div>
+
+  </form>
+</div>

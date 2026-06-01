@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
+    public function newSubscription()
+    {
+        return view('admin.new_subscription');
+    }
+
     public function index(string $file = null)
     {
         if ($file == null) {

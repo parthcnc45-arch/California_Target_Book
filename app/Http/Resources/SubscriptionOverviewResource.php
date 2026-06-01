@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class SubscriptionOverviewResource extends Resource
+class SubscriptionOverviewResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -25,11 +25,11 @@ class SubscriptionOverviewResource extends Resource
 
         return [
             'id' => $this->id,
-            'company' => $companyName,
+            'company' => $companyName ?? '',
             'baseAccount' => [
-                'id' => $u->id,
-                'email' => $u->email,
-                'name' => $usersName,
+                'id' => $u?->id ?? '',
+                'email' => $u?->email ?? '',
+                'name' => $usersName ?? '',
             ],
             'isActive' => $this->isActive(),
             'cycle' => $this->getCurrentCycle(),

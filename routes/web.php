@@ -1,15 +1,5 @@
 <?php
 
-use App\Http\Controllers\Book\DistrictTabController;
-use App\Http\Controllers\SSO\WordpressAuthController;
-use App\Http\Middleware\CheckActiveSubscription;
-use FontLib\Table\Type\name;
-use Illuminate\Support\Facades\Auth;
-
-
-
-
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,20 +17,6 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     return view('home');
 })->name('home');
-Route::get('/appName', function () {
-    return env('APP_NAME');
-})->name('appName');
-
-//landing pages link
-Route::get('/propositions', function () { return view('components.nav.prop_nav'); })->name('propositions');
-Route::get('/candidate', function () { return view('components.nav.candidates'); })->name('candidates');
-Route::get('/census', function () { return view('components.nav.stats'); })->name('census');
-Route::get('/finance', function () { return view('components.nav.finance'); })->name('finance');
-Route::get('/map', function () { return view('components.nav.maps'); })->name('maps');
-Route::get('/election', function () { return view('components.nav.elections'); })->name('elections');
-Route::get('/search', function () { return view('components.nav.search'); })->name('search');
-
-
 
 // Route::get('/about', function () {
 //     return view('old.about');
@@ -83,8 +59,6 @@ Route::group([ 'prefix' => 'events' ], function () {
     Route::post('/{event}', 'Admin\EventsController@rsvp');
 });
 
-//dist dynamic tab loading
-Route::post('/load-content/{tab}', [DistrictTabController::class, 'loadContent']);
 /*
  * Sample pages
  * */
@@ -111,12 +85,6 @@ Route::get('/sample_county_page', function () {
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('/login', 'Auth\LoginController@login');
 Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
-
-//SSO routes
-Route::post('/wp-login', 'Auth\LoginController@login');
-Route::get('/wp-logout', 'Auth\LoginController@logout')->name('logout');
-Route::post('/wp-register', 'Auth\RegisterController@register');
-
 
 // Registration Routes
 Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
@@ -176,46 +144,17 @@ Route::get('/docs/{file}', [
  * Book
  * Behind Paywall
  * */
-Route::get('/wpp', 'App\Http\Controllers\SSO\WordpressAuthController@chk');
-Route::get('/getActiveUsers', [WordpressAuthController::class, 'getActiveUsers']);
-
- Route::get('/book', function () {
-    if (request()->RegUS7GUvL0bGD3) {
-         app(WordpressAuthController::class)->login(request());
-    }
-    if (!Auth::check()) {
-        return redirect()->route('login');
-        // return redirect('https://ctb.epicenterconsulting.net/my-account/?active-subscription=false');
-
-    }
-    return app(CheckActiveSubscription::class)->handle(request(), function () {
-        return view('book.index');
-    });
-    return redirect()->route('login');
-})
-->name('book');
 Route::group([
         'prefix' => 'book',
         'middleware' => ['auth', 'active_subscription'],
     ], function() {
 
-    // Route::get('/', function () {
-    //     if (count(request()->route()->parameters()) > 0) {
-    //         if (count(request()->route()->parameters()) > 0) {
-    //             // If there are parameters, execute the login logic
-    //              app(WordpressAuthController::class)->login(request());
-    //         }
-    //     }
-    //     return view('book.index');
-    // })
-    //     ->name('book');
+    Route::get('/', function () { return view('book.index'); })
+        ->name('book');
 
     Route::group([ 'prefix' => 'hotsheet', 'namespace' => 'Book' ], function () {
         Route::get('/', 'HotsheetController@index')->name('book.hotsheet');
         Route::get('/{article}', 'HotsheetController@showArticle')->name('book.hotsheet.article');
-        Route::post('/', 'HotsheetController@filterArticles')->name('book.hotsheet.filterArticles');
-        Route::post('/favorite', 'HotsheetController@favorite')->name('book.hotsheet.favorite');
-        Route::get('/generate-pdf/{article}','HotsheetController@generatePDF')->name('book.generatePDF');
     });
 
     Route::group([ 'prefix' => 'redist_news', 'namespace' => 'Book' ], function () {
@@ -231,16 +170,11 @@ Route::group([
 
     Route::get('/ca_e22_finance_summary', function () { return view('old.ca_e22_finance_summary'); });
     Route::get('/e22_finances', function () { return view('old.e22_finances'); });
-    Route::get('/e24_finances', function () { return view('old.e24_finances'); });
-    Route::get('/e24_finances_t', function () { return view('old.e24_finances_t'); });
 
 
 
     //CANDIDATE DIRECTORIES
     Route::get('/e22_roster', function () { return view('old.e22_roster'); });
-    Route::get('/e24_roster', function () { return view('old.e24_roster'); });
-    Route::get('/e26_roster', function () { return view('old.e26_roster'); });
-
 
     Route::group([ 'prefix' => 'candidates' ], function () {
         Route::get('/', function () { return view('old.candidates_hub'); });
@@ -259,8 +193,6 @@ Route::group([
         Route::get('/2018/roster', function () { return view('old.e18_roster'); });
 	Route::get('/2020/roster', function () { return view('old.e20_roster'); });
 	Route::get('/2022/roster', function () { return view('old.e22_roster'); });
-        Route::get('/2024/roster', function () { return view('old.e24_roster'); });
-        Route::get('/2026/roster', function () { return view('old.e26_roster'); });
 
 
 
@@ -270,22 +202,16 @@ Route::group([
     });
 
     //DRAW CANDIDATE PAGE, RETRIEVE ELECTION HISTORY AND ASSOCIATED COMMITTEES
-    Route::get('/get_cand_page_t', function () { return view('old.get_cand_page_t'); })->name('candidatePage');
+    Route::get('/get_cand_page_t', function () { return view('old.get_cand_page_t'); });
 
     //CENSUS & REGISTRATION STATISTICS
     Route::get('/stats_hub', function () { return view('old.stats_hub'); });
     Route::get('/ca_census_trends', function () { return view('old.ca_census_trends'); });
     Route::get('/pl94_2020', function () { return view('old.pl94_2020'); });
+	
 
 
-    //SEARCH ENDPOINTS
-    Route::get('/ctb_search', function () { return view('old.ctb_search'); });
-    Route::get('/ctb_hs_an_bio_srch', function () { return view('old.ctb_hs_an_bio_srch'); });
-    Route::get('/search2', function () { return view('old.ctb_tabbed_search'); });
-    Route::post('/ctb_multi_search', function () { return view('old.ctb_multi_search'); });
-    Route::post('/ctb_multi_autocomplete', function () { return view('old.ctb_multi_autocomplete'); });
-    Route::get('/ctb_multi_search', function () { return view('old.ctb_multi_search'); });
-    Route::get('/ctb_multi_autocomplete', function () { return view('old.ctb_multi_autocomplete'); });
+    Route::get('/search', function () { return view('old.search_nav'); });
 
     Route::get('/acs_delta', function () { return view('old.acs_delta'); });
 
@@ -295,10 +221,6 @@ Route::group([
     Route::get('/ca_e20_finance_summary', function () { return view('old.ca_e20_finance_summary'); });
     Route::get('/fppc_top_cmtes', function () { return view('old.fppc_top_cmtes'); });
     Route::get('/fppc_lobby_2021', function () { return view('old.fppc_lobby_2021'); });
-    Route::get('/fppc_lobby_2022', function () { return view('old.fppc_lobby_2022'); });
-    Route::get('/fppc_lobby_2023', function () { return view('old.fppc_lobby_2023'); });
-    Route::get('/fppc_lobby_2024', function () { return view('old.fppc_lobby_2024'); });
-    Route::get('/fppc_major_donors', function () { return view('old.fppc_major_donors'); });
 
 
 
@@ -310,14 +232,6 @@ Route::group([
     Route::get('/cmlocal2', function () { return view('old.cmlocal2'); });
 
     //CALIFORNIA INDEPENDENT EXPENDITURE LISTINGS
-    Route::get('/state_ies', function () { return view('old.state_ies'); });
-    Route::get('/fppc_ie', function () { return view('old.fppc_ie'); });
-
-    Route::get('/ca_ielist_p24', function () { return view('old.ca_ielist_p24'); });
-    Route::get('/ca_ielist_fed_p24', function () { return view('old.ca_ielist_fed_p24'); });
-
-    Route::get('/ca_ielist_g22', function () { return view('old.ca_ielist_g22'); });
-    Route::get('/ca_ielist_p22', function () { return view('old.ca_ielist_p22'); });
     Route::get('/ca_ielist_g20', function () { return view('old.ca_ielist_g20'); });
     Route::get('/ca_ielist_p18', function () { return view('old.ca_ielist_p18'); });
     Route::get('/ca_ielist_p20', function () { return view('old.ca_ielist_p20'); });
@@ -333,7 +247,6 @@ Route::group([
     //FEC CAMPAIGN FINANCE DATA
     Route::get('/federal_finance_hub', function () { return view('old.federal_finance_hub'); });
     Route::get('/fec_2020_hub', function () { return view('old.fec_2020_hub'); });
-    Route::get('/fec_ie', function () { return view('old.fec_ie'); });
 
 
     //FEC FILINGS RSS FEED (PARSED)
@@ -385,8 +298,6 @@ Route::group([
     Route::get('/rpt_nav', function () { return view('old.rpt_nav'); });
     Route::get('/geo_info', function () { return view('old.geo_info'); });
     Route::get('/blockgroup_nav', function () { return view('old.blockgroup_nav'); });
-    Route::get('/results', function () { return view('old.new_rpt_nav'); });
-    Route::get('/results_geo', function () { return view('old.new_geo_rpt_nav'); });
 
 
 
@@ -420,18 +331,9 @@ Route::group([
         return view('old.district', ['id' => $id]);
     })->name('book.district');
 
-    Route::get('/junk/{id}', function($id) {
+    Route::get('/new/{id}', function($id) {
         return view('old.district_20', ['id' => $id]);
     })->name('book.new_district');
-
-    Route::get('backup/new/{id}', function($id) {
-        return view('old.district_20Backup', ['id' => $id]);
-    });
-
-    Route::get('/new/{id}', function($id) {
-        return view('old.district_test_20', ['id' => $id]);
-    })->name('book.test_district');
-
 
 
     /*
@@ -594,15 +496,20 @@ Route::group([
 
     Route::get('/e18_house_target_financials', function () { return view('old.e18_house_target_financials'); });
 
+    Route::get('/ca_registration_feb_2019', function () { return view('old.ca_registration_feb_2019'); });
+    Route::get('/ca_registration_nov_2018', function () { return view('old.ca_registration_nov_2018'); });
+    Route::get('/ca_registration_oct_2018', function () { return view('old.ca_registration_oct_2018'); });
+    Route::get('/ca_registration_feb_2017', function () { return view('old.ca_registration_feb_2017'); });
+    Route::get('/ca_registration_feb_2018', function () { return view('old.ca_registration_feb_2018'); });
+    Route::get('/ca_registration_apr_2018', function () { return view('old.ca_registration_apr_2018'); });
+    Route::get('/ca_registration_may_2018', function () { return view('old.ca_registration_may_2018'); });
+    Route::get('/ca_registration_oct_2016', function () { return view('old.ca_registration_oct_2016'); });
+    Route::get('/ca_registration_sep_2016', function () { return view('old.ca_registration_sep_2016'); });
+    Route::get('/ca_registration_jul_2016', function () { return view('old.ca_registration_jul_2016'); });
     Route::get('/p18_hub', function () { return view('old.p18_hub'); });
     Route::get('/g18_hub', function () { return view('old.g18_hub'); });
     Route::get('/p20_hub', function () { return view('old.p20_hub'); });
     Route::get('/g20_hub', function () { return view('old.g20_hub'); });
-    Route::get('/p22_hub', function () { return view('old.p22_hub'); });
-    Route::get('/g22_hub', function () { return view('old.g22_hub'); });
-    Route::get('/p24_hub', function () { return view('old.p24_hub'); });
-    Route::get('/g24_hub', function () { return view('old.g24_hub'); });
-
     Route::get('/party_spend', function () { return view('old.ca_e20_party_target_summary'); });
     Route::get('/past_county', function () { return view('old.past_county'); });
     Route::get('/compare_past_legislative_registration', function () { return view('old.compare_past_legislative_registration'); });
@@ -611,9 +518,6 @@ Route::group([
     Route::get('/vote_progress', function () { return view('old.vote_count_nav'); });
     Route::get('/f497', function () { return view('old.weekly_f497'); });
     Route::get('/newsom_recall', function () { return view('old.newsom_recall_2021'); });
-    Route::get('/p22_results_all', function () { return view('old.p22_results_all'); });
-    Route::get('/g22_results_all', function () { return view('old.g22_results_all'); });
-    Route::get('/p24_results_all', function () { return view('old.p24_results_all'); });
 
 
 
@@ -642,8 +546,6 @@ Route::group([
     Route::get('/e20_prop_financials', function () { return view('old.e20_prop_financials'); });
     Route::get('/e20_prop_financials2', function () { return view('old.e20_prop_financials2'); });
     Route::get('/fppc_top_lobby', function () { return view('old.fppc_top_lobby'); });
-    Route::get('/fec_summaries', function () { return view('old.fec_summaries'); });
-
 
     Route::get('/targets', function () { return view('old.current_targets'); });
 
@@ -670,7 +572,7 @@ Route::group([
     Route::get('/viz_sd_a_socal', function () { return view('old.viz_sd_a_socal'); });
     Route::get('/viz_sd_a_norcal', function () { return view('old.viz_sd_a_norcal'); });
     Route::get('/viz_sd_a_coast', function () { return view('old.viz_sd_a_coast'); });
-
+ 
     Route::get('/viz_sd_b_laco', function () { return view('old.viz_sd_b_laco'); });
     Route::get('/viz_sd_b_socal', function () { return view('old.viz_sd_b_socal'); });
     Route::get('/viz_sd_b_norcal', function () { return view('old.viz_sd_b_norcal'); });
@@ -682,7 +584,7 @@ Route::group([
     Route::get('/viz_ad_a_socal', function () { return view('old.viz_ad_a_socal'); });
     Route::get('/viz_ad_a_norcal', function () { return view('old.viz_ad_a_norcal'); });
     Route::get('/viz_ad_a_coast', function () { return view('old.viz_ad_a_coast'); });
-
+ 
     Route::get('/viz_ad_b_laco', function () { return view('old.viz_ad_b_laco'); });
     Route::get('/viz_ad_b_socal', function () { return view('old.viz_ad_b_socal'); });
     Route::get('/viz_ad_b_norcal', function () { return view('old.viz_ad_b_norcal'); });
@@ -693,7 +595,7 @@ Route::group([
     Route::get('/viz_cd_a_socal', function () { return view('old.viz_cd_a_socal'); });
     Route::get('/viz_cd_a_norcal', function () { return view('old.viz_cd_a_norcal'); });
     Route::get('/viz_cd_a_coast', function () { return view('old.viz_cd_a_coast'); });
-
+ 
     Route::get('/viz_cd_b_laco', function () { return view('old.viz_cd_b_laco'); });
     Route::get('/viz_cd_b_socal', function () { return view('old.viz_cd_b_socal'); });
     Route::get('/viz_cd_b_norcal', function () { return view('old.viz_cd_b_norcal'); });
@@ -708,42 +610,6 @@ Route::group([
     Route::get('/ads/{id}', function($id) {
         return view('old.dist_ads', ['id' => $id]);
     })->name('book.ads');
-
-    /*
-     * Year Ads
-     * */
-
-    Route::get('/media/{id}', function($id) {
-        return view('old.media', ['id' => $id]);
-    })->name('book.media');
-
-
-    Route::get('/leg/{state}/{id}', function($state, $id) {
-	return view('old.leg', [ 'state' => $state, 'id' => $id ] );
-    });
-
-    Route::get('/us_county/{state}/{id}', function($state, $id) {
-	return view('old.us_county', [ 'state' => $state, 'id' => $id ] );
-    });
-
-
-    Route::get('/fec_f3/{id}', function($id) {
-        return view('old.fec_f3', ['id' => $id]);
-    });
-
-    Route::get('/f3_tmp_exp/{id}', function($id) {
-        return view('old.f3_tmp_exp', ['id' => $id]);
-    });
-
-
-    Route::get('/us/{id}', function($id) {
-	return view('old.us_house', [ 'id' => $id ] );
-    });
-
-    Route::get('/test/{id}', function($id) {
-        return view('old.district_test_20', ['id' => $id]);
-    })->name('book.test_district');
-
 
 
     /*
@@ -836,25 +702,16 @@ Route::group([
    Route::get('/draft_map_viz_1220_interactive', function () { return view('old.draft_map_viz_1220_interactive'); });
 
    Route::get('/sandbox', function () { return view('sandbox'); });
-   Route::get('/new_districts', function () { return view('old.new_districts'); })->name('old.new_districts');
+   Route::get('/new_districts', function () { return view('old.new_districts'); });
 
-   Route::get('/e22_props', function () { return view('old.e22_props'); });
-   Route::get('/e24_props', function () { return view('old.e24_props'); });
+
 
    Route::get('/dashboard', function () { return view('old.dashboard'); });
    Route::get('/watchlist', function () { return view('old.p22_watchlist'); });
    Route::get('/list', function () { return view('old.list22'); });
-   Route::get('/open', function () { return view('old.open24'); });
+   Route::get('/open', function () { return view('old.open22'); });
    Route::get('/calendar', function () { return view('old.calendar'); });
    Route::get('/ballots', function () {return view('old.draw_all_e22_ballots'); });
-   Route::get('/cand2024', function () {return view('old.cand2024'); });
-   Route::get('/props2024', function () {return view('old.props2024'); });
-
-   //ORGANIZATIONAL RATINGS
-
-    Route::post('/org_db', function () { return view('old.org_db'); });
-    Route::get('/org_db', function () { return view('old.org_db'); });
-    Route::get('/scorecards', function () { return view('old.scorecards'); });
 
 
 
@@ -879,6 +736,7 @@ Route::group([
         'middleware' => ['auth', 'admin'],
     ], function() {
 
+        Route::get('/new-subscription', 'AdminController@newSubscription');
         Route::get('/', 'AdminController@index');
         Route::get('/{file}', 'AdminController@index')
             ->where('file', '(.*)');
@@ -910,4 +768,3 @@ foreach ($redirects as $start => $end) {
         return redirect($end);
     });
 }
-

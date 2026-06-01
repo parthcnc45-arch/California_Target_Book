@@ -26,8 +26,6 @@ Stripe\Stripe::setApiKey(config("app.STRIPE_KEY"));
 
 trait CreatesUser {
 
-
-
   static $create_user_admin_options = [
     'is_paid_for',
     'subscription_cost',
@@ -190,7 +188,7 @@ trait CreatesUser {
         'last_name' => $data['last_name'],
         'email' => $data['email'],
         'phone_number' => $data['phone_number'],
-        'password' => $data['password'] ? bcrypt($data['password']) : null,
+        'password' => !empty($data['password']) ? bcrypt($data['password']) : null,
         'email_token' => base64_encode($data['email']),
         'stripe_id' => $cust['id'],
         'company_id' => $company->id,
@@ -211,10 +209,10 @@ trait CreatesUser {
     $subscription = Subscription::make([
         'account_id' => $baseUser->id,
         'frequency' => (int)$data['subscription_length'],
-        'next_payment' => $data['next_payment'],
-        'end_date' => $data['end_date'],
-        'status' => $data['status'],
-        'wordpress_subscription_id' => $data['wordpress_subscription_id'],
+        'next_payment' => $data['next_payment'] ?? null,
+        'end_date' => $data['end_date'] ?? null,
+        'status' => $data['status'] ?? 'active',
+        'wordpress_subscription_id' => $data['wordpress_subscription_id'] ?? null,
     ]);
     $baseUser->subscriptions()->save($subscription, ['role' => SubscriptionUser::SUBSCRIBER]);
 
@@ -354,6 +352,17 @@ trait CreatesUser {
 
     if (array_key_exists('is_paid_for',$data) && $data['is_paid_for']) {
       $cycle->activate();
+
+      // GoHighLevel synchronization for paid subscription
+      try {
+          $ghlService = new \App\Services\GHLPaymentService();
+          $ghlService->syncSubscriptionToLaravel($baseUser, $subscription, $data);
+      } catch (\Exception $e) {
+          \Illuminate\Support\Facades\Log::error('GHL Sync Failed in createUser flow: ' . $e->getMessage(), [
+              'user_id' => $baseUser->id,
+              'exception' => $e
+          ]);
+      }
     }
     $baseUser['addons'] = $addons;
     return $baseUser;

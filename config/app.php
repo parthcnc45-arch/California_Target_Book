@@ -14,8 +14,6 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-    'STRIPE_PUB_KEY' => env('STRIPE_PUB_KEY'),
-    'STRIPE_KEY' => env('STRIPE_KEY'),
 
     /*
     |--------------------------------------------------------------------------
@@ -56,8 +54,10 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'asset_url' => env('ASSET_URL', 'http://localhost'),
-	
+    'STRIPE_KEY' => env('STRIPE_KEY'),
+
+    'GHL_TOKEN' => env('GHL_API_TOKEN', 'pit-9edbcb56-3ea3-4e72-b633-a54a943ec8cf'),
+    'GHL_LOCATION_ID' => env('GHL_LOCATION_ID', 'Fvvh7SvvoDgMQg4PNPCB'),
 
     /*
     |--------------------------------------------------------------------------
@@ -168,7 +168,6 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        Barryvdh\DomPDF\ServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -188,7 +187,6 @@ return [
         App\Providers\CTBServiceProvider::class,
 
         Barryvdh\Debugbar\ServiceProvider::class,
-        
     ],
 
     /*
@@ -237,7 +235,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'PDF' => Barryvdh\DomPDF\Facade::class,
 
         /*
          * Custom
@@ -249,8 +246,6 @@ return [
         'CTB' => App\Providers\CTBServiceProvider::class,
 
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
-
-
     ],
 
 ];

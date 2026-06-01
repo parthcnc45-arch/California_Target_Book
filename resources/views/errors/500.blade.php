@@ -12,7 +12,7 @@
                     <div class="row">
                         <h2>Something went wrong.</h2>
 
-                        @if(app()->bound('sentry') && !empty(Sentry::getLastEventID()))
+                        @if(app()->bound('sentry') && class_exists('Sentry') && !empty(Sentry::getLastEventID()))
                             <div class="subtitle">
                                 Error ID:
                                 <i class="text-red">{{ Sentry::getLastEventID() }}</i>
@@ -44,27 +44,29 @@
 
 @section('scripts')
 
-    <!-- Sentry JS SDK 2.1.+ required -->
-    <script src="https://cdn.ravenjs.com/3.3.0/raven.min.js"></script>
+    @if(app()->bound('sentry') && class_exists('Sentry') && !empty(Sentry::getLastEventID()))
+        <!-- Sentry JS SDK 2.1.+ required -->
+        <script src="https://cdn.ravenjs.com/3.3.0/raven.min.js"></script>
 
-    <script>
-        $('#reportError').on('click', () => {
-          Raven.showReportDialog({
-            eventId: '{{ Sentry::getLastEventID() }}',
-            dsn: 'https://e9ebbd88548a441288393c457ec90441@sentry.io/3235',
-            user: {
-                @auth
-                'id': '{{ Auth::id() }}',
-              'name': '{{ Auth::user()->name() }}',
-              'email': '{{ Auth::user()->email }}',
-                @endauth
-                'tracker_session': '{{ Tracker::getSessionId()['id'] }}',
-            }
-          });
-        });
+        <script>
+            $('#reportError').on('click', () => {
+              Raven.showReportDialog({
+                eventId: '{{ Sentry::getLastEventID() }}',
+                dsn: 'https://e9ebbd88548a441288393c457ec90441@sentry.io/3235',
+                user: {
+                    @auth
+                    'id': '{{ Auth::id() }}',
+                    'name': '{{ Auth::user()->name() }}',
+                    'email': '{{ Auth::user()->email }}',
+                    @endauth
+                    @if(class_exists('Tracker'))
+                    'tracker_session': '{{ Tracker::getSessionId()['id'] }}',
+                    @endif
+                }
+              });
+            });
 
-    </script>
+        </script>
+    @endif
 
 @endsection
-
-

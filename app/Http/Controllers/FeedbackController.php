@@ -22,7 +22,7 @@ class FeedbackController extends Controller
         $fb = Feedback::create([
             'feedback' => $request->input('feedback'),
             'user_id' => \Auth::guard('api')->id(),
-            'tracker_session' => \Tracker::getSessionId()['id']
+            'tracker_session' => class_exists('Tracker') ? \Tracker::getSessionId()['id'] : session()->getId()
         ]);
 
         event(new FeedbackPosted($fb));

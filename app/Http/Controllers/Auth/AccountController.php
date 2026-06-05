@@ -23,7 +23,7 @@ use Stripe\Stripe;
 
 class AccountController extends Controller
 {
-    public function index() {
+    private function getAccountData() {
         $user = Auth::user();
         $user->load('company.address');
         $sub = $user->latestSubscription();
@@ -32,16 +32,15 @@ class AccountController extends Controller
             $prevSub = $user->subscriptions()->first();
             if (empty($prevSub)) {
                 Auth::logout();
-                return redirect()->route('register');
+                return null;
             } else {
-                return redirect()->route('auth.account.renew');
+                return 'renew';
             }
         }
 
         $base_account = $user === $sub->account_id ? $user : User::find($sub->account_id);
         $currentCycle = $sub->getCurrentCycle();
         $latestCycle = $sub->getLatestCycle();
-
 
         // Can't find invoice
         try {
@@ -52,18 +51,26 @@ class AccountController extends Controller
 
         $ba = '';
         if (!empty($user->stripe_id)) {
-            $cust = \Stripe\Customer::retrieve($user->stripe_id);
-            if ($cust->sources && isset($cust->sources->data[0])) {
-                $bank_account = $cust->sources->data[0];
-                if (property_exists($bank_account, 'status') && $bank_account->status === 'new') {
-                    $ba = $bank_account;
+            try {
+                $cust = \Stripe\Customer::retrieve($user->stripe_id);
+                if ($cust->sources && isset($cust->sources->data[0])) {
+                    $bank_account = $cust->sources->data[0];
+                    if (property_exists($bank_account, 'status') && $bank_account->status === 'new') {
+                        $ba = $bank_account;
+                    }
                 }
+            } catch (\Exception $e) {
+                \Log::warning("Stripe Customer Retrieve Failed for user {$user->id}: " . $e->getMessage());
+                $ba = '';
             }
         }
 
-        return view('auth.account.index', [
+        $cycles = $sub ? $sub->cycles()->orderBy('starts_on', 'desc')->get() : collect();
+
+        return [
             'user' => $user,
             'pending_bank' => $ba,
+            'cycles' => $cycles,
             'sub' => [
                 'cycle' => $currentCycle,
                 'status' => $sub->status(),
@@ -75,7 +82,77 @@ class AccountController extends Controller
                 'books' => $sub->load('book_subscriptions.address')->book_subscriptions,
                 'invoice' => $invoice,
             ]
-        ]);
+        ];
+    }
+
+    public function index() {
+        return redirect()->route('auth.account.info');
+    }
+
+    public function accountInfo() {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.account_info', $data);
+    }
+
+    public function subscriptions() {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.subscriptions', $data);
+    }
+
+    public function transactionHistory() {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.transaction_history', $data);
+    }
+
+    public function shippingTracking() {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.shipping_tracking', $data);
+    }
+
+    public function settings() {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.settings', $data);
+    }
+
+    public function helpSupport() {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.help_support', $data);
     }
 
     public function changePassword(Request $request) {

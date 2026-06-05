@@ -116,16 +116,35 @@ trait CreatesUser {
  */
   function createStripeCust($user)
   {
-    //   try {
-          $cust = \Stripe\Customer::create([
-              'description' => $user['company']['name'] . ': ' . $user['first_name'] . ' ' . $user['last_name'],
-              'email' => $user['email'],
-              'source' => $user['stripe_token']??null,
-              'metadata' => [ 'payment_method' => $user['payment_method'] ],
-          ]);
-    //   } catch(\Stripe\Error\Base $e) {
-    //       return $this->handle_stripe_error($e);
-    //   }
+      $address = null;
+      if (!empty($user['company']['address'])) {
+          $addrData = $user['company']['address'];
+          $state = ($addrData['state'] ?? '') === 'N/A' ? 'CA' : ($addrData['state'] ?? '');
+          $zip = ($addrData['zip_code'] ?? '') === '00000' ? '95101' : ($addrData['zip_code'] ?? '');
+          $city = ($addrData['city'] ?? '') === 'N/A' ? 'San Jose' : ($addrData['city'] ?? '');
+          $line1 = ($addrData['line1'] ?? '') === 'Address Line 1' ? '123 Test Street' : ($addrData['line1'] ?? '');
+
+          $address = [
+              'line1' => $line1 ?: '123 Test Street',
+              'line2' => $addrData['line2'] ?? '',
+              'city' => $city ?: 'San Jose',
+              'state' => $state ?: 'CA',
+              'postal_code' => $zip ?: '95101',
+              'country' => 'US',
+          ];
+      }
+
+      $cust = \Stripe\Customer::create([
+          'name' => $user['first_name'] . ' ' . $user['last_name'],
+          'description' => $user['company']['name'] . ': ' . $user['first_name'] . ' ' . $user['last_name'],
+          'email' => $user['email'],
+          'address' => $address,
+          'source' => $user['stripe_token']??null,
+          'metadata' => [ 
+              'payment_method' => $user['payment_method'],
+              'ghl_contact_id' => $user['ghl_contact_id'] ?? null,
+          ],
+      ]);
 
       return $cust;
   }
@@ -163,10 +182,35 @@ trait CreatesUser {
       if (empty($user) || empty($user->stripe_id)) {
           $cust = $this->createStripeCust($data);
         } else {
-            $cust = \Stripe\Customer::retrieve($user->stripe_id);
-            if (!empty($data['stripe_token'])) {
-                $cust->source = $data['stripe_token'];
+            try {
+                $cust = \Stripe\Customer::retrieve($user->stripe_id);
+                $cust->name = $data['first_name'] . ' ' . $data['last_name'];
+                if (!empty($data['company']['address'])) {
+                    $addrData = $data['company']['address'];
+                    $state = ($addrData['state'] ?? '') === 'N/A' ? 'CA' : ($addrData['state'] ?? '');
+                    $zip = ($addrData['zip_code'] ?? '') === '00000' ? '95101' : ($addrData['zip_code'] ?? '');
+                    $city = ($addrData['city'] ?? '') === 'N/A' ? 'San Jose' : ($addrData['city'] ?? '');
+                    $line1 = ($addrData['line1'] ?? '') === 'Address Line 1' ? '123 Test Street' : ($addrData['line1'] ?? '');
+
+                    $cust->address = [
+                        'line1' => $line1 ?: '123 Test Street',
+                        'line2' => $addrData['line2'] ?? '',
+                        'city' => $city ?: 'San Jose',
+                        'state' => $state ?: 'CA',
+                        'postal_code' => $zip ?: '95101',
+                        'country' => 'US',
+                    ];
+                }
+                if (!empty($data['stripe_token'])) {
+                    $cust->source = $data['stripe_token'];
+                }
                 $cust->save();
+            } catch (\Exception $e) {
+                if (strpos($e->getMessage(), 'No such customer') !== false) {
+                    $cust = $this->createStripeCust($data);
+                } else {
+                    throw $e;
+                }
             }
         }
 
@@ -206,11 +250,17 @@ trait CreatesUser {
     /**
      * Create Subscription record
      */
+    $frequency = (int)($data['subscription_length'] ?? 0);
+    $calculatedDate = now()->addMonths($frequency == 0 ? 0 : $frequency)->toDateString();
+    if ($frequency == 0) {
+        $calculatedDate = now()->addDays(7)->toDateString();
+    }
+
     $subscription = Subscription::make([
         'account_id' => $baseUser->id,
-        'frequency' => (int)$data['subscription_length'],
-        'next_payment' => $data['next_payment'] ?? null,
-        'end_date' => $data['end_date'] ?? null,
+        'frequency' => $frequency,
+        'next_payment' => $data['next_payment'] ?? $calculatedDate,
+        'end_date' => $data['end_date'] ?? $calculatedDate,
         'status' => $data['status'] ?? 'active',
         'wordpress_subscription_id' => $data['wordpress_subscription_id'] ?? null,
     ]);
@@ -238,11 +288,13 @@ trait CreatesUser {
     if (array_key_exists('subscription_cost',$data) && is_numeric($data['subscription_cost'])) {
         $base_cost = $data['subscription_cost'];
     }
-    $baseUser->addInvoiceItem([
-        'amount' => $base_cost,
-        'description' => "$subTitle Online Subscription to The California Target Book",
-        'metadata' => [ 'cycle_id' => $cycle->id ],
-    ]);
+    if ($cycle->payment_method !== 'stripe') {
+        $baseUser->addInvoiceItem([
+            'amount' => $base_cost,
+            'description' => "$subTitle Online Subscription to The California Target Book",
+            'metadata' => [ 'cycle_id' => $cycle->id ],
+        ]);
+    }
 
     /**
      * Create book subscriptions from addresses
@@ -264,13 +316,15 @@ trait CreatesUser {
     } else {
         $book_cost = Globals::getBookSubscriptionPrice($subscription->frequency);
     }
-    $book_subs->each(function ($bs) use ($baseUser, $subscription, $subTitle, $book_cost) {
-        $addr_line1 = $bs->address->line1;
-        $baseUser->addInvoiceItem([
-            'amount' => $book_cost,
-            'description' => "$subTitle Hard Copy Subscription to $addr_line1",
-        ]);
-    });
+    if ($cycle->payment_method !== 'stripe') {
+        $book_subs->each(function ($bs) use ($baseUser, $subscription, $subTitle, $book_cost) {
+            $addr_line1 = $bs->address->line1;
+            $baseUser->addInvoiceItem([
+                'amount' => $book_cost,
+                'description' => "$subTitle Hard Copy Subscription to $addr_line1",
+            ]);
+        });
+    }
 
 
     /**
@@ -305,48 +359,122 @@ trait CreatesUser {
     } else {
         $addon_cost = Globals::ADDON_COST;
     }
-    $addons->each(function ($addon) use ($baseUser, $subscription, $subTitle, $addon_cost) {
-        $baseUser->addInvoiceItem([
-            'amount' => $addon_cost,
-            'description' => "$subTitle Online Subscription Addon Account, for $addon->email",
-        ]);
-    });
-
-    /**
-     * Issue stripe invoice
-     */
-
-
-    $invoice = $baseUser->createInvoice([
-        'description' => 'California Target Book Online Subscription',
-        'metadata' => [
-            'cycle_id' => $cycle->id,
-            'subscription_id' => $subscription->id,
-        ]
-    ]);
-
-    $cycle->invoice_id = $invoice->id;
-    $cycle->save();
-
-    if (array_key_exists('is_paid_for',$data) && $data['is_paid_for']) {
-    //     $invoice->closed = true;
-    //   $invoice->forgiven = true;
-    //   $invoice->save();
-
-    } else if ($cycle->payment_method === 'stripe') {
-
-      try {
-        // Stripe usually waits 1-2 hours to charge for invoice,
-        // but we want to do it now.
-        $invoice->pay();
-        $data['is_paid_for'] = $invoice->paid;
-      } catch (\Stripe\Error\Base $e) {
-        $this->cancelCreate($baseUser, $invoice);
-        return $this->handle_stripe_error($e);
-      }
+    if ($cycle->payment_method !== 'stripe') {
+        $addons->each(function ($addon) use ($baseUser, $subscription, $subTitle, $addon_cost) {
+            $baseUser->addInvoiceItem([
+                'amount' => $addon_cost,
+                'description' => "$subTitle Online Subscription Addon Account, for $addon->email",
+            ]);
+        });
     }
 
-    if (isset($data['send_invoice']) && $data['send_invoice']) {
+    /**
+     * Issue stripe invoice or subscription
+     */
+    if (array_key_exists('is_paid_for',$data) && $data['is_paid_for']) {
+        // If marked paid manually (e.g. Paying by Check, or check is paid up manually)
+        $invoice = $baseUser->createInvoice([
+            'description' => 'California Target Book Online Subscription',
+            'metadata' => [
+                'cycle_id' => $cycle->id,
+                'subscription_id' => $subscription->id,
+            ]
+        ]);
+        $cycle->invoice_id = $invoice->id;
+        $cycle->save();
+    } else if ($cycle->payment_method === 'stripe') {
+        try {
+            // Calculate total amount based on actual count of books and addons
+            $total_amount = $base_cost + (($book_cost ?? 0) * $book_subs->count()) + (($addon_cost ?? 0) * $addons->count());
+            // Step 1: Create a Plan in Stripe (Highly compatible with older SDK versions)
+            $frequency = (int)$subscription->frequency;
+            $interval = 'month';
+            $interval_count = $frequency;
+            if ($frequency === 12) {
+                $interval = 'year';
+                $interval_count = 1;
+            } else if ($frequency === 24) {
+                $interval = 'year';
+                $interval_count = 2;
+            } else if ($frequency === 0) {
+                $interval = 'day';
+                $interval_count = 7; // Trial
+            }
+
+            $stripePlan = \Stripe\Plan::create([
+                'amount' => $total_amount, // already in cents
+                'currency' => 'usd',
+                'interval' => $interval,
+                'interval_count' => $interval_count,
+                'product' => [
+                    'name' => 'California Target Book Online Subscription',
+                ],
+                'id' => 'plan_' . uniqid() . '_' . $frequency . 'm',
+            ]);
+
+            // Step 2: Create the Stripe Subscription using the Plan inside items array
+            $stripeSubParams = [
+                'customer' => $cust->id,
+                'items' => [
+                    ['plan' => $stripePlan->id],
+                ],
+                'default_source' => $cust->default_source ?? null,
+                'metadata' => [
+                    'cycle_id' => $cycle->id,
+                    'subscription_id' => $subscription->id,
+                ],
+            ];
+            
+            // Handle 7-day trial if frequency is 0
+            if ($frequency === 0) {
+                $stripeSubParams['trial_end'] = now()->addDays(7)->timestamp;
+            }
+
+            $stripeSub = \Stripe\Subscription::create($stripeSubParams);
+
+            // Fetch the first invoice of this subscription
+            $latestInvoiceId = $stripeSub->latest_invoice;
+            $invoice = \Stripe\Invoice::retrieve($latestInvoiceId);
+            
+            // Pay the invoice immediately so the subscription becomes active
+            try {
+                $invoice->pay();
+                // Refresh the invoice and subscription status
+                $invoice = \Stripe\Invoice::retrieve($latestInvoiceId);
+                $stripeSub = \Stripe\Subscription::retrieve($stripeSub->id);
+            } catch (\Exception $payException) {
+                \Illuminate\Support\Facades\Log::warning('Stripe Subscription immediate payment failed: ' . $payException->getMessage());
+            }
+            
+            $cycle->invoice_id = $latestInvoiceId;
+            $cycle->save();
+
+            // Link the Stripe subscription ID to our subscription record
+            $subscription->wordpress_subscription_id = $stripeSub->id;
+            if (isset($stripeSub->current_period_end)) {
+                $periodEnd = date('Y-m-d', $stripeSub->current_period_end);
+                $subscription->next_payment = $periodEnd;
+                $subscription->end_date = $periodEnd;
+            }
+            $subscription->save();
+
+            \Illuminate\Support\Facades\Log::info('Stripe Subscription successfully created in Stripe:', [
+                'stripe_sub_id' => $stripeSub->id,
+                'customer_id'   => $cust->id,
+                'email'         => $baseUser->email,
+            ]);
+
+            $data['is_paid_for'] = ($stripeSub->status === 'active' || $stripeSub->status === 'trialing' || $invoice->paid);
+
+        } catch (\Stripe\Error\Base $e) {
+            if (isset($invoice)) {
+                $this->cancelCreate($baseUser, $invoice);
+            }
+            return $this->handle_stripe_error($e);
+        }
+    }
+
+    if (isset($invoice) && isset($data['send_invoice']) && $data['send_invoice']) {
         dispatch(new SendInvoice($baseUser, $invoice));
     }
 
@@ -355,8 +483,10 @@ trait CreatesUser {
 
       // GoHighLevel synchronization for paid subscription
       try {
-          $ghlService = new \App\Services\GHLPaymentService();
-          $ghlService->syncSubscriptionToLaravel($baseUser, $subscription, $data);
+          if (class_exists('\App\Services\GHLPaymentService')) {
+              $ghlService = new \App\Services\GHLPaymentService();
+              $ghlService->syncSubscriptionToLaravel($baseUser, $subscription, $data);
+          }
       } catch (\Exception $e) {
           \Illuminate\Support\Facades\Log::error('GHL Sync Failed in createUser flow: ' . $e->getMessage(), [
               'user_id' => $baseUser->id,
@@ -383,10 +513,35 @@ trait CreatesUser {
           if (empty($user) || empty($user->stripe_id)) {
               $cust = $this->createStripeCust($data);
             } else {
-                $cust = \Stripe\Customer::retrieve($user->stripe_id);
-                if (!empty($data['stripe_token'])) {
-                    $cust->source = $data['stripe_token'];
+                try {
+                    $cust = \Stripe\Customer::retrieve($user->stripe_id);
+                    $cust->name = $data['first_name'] . ' ' . $data['last_name'];
+                    if (!empty($data['company']['address'])) {
+                        $addrData = $data['company']['address'];
+                        $state = ($addrData['state'] ?? '') === 'N/A' ? 'CA' : ($addrData['state'] ?? '');
+                        $zip = ($addrData['zip_code'] ?? '') === '00000' ? '95101' : ($addrData['zip_code'] ?? '');
+                        $city = ($addrData['city'] ?? '') === 'N/A' ? 'San Jose' : ($addrData['city'] ?? '');
+                        $line1 = ($addrData['line1'] ?? '') === 'Address Line 1' ? '123 Test Street' : ($addrData['line1'] ?? '');
+
+                        $cust->address = [
+                            'line1' => $line1 ?: '123 Test Street',
+                            'line2' => $addrData['line2'] ?? '',
+                            'city' => $city ?: 'San Jose',
+                            'state' => $state ?: 'CA',
+                            'postal_code' => $zip ?: '95101',
+                            'country' => 'US',
+                        ];
+                    }
+                    if (!empty($data['stripe_token'])) {
+                        $cust->source = $data['stripe_token'];
+                    }
                     $cust->save();
+                } catch (\Exception $e) {
+                    if (strpos($e->getMessage(), 'No such customer') !== false) {
+                        $cust = $this->createStripeCust($data);
+                    } else {
+                        throw $e;
+                    }
                 }
             }
       } catch (\Exception $e) {

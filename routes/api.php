@@ -18,6 +18,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/mail', 'ContactController@send');
+Route::get('/ghl/public-subscriptions', 'Admin\GHLIntegrationController@getPublicSubscriptions');
+Route::post('/ghl/subscriptions/{stripeSubId}/cancel', 'Admin\GHLIntegrationController@cancelSubscription');
+Route::post('/ghl/subscriptions/{stripeSubId}/pause', 'Admin\GHLIntegrationController@pausedSubscription');
 
 Route::group([
     'prefix' => '/feedback',

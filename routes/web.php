@@ -18,6 +18,12 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+Route::get('/home', 'HomeController@index')->name('home.dashboard');
+
+Route::get('/new', function () {
+    return view('new');
+});
+
 // Route::get('/about', function () {
 //     return view('old.about');
 // })->name('about');
@@ -112,6 +118,36 @@ Route::group([
     Route::get('/', [
         'uses' => 'Auth\AccountController@index',
         'as' => 'auth.account',
+    ]);
+
+    Route::get('/account-info', [
+        'uses' => 'Auth\AccountController@accountInfo',
+        'as' => 'auth.account.info',
+    ]);
+
+    Route::get('/subscriptions', [
+        'uses' => 'Auth\AccountController@subscriptions',
+        'as' => 'auth.account.subscriptions',
+    ]);
+
+    Route::get('/transaction-history', [
+        'uses' => 'Auth\AccountController@transactionHistory',
+        'as' => 'auth.account.transaction_history',
+    ]);
+
+    Route::get('/shipping-tracking', [
+        'uses' => 'Auth\AccountController@shippingTracking',
+        'as' => 'auth.account.shipping_tracking',
+    ]);
+
+    Route::get('/settings', [
+        'uses' => 'Auth\AccountController@settings',
+        'as' => 'auth.account.settings',
+    ]);
+
+    Route::get('/help-support', [
+        'uses' => 'Auth\AccountController@helpSupport',
+        'as' => 'auth.account.help_support',
     ]);
 
     Route::get('/renew', [

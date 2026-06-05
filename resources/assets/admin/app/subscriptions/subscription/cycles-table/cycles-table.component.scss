@@ -27,7 +27,7 @@ p {
   min-height: 52px;
 }
 
-/deep/ .cycle-table .mat-list-item .mat-list-item-content {
+::ng-deep .cycle-table .mat-list-item .mat-list-item-content {
   align-items: end !important;
 }
 

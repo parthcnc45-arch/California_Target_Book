@@ -1,104 +1,77 @@
-<div class="row page-heading">
-  <h1 class="left">Hard Copy Subscriptions</h1>
-</div>
+<div class="admin-page-container">
 
-<div class="pt-md">
-  <div class="row">
-
-    <div class="col s3 l2 xl2">
-      <div class="card-panel stats-panel clearfix">
-        <div class="col s12 title teal lighten-1">
-          <h4>Total</h4>
-        </div>
-        <div class="col s12 stat">
-          <h4>{{stats.total}}</h4>
-        </div>
-      </div>
-    </div>
-
-    <div class="col s3 l2 xl2">
-      <div class="card-panel  stats-panel clearfix">
-        <div class="col s12 title green lighten-1">
-          <h4>Active</h4>
-        </div>
-        <div class="col s12 stat">
-          <h4>{{stats.active}}</h4>
-        </div>
-      </div>
-    </div>
-
-    <div class="col s3 l2 xl2">
-      <div class="card-panel stats-panel clearfix">
-        <div class="col s12 title red lighten-1 ">
-          <h4>Inactive</h4>
-        </div>
-        <div class="col s12 stat">
-          <h4>{{stats.inactive}}</h4>
-        </div>
-      </div>
-    </div>
-
+  <div class="admin-page-header">
+    <h1 class="admin-page-title">Hard Copy Subscriptions</h1>
   </div>
 
-  <div class="row">
-    <div class="col s12">
-      <mat-card class="p-n">
-        <mat-card-header class="p-sm">
+  <div class="admin-stats-grid">
+    <div class="admin-stat-card total-card">
+      <div class="stat-label">Total</div>
+      <div class="stat-value">{{stats.total}}</div>
+    </div>
 
-          <div class="input-field col s12">
-            <i class="material-icons prefix">search</i>
+    <div class="admin-stat-card active-card">
+      <div class="stat-label">Active</div>
+      <div class="stat-value">{{stats.active}}</div>
+    </div>
 
-            <label for="query">Search</label>
-            <input id="query"
-                class="mb-n"
-                (keyup)="applyFilter($event.target.value)"
-                type="text" />
-          </div>
-
-        </mat-card-header>
-
-        <mat-card-content>
-          <mat-table #table [dataSource]="booksData" matSort>
-            <ng-container matColumnDef="status">
-              <mat-header-cell *matHeaderCellDef mat-sort-header class="statusCell">Status</mat-header-cell>
-              <mat-cell *matCellDef="let row" class="statusCell">
-                <span class="circle"
-                    [ngClass]="{'green': row.subscription?.isActive, 'red': !row.subscription?.isActive}">
-                </span>
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="company">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>Company</mat-header-cell>
-              <mat-cell *matCellDef="let row;"> {{row.subscription?.company}} </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="address">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>Company</mat-header-cell>
-              <mat-cell *matCellDef="let row;">
-                {{row.address?.line1}},
-                {{row.address?.line2 ? row.address?.line2 + ', ' : '' }}
-                {{row.address?.city}},
-                {{row.address?.state}}
-                {{row.address?.zip_code}}
-              </mat-cell>
-            </ng-container>
-
-            <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: columns"
-                [id]="row.subscription_id"
-                (click)="viewSubscription(row.subscription_id)">>
-            </mat-row>
-
-          </mat-table>
-        </mat-card-content>
-
-        <div class="progress" [hidden]="!isLoading">
-          <div class="indeterminate"></div>
-        </div>
-
-      </mat-card>
-
+    <div class="admin-stat-card inactive-card">
+      <div class="stat-label">Inactive</div>
+      <div class="stat-value">{{stats.inactive}}</div>
     </div>
   </div>
+
+  <div class="admin-table-container">
+    <mat-card class="admin-table-card">
+      <mat-card-header>
+        <div class="admin-search-field">
+          <i class="material-icons">search</i>
+          <input type="text" placeholder="Search..." (keyup)="applyFilter($event.target.value)">
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-table #table [dataSource]="booksData" matSort>
+          
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="statusCell">Status</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="statusCell">
+              <span class="circle"
+                  [ngClass]="{'green': row.subscription?.isActive, 'red': !row.subscription?.isActive}">
+              </span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="company">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Company</mat-header-cell>
+            <mat-cell *matCellDef="let row;"> {{row.subscription?.company}} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="address">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+            <mat-cell *matCellDef="let row;">
+              {{row.address?.line1}},
+              {{row.address?.line2 ? row.address?.line2 + ', ' : '' }}
+              {{row.address?.city}},
+              {{row.address?.state}}
+              {{row.address?.zip_code}}
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: columns"
+              [id]="row.subscription_id"
+              (click)="viewSubscription(row.subscription_id)">
+          </mat-row>
+
+        </mat-table>
+      </mat-card-content>
+
+      <div class="progress" [hidden]="!isLoading">
+        <div class="indeterminate"></div>
+      </div>
+
+    </mat-card>
+  </div>
+
 </div>

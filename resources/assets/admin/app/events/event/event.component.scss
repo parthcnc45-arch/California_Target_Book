@@ -8,7 +8,7 @@
   }
 }
 
-/deep/ .mat-option-text span {
+::ng-deep .mat-option-text span {
   display: block;
   text-align: center;
   line-height: 1rem;

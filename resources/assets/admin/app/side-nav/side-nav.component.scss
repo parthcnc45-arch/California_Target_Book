@@ -1,50 +1,190 @@
 
 @import "~theme/_vars";
-$sidebar-bg: #F7F9FC;
+
+$sidebar-bg: #ffffff;
+$text-primary: #1f2937;
+$text-secondary: #4b5563;
+$text-muted: #9ca3af;
+$border-color: #f3f4f6;
+$active-bg: #fff1f2;
+$active-text: #be123c;
+$hover-bg: #f9fafb;
 
 .sidebar {
   position: fixed;
   top: 0;
-  //left: 0;
+  left: 0;
   bottom: 0;
-  min-height: 100%;
-  //border-right: 1px solid #ddd;
-  //background: $sidebar-bg;
-  width: 200px;
-
-  * {
-    //color: rgba(0,0,0,0.68);
-    color: rgba(80, 90, 100, 0.88);
-  }
+  height: 100vh;
+  width: 240px;
+  background: $sidebar-bg;
+  border-right: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  box-sizing: border-box;
 
   .sidebar-header {
-    padding: 10px 0;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
 
-    img {
-      display: inline-block;
+    a {
+      display: block;
+      margin-bottom: 20px;
+      padding-left: 8px;
+
+      .logo-img {
+        height: 48px;
+        width: auto;
+      }
+    }
+
+    .profile-section {
+      display: flex;
+      align-items: center;
+      padding: 16px 8px;
+      width: 100%;
+      border-bottom: 1px solid #f3f4f6;
+      box-sizing: border-box;
+
+      .avatar-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: #ffe4e6;
+        color: #e11d48;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+        margin-right: 12px;
+        flex-shrink: 0;
+      }
+
+      .profile-details {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        .profile-name {
+          font-size: 13px;
+          font-weight: 600;
+          color: $text-primary;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+        .profile-email {
+          font-size: 11px;
+          color: $text-muted;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
     }
   }
 
   .nav-links {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .nav-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: $text-muted;
+      letter-spacing: 0.05em;
+      margin: 12px 0 8px 8px;
+      text-transform: uppercase;
+    }
+
     ul {
       list-style: none;
-      li a {
-        padding: 10px;
-        display: block;
-        span {
-          display: inline-block;
-          padding-left: 12px;
-        }
-        span, i {
-          vertical-align: middle;
-        }
-        &:hover {
-          background: darken($sidebar-bg, 3%);
-        }
+      padding: 0;
+      margin: 0;
 
-        border-left: 3px solid transparent;
-        &.active {
-          border-left: 3px solid $red;
+      li {
+        margin-bottom: 4px;
+
+        a {
+          display: flex;
+          align-items: center;
+          padding: 10px 12px;
+          color: $text-secondary;
+          text-decoration: none;
+          font-size: 13px;
+          font-weight: 500;
+          border-radius: 8px;
+          transition: all 0.2s ease-in-out;
+          border-left: none;
+
+          i {
+            font-size: 18px;
+            margin-right: 12px;
+            color: $text-secondary;
+            transition: all 0.2s ease-in-out;
+          }
+
+          span {
+            vertical-align: middle;
+          }
+
+          &:hover {
+            background-color: $hover-bg;
+            color: $text-primary;
+
+            i {
+              color: $text-primary;
+            }
+          }
+
+          &.active {
+            background-color: $active-bg;
+            color: $active-text;
+            font-weight: 600;
+
+            i {
+              color: $active-text;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .sidebar-footer {
+    padding-top: 12px;
+    border-top: 1px solid $border-color;
+
+    .signout-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      color: $text-secondary;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: all 0.2s ease-in-out;
+
+      i {
+        font-size: 18px;
+        margin-right: 12px;
+        color: $text-secondary;
+      }
+
+      &:hover {
+        background-color: #f9fafb;
+        color: #dc2626;
+
+        i {
+          color: #dc2626;
         }
       }
     }

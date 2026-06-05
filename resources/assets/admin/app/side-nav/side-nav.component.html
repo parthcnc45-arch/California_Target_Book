@@ -1,12 +1,22 @@
 <div class="sidebar">
   <div class="sidebar-header">
     <a href="/">
-      <img src="/img/ctb_logo.png" width="93" height="93">
+      <img src="/img/ctb_logo.png" class="logo-img">
     </a>
+
+    <div class="profile-section" *ngIf="admin">
+      <div class="avatar-circle">
+        {{ getInitials() }}
+      </div>
+      <div class="profile-details">
+        <div class="profile-name">{{ admin.name || (admin.first_name + ' ' + admin.last_name) }}</div>
+        <div class="profile-email">{{ admin.email }}</div>
+      </div>
+    </div>
   </div>
 
-  <div class="nav-links mt-md">
-    <h6 class="pl-sm">NAVIGATION</h6>
+  <div class="nav-links">
+    <h6 class="nav-title">NAVIGATION</h6>
     <ul>
       <li *ngFor="let v of views">
         <a [routerLink]="v.path" routerLinkActive="active">
@@ -17,4 +27,10 @@
     </ul>
   </div>
 
+  <div class="sidebar-footer">
+    <a href="/logout" class="signout-link">
+      <i class="material-icons">exit_to_app</i>
+      <span>Sign Out</span>
+    </a>
+  </div>
 </div>

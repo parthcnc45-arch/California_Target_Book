@@ -4,13 +4,12 @@
     "outDir": "../views/admin",
     "baseUrl": "",
     "module": "es2015",
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "types": []
+    "types": [],
+    "skipLibCheck": true
   },
   "exclude": [
-    "node_modules",
     "test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "node_modules"
   ]
 }

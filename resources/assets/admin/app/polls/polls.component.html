@@ -1,69 +1,73 @@
-<div class="admin-page-container">
+<div class="row page-heading">
+  <h3 class="left">Polls</h3>
 
-  <div class="admin-page-header">
-    <h1 class="admin-page-title">Polls</h1>
-    <a class="btn waves-light brand z-depth-0" (click)="createPoll()">
-      Add
-      <i class="material-icons right">add</i>
-    </a>
-  </div>
+  <a class="btn waves-light brand z-depth-0 right mt-md"
+      (click)="createPoll()">
+    Add
+    <i class="material-icons right">add</i>
+  </a>
+</div>
 
-  <div class="admin-table-container">
-    <mat-card class="admin-table-card">
-      <mat-card-content>
 
-        <mat-table #table [dataSource]="pollsData" matSort>
-          
-          <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Poll #</mat-header-cell>
-            <mat-cell *matCellDef="let poll" class="statusCell">
-              {{ poll.id }}
-            </mat-cell>
-          </ng-container>
+<div class="pt-md">
+  <div class="row">
+    <div class="col s12">
+      <mat-card class="p-n">
+        <mat-card-content>
 
-          <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
-            <mat-cell *matCellDef="let poll"> {{poll.title}} </mat-cell>
-          </ng-container>
+          <mat-table #table [dataSource]="pollsData" matSort>
+            <ng-container matColumnDef="id">
+              <mat-header-cell *matHeaderCellDef mat-sort-header >Poll #</mat-header-cell>
+              <mat-cell *matCellDef="let poll" class="statusCell">
+                {{ poll.id }}
+              </mat-cell>
+            </ng-container>
 
-          <ng-container matColumnDef="response_count">
-            <mat-header-cell *matHeaderCellDef mat-sort-header># Responses</mat-header-cell>
-            <mat-cell *matCellDef="let poll"> {{poll.response_count}} </mat-cell>
-          </ng-container>
+            <ng-container matColumnDef="title">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
+              <mat-cell *matCellDef="let poll"> {{poll.title}} </mat-cell>
+            </ng-container>
 
-          <ng-container matColumnDef="starts_on">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Starts On</mat-header-cell>
-            <mat-cell *matCellDef="let poll"> {{poll.starts_on}} </mat-cell>
-          </ng-container>
+            <ng-container matColumnDef="response_count">
+              <mat-header-cell *matHeaderCellDef mat-sort-header># Responses</mat-header-cell>
+              <mat-cell *matCellDef="let poll"> {{poll.response_count}} </mat-cell>
+            </ng-container>
 
-          <ng-container matColumnDef="ends_on">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Ends On</mat-header-cell>
-            <mat-cell *matCellDef="let poll"> {{poll.ends_on}} </mat-cell>
-          </ng-container>
+            <ng-container matColumnDef="starts_on">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Starts On</mat-header-cell>
+              <mat-cell *matCellDef="let poll"> {{poll.starts_on}} </mat-cell>
+            </ng-container>
 
-          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
-          <mat-row *matRowDef="let poll; columns: columns"
-              [id]="poll?.id"
-              [ngClass]="{ 'is-current': poll.isCurrent }"
-              (click)="viewPoll(poll.id)">
-          </mat-row>
+            <ng-container matColumnDef="ends_on">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Ends On</mat-header-cell>
+              <mat-cell *matCellDef="let poll"> {{poll.ends_on}} </mat-cell>
+            </ng-container>
 
-        </mat-table>
-      </mat-card-content>
+            <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+            <mat-row *matRowDef="let poll; columns: columns"
+                [id]="poll?.id"
+                [ngClass]="{ 'is-current': poll.isCurrent }"
+                (click)="viewPoll(poll.id)">>
+            </mat-row>
 
-      <mat-card-actions>
-        <div class="no-polls center-align" [hidden]="isLoading || pollsData.data?.length !== 0">
-          <h6>No Polls</h6>
+          </mat-table>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <div class="no-polls center-align" [hidden]="isLoading || pollsData.data?.length !== 0">
+            <h6>No Polls</h6>
+          </div>
+        </mat-card-actions>
+
+
+        <div  [hidden]="!isLoading">
+         <div class="progress">
+            <div class="indeterminate"></div>
+          </div>
         </div>
-      </mat-card-actions>
 
-      <div [hidden]="!isLoading">
-        <div class="progress">
-          <div class="indeterminate"></div>
-        </div>
-      </div>
+      </mat-card>
 
-    </mat-card>
+    </div>
   </div>
-
 </div>

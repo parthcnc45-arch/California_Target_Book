@@ -196,37 +196,46 @@
         </div>
 
         @if (session('status'))
-            <div class="alert-success-custom">
-                {{ session('status') }}
+            <div style="text-align: center; margin-top: 24px;">
+                <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+                </div>
+                <h3 style="font-weight: 700;">Check your email</h3>
+                <p style="margin-bottom: 24px;">
+                    If an account exists for <strong>{{ old('email') ?? 'the email address provided' }}</strong>, you'll receive a password reset link shortly.
+                </p>
+                <div class="login-footer-links" style="margin-top: 0;">
+                    <a href="{{ route('login') }}">Back to Sign In</a>
+                </div>
+            </div>
+        @else
+            <form method="POST" action="{{ route('password.email') }}">
+                {{ csrf_field() }}
+
+                <!-- Email Address -->
+                <div class="form-group-custom">
+                    <div class="label-wrapper">
+                        <label for="email" class="form-label-custom">Email address</label>
+                    </div>
+                    <input id="email" type="email" class="input-custom{{ $errors->has('email') ? ' has-error-border' : '' }}" name="email" value="{{ old('email') }}" required autofocus placeholder="you@example.com">
+                    @if ($errors->has('email'))
+                        <span class="error-message">
+                            {{ $errors->first('email') }}
+                        </span>
+                    @endif
+                </div>
+
+                <!-- Send Reset Link Button -->
+                <button type="submit" class="btn-submit-custom">
+                    Send Reset Link
+                </button>
+            </form>
+
+            <!-- Back to Sign In -->
+            <div class="login-footer-links">
+                <a href="{{ route('login') }}">Back to Sign In</a>
             </div>
         @endif
-
-        <form method="POST" action="{{ route('password.email') }}">
-            {{ csrf_field() }}
-
-            <!-- Email Address -->
-            <div class="form-group-custom">
-                <div class="label-wrapper">
-                    <label for="email" class="form-label-custom">Email address</label>
-                </div>
-                <input id="email" type="email" class="input-custom{{ $errors->has('email') ? ' has-error-border' : '' }}" name="email" value="{{ old('email') }}" required autofocus placeholder="you@example.com">
-                @if ($errors->has('email'))
-                    <span class="error-message">
-                        {{ $errors->first('email') }}
-                    </span>
-                @endif
-            </div>
-
-            <!-- Send Reset Link Button -->
-            <button type="submit" class="btn-submit-custom">
-                Send Reset Link
-            </button>
-        </form>
-
-        <!-- Back to Sign In -->
-        <div class="login-footer-links">
-            <a href="{{ route('login') }}">Back to Sign In</a>
-        </div>
     </div>
 </div>
 @endsection

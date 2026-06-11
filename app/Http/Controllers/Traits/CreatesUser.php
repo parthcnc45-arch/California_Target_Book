@@ -126,7 +126,7 @@ trait CreatesUser {
 
           $address = [
               'line1' => $line1 ?: '123 Test Street',
-              'line2' => $addrData['line2'] ?? '',
+              'line2' => empty($addrData['line2']) ? null : $addrData['line2'],
               'city' => $city ?: 'San Jose',
               'state' => $state ?: 'CA',
               'postal_code' => $zip ?: '95101',
@@ -134,19 +134,30 @@ trait CreatesUser {
           ];
       }
 
-      $cust = \Stripe\Customer::create([
-          'name' => $user['first_name'] . ' ' . $user['last_name'],
-          'description' => $user['company']['name'] . ': ' . $user['first_name'] . ' ' . $user['last_name'],
-          'email' => $user['email'],
-          'address' => $address,
-          'source' => $user['stripe_token']??null,
-          'metadata' => [ 
-              'payment_method' => $user['payment_method'],
-              'ghl_contact_id' => $user['ghl_contact_id'] ?? null,
-          ],
-      ]);
+        $payload = [
+            'name' => $user['first_name'] . ' ' . $user['last_name'],
+            'description' => $user['company']['name'] . ': ' . $user['first_name'] . ' ' . $user['last_name'],
+            'email' => $user['email'],
+            'address' => $address,
+            'metadata' => [ 
+                'payment_method' => $user['payment_method'],
+                'ghl_contact_id' => $user['ghl_contact_id'] ?? null,
+            ],
+        ];
 
-      return $cust;
+        $token = $user['stripe_token'] ?? null;
+        if (!empty($token)) {
+            if (strpos($token, 'pm_') === 0) {
+                $payload['payment_method'] = $token;
+                $payload['invoice_settings'] = ['default_payment_method' => $token];
+            } else {
+                $payload['source'] = $token;
+            }
+        }
+
+        $cust = \Stripe\Customer::create($payload);
+
+        return $cust;
   }
 
 
@@ -194,7 +205,7 @@ trait CreatesUser {
 
                     $cust->address = [
                         'line1' => $line1 ?: '123 Test Street',
-                        'line2' => $addrData['line2'] ?? '',
+                        'line2' => empty($addrData['line2']) ? null : $addrData['line2'],
                         'city' => $city ?: 'San Jose',
                         'state' => $state ?: 'CA',
                         'postal_code' => $zip ?: '95101',
@@ -202,7 +213,17 @@ trait CreatesUser {
                     ];
                 }
                 if (!empty($data['stripe_token'])) {
-                    $cust->source = $data['stripe_token'];
+                    if (strpos($data['stripe_token'], 'pm_') === 0) {
+                        $stripeKey = config('app.STRIPE_KEY');
+                        \Illuminate\Support\Facades\Http::withToken($stripeKey)->asForm()->post("https://api.stripe.com/v1/payment_methods/{$data['stripe_token']}/attach", [
+                            'customer' => $cust->id
+                        ]);
+                        \Illuminate\Support\Facades\Http::withToken($stripeKey)->asForm()->post("https://api.stripe.com/v1/customers/{$cust->id}", [
+                            'invoice_settings' => ['default_payment_method' => $data['stripe_token']]
+                        ]);
+                    } else {
+                        $cust->source = $data['stripe_token'];
+                    }
                 }
                 $cust->save();
             } catch (\Exception $e) {
@@ -385,7 +406,11 @@ trait CreatesUser {
     } else if ($cycle->payment_method === 'stripe') {
         try {
             // Calculate total amount based on actual count of books and addons
-            $total_amount = $base_cost + (($book_cost ?? 0) * $book_subs->count()) + (($addon_cost ?? 0) * $addons->count());
+            if (array_key_exists('custom_total_amount', $data) && is_numeric($data['custom_total_amount'])) {
+                $total_amount = (int) $data['custom_total_amount'];
+            } else {
+                $total_amount = $base_cost + (($book_cost ?? 0) * $book_subs->count()) + (($addon_cost ?? 0) * $addons->count());
+            }
             // Step 1: Create a Plan in Stripe (Highly compatible with older SDK versions)
             $frequency = (int)$subscription->frequency;
             $interval = 'month';
@@ -401,14 +426,38 @@ trait CreatesUser {
                 $interval_count = 7; // Trial
             }
 
+            // Generate Dynamic Product Name and ID
+            $hasPrint = $book_subs->count() > 0;
+            $formatString = $hasPrint ? 'Online Access & Print' : 'Online Access Only';
+            
+            if ($frequency === 12) {
+                $productName = "CTB Online One-Year Subscription ($formatString)";
+            } elseif ($frequency === 24) {
+                $productName = "CTB Online Two-Year Subscription ($formatString)";
+            } else {
+                $productName = "CTB Online Trial Subscription";
+            }
+
+            $productId = 'prod_' . md5($productName);
+
+            try {
+                // Try to reuse existing product to keep Stripe catalog clean
+                $stripeProduct = \Stripe\Product::retrieve($productId);
+            } catch (\Exception $e) {
+                // Create it if it doesn't exist
+                $stripeProduct = \Stripe\Product::create([
+                    'id' => $productId,
+                    'name' => $productName,
+                    'type' => 'service',
+                ]);
+            }
+
             $stripePlan = \Stripe\Plan::create([
                 'amount' => $total_amount, // already in cents
                 'currency' => 'usd',
                 'interval' => $interval,
                 'interval_count' => $interval_count,
-                'product' => [
-                    'name' => 'California Target Book Online Subscription',
-                ],
+                'product' => $productId,
                 'id' => 'plan_' . uniqid() . '_' . $frequency . 'm',
             ]);
 
@@ -418,7 +467,6 @@ trait CreatesUser {
                 'items' => [
                     ['plan' => $stripePlan->id],
                 ],
-                'default_source' => $cust->default_source ?? null,
                 'metadata' => [
                     'cycle_id' => $cycle->id,
                     'subscription_id' => $subscription->id,
@@ -525,7 +573,7 @@ trait CreatesUser {
 
                         $cust->address = [
                             'line1' => $line1 ?: '123 Test Street',
-                            'line2' => $addrData['line2'] ?? '',
+                            'line2' => empty($addrData['line2']) ? null : $addrData['line2'],
                             'city' => $city ?: 'San Jose',
                             'state' => $state ?: 'CA',
                             'postal_code' => $zip ?: '95101',
@@ -533,7 +581,17 @@ trait CreatesUser {
                         ];
                     }
                     if (!empty($data['stripe_token'])) {
-                        $cust->source = $data['stripe_token'];
+                        if (strpos($data['stripe_token'], 'pm_') === 0) {
+                            $stripeKey = config('app.STRIPE_KEY');
+                            \Illuminate\Support\Facades\Http::withToken($stripeKey)->asForm()->post("https://api.stripe.com/v1/payment_methods/{$data['stripe_token']}/attach", [
+                                'customer' => $cust->id
+                            ]);
+                            \Illuminate\Support\Facades\Http::withToken($stripeKey)->asForm()->post("https://api.stripe.com/v1/customers/{$cust->id}", [
+                                'invoice_settings' => ['default_payment_method' => $data['stripe_token']]
+                            ]);
+                        } else {
+                            $cust->source = $data['stripe_token'];
+                        }
                     }
                     $cust->save();
                 } catch (\Exception $e) {

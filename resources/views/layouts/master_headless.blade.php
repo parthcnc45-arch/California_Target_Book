@@ -9,6 +9,14 @@
 
         <title>@yield('title')</title>
 
+        <!-- CSRF Token -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <!-- API Token -->
+        @if(Auth::check())
+            <meta name="api_token" content="{{ Auth::user()->api_token }}">
+        @endif
+
         <meta name="author" content="California Target Book">
         <meta name="keywords" content="Political Campaign, California Election Spending, Political, Political Consulting, Political Consultant, California Non-Partisan, California Voter Guide, Strategist, Political Analyst">
 
@@ -31,10 +39,6 @@
         <link href="{{ mix('css/app.css') }}" rel="stylesheet" />
 
         <!-- Custom Fonts -->
-
-        {{--<link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">--}}
-        {{--<link href='http://fonts.googleapis.com/css?family=PT+Sans+Narrow' rel='stylesheet' type='text/css'>--}}
-        {{--<link href='http://fonts.googleapis.com/css?family=BenchNine:300,400,700' rel='stylesheet' type='text/css'>--}}
 
         <style>
 
@@ -150,21 +154,10 @@
     <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
 
         <div id="app">
-
-            @if(Session::get('message'))
-                <div class="notice">
-                    {{ Session::get('message') }}
-                    <i class="fa fa-times"></i>
-                </div>
-            @endif
-
             <main>
                 @yield('content')
             </main>
-
-
         </div>
-
 
         <script src="https://js.stripe.com/v3/"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -188,6 +181,74 @@
 
         @yield('scripts')
 
+        @if(Session::get('message'))
+            <div class="toast-notice" id="toast-notice">
+                <div class="toast-content">
+                    <i class="fa fa-info-circle toast-icon"></i>
+                    <span>{{ Session::get('message') }}</span>
+                </div>
+                <i class="fa fa-times toast-close" onclick="document.getElementById('toast-notice').style.display='none'"></i>
+            </div>
+            <style>
+                .toast-notice {
+                    position: fixed;
+                    top: 24px;
+                    right: 24px;
+                    background-color: #1e293b; /* Dark slate */
+                    color: #ffffff;
+                    padding: 16px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+                    z-index: 99999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    min-width: 300px;
+                    max-width: 400px;
+                    font-family: 'Inter', -apple-system, sans-serif;
+                }
+                .toast-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    font-size: 14.5px;
+                    font-weight: 500;
+                    line-height: 1.4;
+                    color: white !important;
+                }
+                .toast-icon {
+                    font-size: 18px;
+                    color: #60a5fa; /* Light blue info color */
+                }
+                .toast-close {
+                    font-size: 16px;
+                    cursor: pointer;
+                    color: #94a3b8;
+                    transition: color 0.2s;
+                    margin-left: 16px;
+                }
+                .toast-close:hover {
+                    color: #ffffff;
+                }
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes fadeOutToast {
+                    from { opacity: 1; transform: translateY(0); }
+                    to { opacity: 0; visibility: hidden; transform: translateY(-10px); }
+                }
+            </style>
+            <!-- <script>
+                setTimeout(() => {
+                    const toast = document.getElementById('toast-notice');
+                    if(toast) {
+                        toast.style.animation = 'fadeOutToast 0.4s ease-out forwards';
+                        setTimeout(() => toast.remove(), 400);
+                    }
+                }, 5000);
+            </script> -->
+        @endif
 
     </body>
 </html>

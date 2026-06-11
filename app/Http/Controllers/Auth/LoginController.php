@@ -55,6 +55,14 @@ class LoginController extends Controller
 
         $this->validateLogin($request);
 
+        // Check if the user is soft deleted
+        $user = User::where($this->username(), $request->{$this->username()})->first();
+        if ($user && $user->deleted_at !== null) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                $this->username() => ['Account not found.'],
+            ]);
+        }
+
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
         // the login attempts for this application. We'll key this by the username and
         // the IP address of the client making these requests into this application.

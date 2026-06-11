@@ -13,7 +13,7 @@ import RavenVue from 'raven-js/plugins/vue';
 
 console.log('Vue Imported.');
 
-if (window.globals.ENV !== 'production') {
+if (window.globals && window.globals.ENV !== 'production') {
   Raven
       .config('https://4cb8e52ea3dc4447a5590bc0e846f308@sentry.io/305883', {
         environment: window.globals && window.globals.ENV,
@@ -84,6 +84,7 @@ Vue.component('ctb-house-cand-directory', require('./book/candidates/house-cand-
 console.log('Loaded ctb-house-cand-directory');
 
 Vue.component('change-password-modal', require('./components/modals/ChangePasswordModal.vue').default);
+Vue.component('account-info-form', require('./components/AccountInfoForm.vue').default);
 console.log('Loaded change-password-modal');
 
 Vue.component('feedback-modal', require('./components/modals/FeedbackModal.vue').default);

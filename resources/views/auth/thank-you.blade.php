@@ -26,30 +26,36 @@
                     to have it resent.
                 </p>
 
-                <p class="mb-xl">
-                    Your invoice ID is
-                    <i class="text-red">{{ $invoice->number }}</i>.
-                    <br/>
-                    You will receive a copy of your invoice by email.
-                </p>
+                @if($invoice)
+                    <p class="mb-xl">
+                        Your invoice ID is
+                        <i class="text-red">{{ $invoice->number }}</i>.
+                        <br/>
+                        You will receive a copy of your invoice by email.
+                    </p>
 
-
-                <h3 class="upper text-red">Subscription Summary</h3>
-                <table class="table table-striped">
-                    <tbody>
-                    @foreach($invoice->lines->data as $line)
+                    <h3 class="upper text-red">Subscription Summary</h3>
+                    <table class="table table-striped">
+                        <tbody>
+                        @foreach($invoice->lines->data as $line)
+                            <tr>
+                                <td>{{ $line->description }}</td>
+                                <td>${{ $line->amount / 100 }}</td>
+                            </tr>
+                        @endforeach
                         <tr>
-                            <td>{{ $line->description }}</td>
-                            <td>${{ $line->amount / 100 }}</td>
+                            <th>Order Total</th>
+                            <th>${{ $invoice->total / 100 }}</th>
                         </tr>
-                    @endforeach
-                    <tr>
-                        <th>Order Total</th>
-                        <th>${{ $invoice->total / 100 }}</th>
-                    </tr>
-                    </tbody>
-
-                </table>
+                        </tbody>
+                    </table>
+                @else
+                    <p class="mb-xl">
+                        Your subscription has been created.
+                        <br/>
+                        If you opted for a manual payment method (such as check), you will receive payment instructions by email.
+                    </p>
+                @endif
 
             </div>
 

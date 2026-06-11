@@ -31,8 +31,22 @@ class AccountController extends Controller
         if (empty($sub)) {
             $prevSub = $user->subscriptions()->first();
             if (empty($prevSub)) {
-                Auth::logout();
-                return null;
+                return [
+                    'user' => $user,
+                    'pending_bank' => null,
+                    'cycles' => collect(),
+                    'sub' => [
+                        'cycle' => null,
+                        'status' => 'None',
+                        'end' => null,
+                        'start' => null,
+                        'base_account' => $user,
+                        'role' => 'owner',
+                        'addons' => collect(),
+                        'books' => collect(),
+                        'invoice' => null,
+                    ]
+                ];
             } else {
                 return 'renew';
             }
@@ -67,6 +81,26 @@ class AccountController extends Controller
 
         $cycles = $sub ? $sub->cycles()->orderBy('starts_on', 'desc')->get() : collect();
 
+        $stripe_subscription = null;
+        $stripe_product_name = null;
+        if ($sub && !empty($sub->wordpress_subscription_id) && strpos($sub->wordpress_subscription_id, 'sub_') === 0) {
+            try {
+                \Stripe\Stripe::setApiKey(config('app.STRIPE_KEY'));
+                $stripe_subscription = \Stripe\Subscription::retrieve($sub->wordpress_subscription_id);
+                
+                // Fetch product name from Stripe
+                if (!empty($stripe_subscription->plan->product)) {
+                    $product = \Stripe\Product::retrieve($stripe_subscription->plan->product);
+                    $stripe_product_name = $product->name;
+                } elseif (!empty($stripe_subscription->items->data[0]->plan->product)) {
+                    $product = \Stripe\Product::retrieve($stripe_subscription->items->data[0]->plan->product);
+                    $stripe_product_name = $product->name;
+                }
+            } catch (\Exception $e) {
+                \Log::warning("Could not retrieve Stripe subscription for user {$user->id}: " . $e->getMessage());
+            }
+        }
+
         return [
             'user' => $user,
             'pending_bank' => $ba,
@@ -81,6 +115,8 @@ class AccountController extends Controller
                 'addons' => $sub->addons()->get(),
                 'books' => $sub->load('book_subscriptions.address')->book_subscriptions,
                 'invoice' => $invoice,
+                'stripe_data' => $stripe_subscription,
+                'stripe_product_name' => $stripe_product_name,
             ]
         ];
     }
@@ -119,7 +155,138 @@ class AccountController extends Controller
         if ($data === 'renew') {
             return redirect()->route('auth.account.renew');
         }
+
+        $transactions = collect();
+        $user = Auth::user();
+        
+        $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
+        \Stripe\Stripe::setApiKey($stripeKey);
+
+        foreach ($data['cycles'] as $c) {
+            if (!empty($c->invoice_id)) {
+                try {
+                    $inv = \Stripe\Invoice::retrieve($c->invoice_id);
+                    
+                    $plan = '—';
+                    $description = $inv->description ?? 'Subscription Charge';
+                    
+                    if ($inv->lines && isset($inv->lines->data[0])) {
+                        $line = $inv->lines->data[0];
+                        if (!empty($line->description)) {
+                            $description = $line->description; 
+                        }
+                        
+                        // Parse Plan
+                        if (stripos($description, 'One-Year') !== false || stripos($description, '1 Year') !== false || (isset($line->plan) && $line->plan->interval === 'year' && $line->plan->interval_count === 1)) {
+                            $plan = 'One-Year';
+                        } elseif (stripos($description, 'Two-Year') !== false || stripos($description, '2 Year') !== false || (isset($line->plan) && $line->plan->interval === 'year' && $line->plan->interval_count === 2)) {
+                            $plan = 'Two-Year';
+                        } elseif (stripos($description, 'Addon') !== false) {
+                            $plan = 'One-Year';
+                        }
+                    }
+                    
+                    $status = 'Pending';
+                    if ($inv->paid) {
+                        $status = 'Completed';
+                        if ($inv->charge) {
+                            try {
+                                $charge = \Stripe\Charge::retrieve($inv->charge);
+                                if ($charge->refunded) {
+                                    $status = 'Refunded';
+                                }
+                            } catch (\Exception $e) {}
+                        }
+                    } else if ($inv->closed || $inv->status === 'void') {
+                        $status = 'Refunded';
+                    }
+                    
+                    $transactions->push((object)[
+                        'date' => Carbon::createFromTimestamp($inv->created)->format('F j, Y'),
+                        'timestamp' => $inv->created,
+                        'description' => $description,
+                        'plan' => $plan,
+                        'amount' => '$' . number_format($inv->total / 100, 2),
+                        'status' => $status,
+                        'invoice_url' => route('auth.account.invoice', ['invoice_id' => $inv->id]),
+                    ]);
+                    continue;
+                } catch (\Exception $e) {
+                    \Log::error("Stripe Invoice Fetch Failed for ID {$c->invoice_id}: " . $e->getMessage());
+                }
+            }
+            
+            // Fallback to local cycle if invoice_id is empty or Stripe retrieval fails
+            $plan = 'One-Year';
+            if ($c->subscription && $c->subscription->frequency === 24) {
+                $plan = 'Two-Year';
+            }
+            
+            $amount = '$1,200.00';
+            if ($c->subscription) {
+                if ($c->subscription->frequency === 24) {
+                    $amount = '$2,200.00';
+                }
+            }
+            
+            $transactions->push((object)[
+                'date' => Carbon::parse($c->starts_on)->format('F j, Y'),
+                'timestamp' => Carbon::parse($c->starts_on)->timestamp,
+                'description' => $plan . ' Subscription — ' . ($c->isPending() ? 'Renewal' : 'Annual Renewal'),
+                'plan' => $plan,
+                'amount' => $amount,
+                'status' => $c->isPending() ? 'Pending' : 'Completed',
+                'invoice_url' => $c->invoice_id ? route('auth.account.invoice', ['invoice_id' => $c->invoice_id]) : null,
+            ]);
+        }
+
+        $data['transactions'] = $transactions;
+
         return view('auth.account.transaction_history', $data);
+    }
+
+    public function viewInvoice($invoice_id) {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+
+        $user = Auth::user();
+
+        try {
+            $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
+            \Stripe\Stripe::setApiKey($stripeKey);
+            $invoice = \Stripe\Invoice::retrieve($invoice_id);
+
+            // Check Authorization
+            $authorized = false;
+            if ($invoice->customer === $user->stripe_id || $invoice->customer_email === $user->email) {
+                $authorized = true;
+            } else {
+                // Check if any cycle of user's subscriptions contains this invoice ID
+                $sub = $user->latestSubscription();
+                if ($sub) {
+                    $authorized = $sub->cycles()->where('invoice_id', $invoice_id)->exists();
+                }
+            }
+            
+            if (!$authorized) {
+                abort(403, 'Unauthorized.');
+            }
+            
+            return view('auth.account.invoice', [
+                'user' => $user,
+                'invoice' => $invoice,
+                'sub' => $data['sub'],
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error("Invoice retrieval failed for {$invoice_id}: " . $e->getMessage());
+            abort(404, 'Invoice not found.');
+        }
     }
 
     public function shippingTracking() {
@@ -153,6 +320,97 @@ class AccountController extends Controller
             return redirect()->route('auth.account.renew');
         }
         return view('auth.account.help_support', $data);
+    }
+
+    public function updateProfile(Request $request) {
+        $user = Auth::user();
+
+        $data = $request->all();
+
+        $validator = Validator::make($data, [
+            'fullName' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'phone_number' => 'nullable|string|max:50',
+            'companyName' => 'required|string|max:255',
+            
+            // Billing Address
+            'billing.line1' => 'required|string|max:255',
+            'billing.line2' => 'nullable|string|max:255',
+            'billing.city' => 'required|string|max:255',
+            'billing.state' => 'required|string|max:2',
+            'billing.zip_code' => 'required|string|max:20',
+
+            // Shipping Address (required unless sameAsBilling is true)
+            'shipping.line1' => 'required_unless:sameAsBilling,true|nullable|string|max:255',
+            'shipping.line2' => 'nullable|string|max:255',
+            'shipping.city' => 'required_unless:sameAsBilling,true|nullable|string|max:255',
+            'shipping.state' => 'required_unless:sameAsBilling,true|nullable|string|max:2',
+            'shipping.zip_code' => 'required_unless:sameAsBilling,true|nullable|string|max:20',
+        ]);
+
+        $validator->validate();
+
+        // 1. Update User
+        $parts = explode(' ', $data['fullName'], 2);
+        $user->first_name = $parts[0];
+        $user->last_name = isset($parts[1]) ? $parts[1] : '';
+        $user->email = $data['email'];
+        $user->phone_number = $data['phone_number'];
+        $user->save();
+
+        // 2. Update Company
+        $company = $user->company;
+        if (!$company) {
+            $company = new \App\Company();
+            $company->name = $data['companyName'];
+            $company->save();
+            $user->company_id = $company->id;
+            $user->save();
+        } else {
+            $company->name = $data['companyName'];
+            $company->save();
+        }
+
+        // 3. Update Billing Address
+        $billingAddr = $company->address;
+        if (!$billingAddr) {
+            $billingAddr = \App\Address::create($data['billing']);
+            $company->address_id = $billingAddr->id;
+            $company->save();
+        } else {
+            $billingAddr->update($data['billing']);
+        }
+
+        // 4. Update Shipping Address
+        $sub = $user->latestSubscription();
+        if ($sub) {
+            $bookSub = $sub->book_subscriptions()->first();
+            $shippingData = $data['sameAsBilling'] ? $data['billing'] : $data['shipping'];
+            
+            if ($bookSub) {
+                $shippingAddr = $bookSub->address;
+                if (!$shippingAddr) {
+                    $shippingAddr = \App\Address::create($shippingData);
+                    $bookSub->address_id = $shippingAddr->id;
+                    $bookSub->save();
+                } else {
+                    $shippingAddr->update($shippingData);
+                }
+            } else {
+                if (!$data['sameAsBilling']) {
+                    $shippingAddr = \App\Address::create($shippingData);
+                    $sub->book_subscriptions()->create([
+                        'address_id' => $shippingAddr->id
+                    ]);
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'user' => $user->fresh(['company.address']),
+            'shippingAddress' => ($sub && $sub->book_subscriptions()->first()) ? $sub->book_subscriptions()->first()->address : null,
+        ]);
     }
 
     public function changePassword(Request $request) {
@@ -443,6 +701,175 @@ class AccountController extends Controller
             $pendingCycle->activate();
         }
 
+    }
+
+    public function manageBilling()
+    {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.manage_subscription', $data);
+    }
+
+    public function cancelSubscription()
+    {
+        $user = Auth::user();
+        $sub = $user->latestSubscription();
+
+        if (empty($sub)) {
+            return redirect()->back()->with('message', 'No active subscription found.');
+        }
+
+        try {
+            $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
+            
+            // 1. Cancel on Stripe if a Stripe subscription ID is linked
+            if ($sub->wordpress_subscription_id && strpos($sub->wordpress_subscription_id, 'sub_') === 0) {
+                if ($stripeKey) {
+                    \Stripe\Stripe::setApiKey($stripeKey);
+                    try {
+                        $stripeSub = \Stripe\Subscription::retrieve($sub->wordpress_subscription_id);
+                        if ($stripeSub && $stripeSub->status !== 'canceled') {
+                            $stripeSub->cancel();
+                        }
+                    } catch (\Exception $stripeEx) {
+                        \Log::warning('Stripe cancel during customer self-cancel failed: ' . $stripeEx->getMessage());
+                    }
+                }
+            }
+
+            // 2. Update local database
+            $sub->status = 'cancelled';
+            $sub->next_payment = null;
+            $sub->save();
+
+            return redirect()->back()->with('message', 'Your subscription has been cancelled successfully.');
+
+        } catch (\Exception $e) {
+            \Log::error('Subscription Cancel Failed: ' . $e->getMessage());
+            return redirect()->back()->with('message', 'Failed to cancel subscription: ' . $e->getMessage());
+        }
+    }
+
+    public function inviteAddon(Request $request)
+    {
+        $user = Auth::user();
+        $sub = $user->latestSubscription();
+        if (empty($sub)) {
+            return response()->json(['success' => false, 'message' => 'No active subscription found.'], 400);
+        }
+
+        // Enforce 5 seats limit (1 Owner + max 4 addons)
+        $addonsCount = $sub->addons()->count();
+        if ($addonsCount >= 4) {
+            return response()->json(['success' => false, 'message' => 'You have reached the limit of 5 seats. Remove a member to invite more.'], 400);
+        }
+
+        $validation = [
+            'email' => 'required|email|max:255',
+        ];
+
+        $data = $request->only(['email']);
+        $val = Validator::make($data, $validation);
+        if ($val->fails()) {
+            return response()->json(['success' => false, 'errors' => $val->errors()], 422);
+        }
+
+        $email = $data['email'];
+
+        // Check if user is the owner
+        if (strtolower($email) === strtolower($user->email)) {
+            return response()->json(['success' => false, 'message' => 'This email belongs to the subscription owner.'], 400);
+        }
+
+        // Check if user is already an addon on this subscription
+        $isAlreadyAddon = $sub->addons()->where('email', $email)->exists();
+        if ($isAlreadyAddon) {
+            return response()->json(['success' => false, 'message' => 'This user is already a member of your subscription.'], 400);
+        }
+
+        try {
+            $addon = $sub->addUser($email, [
+                'first_name' => '',
+                'last_name' => '',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Invitation sent successfully.',
+                'addon' => [
+                    'id' => $addon->id,
+                    'name' => trim($addon->name()) ?: 'Pending Profile',
+                    'email' => $addon->email,
+                    'role' => 'Member',
+                    'status' => $addon->verified ? 'Active' : 'Pending',
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Addon invite failed: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to invite user: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function removeAddon(Request $request)
+    {
+        $user = Auth::user();
+        $sub = $user->latestSubscription();
+        if (empty($sub)) {
+            return response()->json(['success' => false, 'message' => 'No active subscription found.'], 400);
+        }
+
+        $addonId = $request->input('id');
+        if (empty($addonId)) {
+            return response()->json(['success' => false, 'message' => 'User ID is required.'], 400);
+        }
+
+        // Verify the addon actually belongs to this subscription
+        $addon = $sub->addons()->where('users.id', $addonId)->first();
+        if (empty($addon)) {
+            return response()->json(['success' => false, 'message' => 'Addon user not found in this subscription.'], 404);
+        }
+
+        try {
+            // Detach user from subscription
+            $addon->subscriptions()->detach($sub->id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User removed successfully.'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Addon removal failed: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to remove user: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function purchaseSeats()
+    {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.purchase_seats', $data);
+    }
+
+    public function addSubscriptionPage()
+    {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.add_subscription', $data);
     }
 
 }

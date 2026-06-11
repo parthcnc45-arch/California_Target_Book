@@ -15,8 +15,16 @@
  * Public Routes
  */
 Route::get('/', function () {
-    return view('home');
+    return view('new');
 })->name('home');
+
+Route::get('/subscriptions/one-year', function () {
+    return view('subscriptions.one_year');
+})->name('subscriptions.one-year');
+
+Route::get('/subscriptions/two-year', function () {
+    return view('subscriptions.two_year');
+})->name('subscriptions.two-year');
 
 Route::get('/home', 'HomeController@index')->name('home.dashboard');
 
@@ -93,6 +101,10 @@ Route::post('/login', 'Auth\LoginController@login');
 Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 
 // Registration Routes
+Route::get('/signup', function () {
+    return view('signup');
+})->name('signup');
+Route::post('/signup', 'Auth\RegisterController@signup')->name('signup.post');
 Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('/register', 'Auth\RegisterController@register');
 Route::post('/register-addon', 'Auth\RegisterController@register_addon')->name('auth.register_addon');
@@ -130,9 +142,45 @@ Route::group([
         'as' => 'auth.account.subscriptions',
     ]);
 
+    Route::get('/subscriptions/seats', [
+        'uses' => 'Auth\AccountController@purchaseSeats',
+        'as' => 'auth.account.subscriptions.seats',
+    ]);
+
+    Route::get('/subscriptions/add', [
+        'uses' => 'Auth\AccountController@addSubscriptionPage',
+        'as' => 'auth.account.subscriptions.add',
+    ]);
+
+    Route::get('/subscriptions/manage-billing', [
+        'uses' => 'Auth\AccountController@manageBilling',
+        'as' => 'auth.account.manage_billing',
+    ]);
+
+    Route::post('/subscriptions/cancel', [
+        'uses' => 'Auth\AccountController@cancelSubscription',
+        'as' => 'auth.account.subscriptions.cancel',
+    ]);
+
+    Route::post('/subscriptions/addons', [
+        'uses' => 'Auth\AccountController@inviteAddon',
+        'as' => 'auth.account.subscriptions.addons.invite',
+    ]);
+
+    Route::post('/subscriptions/addons/remove', [
+        'uses' => 'Auth\AccountController@removeAddon',
+        'as' => 'auth.account.subscriptions.addons.remove',
+    ]);
+
+
     Route::get('/transaction-history', [
         'uses' => 'Auth\AccountController@transactionHistory',
         'as' => 'auth.account.transaction_history',
+    ]);
+
+    Route::get('/invoice/{invoice_id}', [
+        'uses' => 'Auth\AccountController@viewInvoice',
+        'as' => 'auth.account.invoice',
     ]);
 
     Route::get('/shipping-tracking', [
@@ -804,3 +852,26 @@ foreach ($redirects as $start => $end) {
         return redirect($end);
     });
 }
+
+Route::post('/account/delete', function(\Illuminate\Http\Request $request) {
+    $user = auth()->user();
+    
+    if ($user) {
+        // Soft delete the user by setting deleted_at to now()
+        \Illuminate\Support\Facades\DB::table('users')
+            ->where('id', $user->id)
+            ->update(['deleted_at' => now()]);
+            
+        // Log out the user if they were using session auth
+        if (auth()->check()) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+            
+        return response()->json(['success' => true]);
+    }
+    
+    return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+});
+Route::post('/submit-subscription', 'Auth\RegisterController@submitSubscription')->name('submit-subscription');

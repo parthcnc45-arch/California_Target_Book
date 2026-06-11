@@ -34,6 +34,7 @@ Route::group([
     'namespace' => 'Auth',
     'middleware' => ['auth:api'],
 ], function() {
+    Route::put('/', 'AccountController@updateProfile');
     Route::put('/password', 'AccountController@changePassword');
     Route::post('/verify-bank', 'AccountController@verifyBank');
 });
@@ -116,3 +117,24 @@ Route::group([
     Route::post('/{id}/questions', 'Admin\PollsController@createQuestion');
     Route::put('/{pollId}/questions/{questionId}', 'Admin\PollsController@updateQuestion');
 });
+
+Route::post('/help-support/contact', function(\Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'subject' => 'required|string|max:255',
+        'message' => 'required|string',
+    ]);
+
+    $userEmail = auth('api')->check() ? auth('api')->user()->email : (auth()->check() ? auth()->user()->email : 'guest@example.com');
+
+    try {
+        \Illuminate\Support\Facades\Mail::raw("From: {$userEmail}\n\nSubject: {$validated['subject']}\n\nMessage:\n{$validated['message']}", function ($message) use ($validated) {
+            $message->to('parthcnc45@gmail.com')
+                    ->subject('Support Contact: ' . $validated['subject']);
+        });
+        return response()->json(['success' => true]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+});
+
+

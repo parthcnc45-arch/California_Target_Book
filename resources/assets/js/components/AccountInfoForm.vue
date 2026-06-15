@@ -41,17 +41,29 @@
             <td class="info-value">
               <span v-if="display.billing && display.billing.line1">
                 {{ display.billing.line1 }}{{ display.billing.line2 ? ', ' + display.billing.line2 : '' }}, {{ display.billing.city }}, {{ display.billing.state }} {{ display.billing.zip_code }}
+                <div v-if="display.billing.special_instructions" style="margin-top: 4px; font-size: 11.5px; color: #64748b;">
+                  Instructions: {{ display.billing.special_instructions }}
+                </div>
               </span>
               <span v-else>1215 K Street, Suite 1150, Sacramento, CA, 95814</span>
             </td>
           </tr>
-          <tr>
+          <tr v-for="(shipping, index) in display.shippings" :key="shipping.id">
+            <td class="info-label">Shipping Address {{ display.shippings.length > 1 ? (index + 1) : '' }}</td>
+            <td class="info-value">
+              <span v-if="shipping.address && shipping.address.line1">
+                {{ shipping.address.line1 }}{{ shipping.address.line2 ? ', ' + shipping.address.line2 : '' }}, {{ shipping.address.city }}, {{ shipping.address.state }} {{ shipping.address.zip_code }}
+                <div v-if="shipping.address.special_instructions" style="margin-top: 4px; font-size: 11.5px; color: #64748b;">
+                  Instructions: {{ shipping.address.special_instructions }}
+                </div>
+              </span>
+              <span v-else>No shipping address set</span>
+            </td>
+          </tr>
+          <tr v-if="!display.shippings || !display.shippings.length">
             <td class="info-label">Shipping Address</td>
             <td class="info-value">
-              <span v-if="display.shipping && display.shipping.line1">
-                {{ display.shipping.line1 }}{{ display.shipping.line2 ? ', ' + display.shipping.line2 : '' }}, {{ display.shipping.city }}, {{ display.shipping.state }} {{ display.shipping.zip_code }}
-              </span>
-              <span v-else-if="display.billing && display.billing.line1">
+              <span v-if="display.billing && display.billing.line1">
                 {{ display.billing.line1 }}{{ display.billing.line2 ? ', ' + display.billing.line2 : '' }}, {{ display.billing.city }}, {{ display.billing.state }} {{ display.billing.zip_code }}
               </span>
               <span v-else>1215 K Street, Suite 1150, Sacramento, CA, 95814</span>
@@ -101,8 +113,12 @@
           <div class="address-block">
             <h3 class="address-block-title">Billing Address</h3>
             <div class="edit-row">
-              <label class="edit-label">Street</label>
-              <input class="edit-input" type="text" v-model="form.billing.line1" placeholder="Street address" required />
+              <label class="edit-label">Address Line 1</label>
+              <input class="edit-input" type="text" v-model="form.billing.line1" placeholder="Address Line 1" required />
+            </div>
+            <div class="edit-row">
+              <label class="edit-label">Address Line 2</label>
+              <input class="edit-input" type="text" v-model="form.billing.line2" placeholder="Address Line 2" />
             </div>
             <div class="address-grid">
               <div class="grid-col city-col">
@@ -120,37 +136,56 @@
                 <input class="edit-input" type="text" v-model="form.billing.zip_code" required />
               </div>
             </div>
+            <div class="edit-row" style="margin-top: 12px;">
+              <label class="edit-label">Special Instructions</label>
+              <input class="edit-input" type="text" v-model="form.billing.special_instructions" placeholder="Delivery instructions" />
+            </div>
           </div>
 
           <!-- Shipping Address Block -->
           <div class="address-block">
-            <div class="address-block-header">
-              <h3 class="address-block-title">Shipping Address</h3>
-              <label class="same-as-billing-checkbox">
-                <input type="checkbox" v-model="form.sameAsBilling" /> Same as Billing
-              </label>
+            <div v-for="(shipping, index) in form.shippings" :key="shipping.id" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e2e8ee;">
+              <div class="address-block-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 class="address-block-title">Shipping Address {{ form.shippings.length > 1 ? (index + 1) : '' }}</h3>
+                <label class="same-as-billing-checkbox">
+                  <input type="checkbox" v-model="shipping.sameAsBilling" @change="toggleSameAsBilling(index)" /> Same as Billing
+                </label>
+              </div>
+              
+              <div v-show="!shipping.sameAsBilling">
+                <div class="edit-row">
+                  <label class="edit-label">Address Line 1</label>
+                  <input class="edit-input" type="text" v-model="shipping.line1" placeholder="Address Line 1" :required="!shipping.sameAsBilling" />
+                </div>
+                <div class="edit-row">
+                  <label class="edit-label">Address Line 2</label>
+                  <input class="edit-input" type="text" v-model="shipping.line2" placeholder="Address Line 2" />
+                </div>
+                <div class="address-grid">
+                  <div class="grid-col city-col">
+                    <label class="edit-label">City</label>
+                    <input class="edit-input" type="text" v-model="shipping.city" :required="!shipping.sameAsBilling" />
+                  </div>
+                  <div class="grid-col state-col">
+                    <label class="edit-label">State</label>
+                    <select class="edit-input select-state" v-model="shipping.state" :required="!shipping.sameAsBilling">
+                      <option v-for="st in statesList" :key="st.value" :value="st.value">{{ st.label }}</option>
+                    </select>
+                  </div>
+                  <div class="grid-col zip-col">
+                    <label class="edit-label">Zip</label>
+                    <input class="edit-input" type="text" v-model="shipping.zip_code" :required="!shipping.sameAsBilling" />
+                  </div>
+                </div>
+                <div class="edit-row" style="margin-top: 12px; margin-bottom: 0;">
+                  <label class="edit-label">Special Instructions</label>
+                  <input class="edit-input" type="text" v-model="shipping.special_instructions" placeholder="Delivery instructions" />
+                </div>
+              </div>
             </div>
-            <div v-show="!form.sameAsBilling">
-              <div class="edit-row">
-                <label class="edit-label">Street</label>
-                <input class="edit-input" type="text" v-model="form.shipping.line1" placeholder="Street address" :required="!form.sameAsBilling" />
-              </div>
-              <div class="address-grid">
-                <div class="grid-col city-col">
-                  <label class="edit-label">City</label>
-                  <input class="edit-input" type="text" v-model="form.shipping.city" :required="!form.sameAsBilling" />
-                </div>
-                <div class="grid-col state-col">
-                  <label class="edit-label">State</label>
-                  <select class="edit-input select-state" v-model="form.shipping.state" :required="!form.sameAsBilling">
-                    <option v-for="st in statesList" :key="st.value" :value="st.value">{{ st.label }}</option>
-                  </select>
-                </div>
-                <div class="grid-col zip-col">
-                  <label class="edit-label">Zip</label>
-                  <input class="edit-input" type="text" v-model="form.shipping.zip_code" :required="!form.sameAsBilling" />
-                </div>
-              </div>
+
+            <div v-if="!form.shippings || !form.shippings.length" style="font-size: 13.5px; color: #64748b; font-style: italic; padding: 10px 0;">
+              No shipping address associated with your subscription.
             </div>
           </div>
         </div>
@@ -181,23 +216,58 @@
 import axios from 'axios';
 
 const US_STATES = [
-  { value: 'AL', label: 'AL' }, { value: 'AK', label: 'AK' }, { value: 'AZ', label: 'AZ' },
-  { value: 'AR', label: 'AR' }, { value: 'CA', label: 'CA' }, { value: 'CO', label: 'CO' },
-  { value: 'CT', label: 'CT' }, { value: 'DE', label: 'DE' }, { value: 'FL', label: 'FL' },
-  { value: 'GA', label: 'GA' }, { value: 'HI', label: 'HI' }, { value: 'ID', label: 'ID' },
-  { value: 'IL', label: 'IL' }, { value: 'IN', label: 'IN' }, { value: 'IA', label: 'IA' },
-  { value: 'KS', label: 'KS' }, { value: 'KY', label: 'KY' }, { value: 'LA', label: 'LA' },
-  { value: 'ME', label: 'ME' }, { value: 'MD', label: 'MD' }, { value: 'MA', label: 'MA' },
-  { value: 'MI', label: 'MI' }, { value: 'MN', label: 'MN' }, { value: 'MS', label: 'MS' },
-  { value: 'MO', label: 'MO' }, { value: 'MT', label: 'MT' }, { value: 'NE', label: 'NE' },
-  { value: 'NV', label: 'NV' }, { value: 'NH', label: 'NH' }, { value: 'NJ', label: 'NJ' },
-  { value: 'NM', label: 'NM' }, { value: 'NY', label: 'NY' }, { value: 'NC', label: 'NC' },
-  { value: 'ND', label: 'ND' }, { value: 'OH', label: 'OH' }, { value: 'OK', label: 'OK' },
-  { value: 'OR', label: 'OR' }, { value: 'PA', label: 'PA' }, { value: 'RI', label: 'RI' },
-  { value: 'SC', label: 'SC' }, { value: 'SD', label: 'SD' }, { value: 'TN', label: 'TN' },
-  { value: 'TX', label: 'TX' }, { value: 'UT', label: 'UT' }, { value: 'VT', label: 'VT' },
-  { value: 'VA', label: 'VA' }, { value: 'WA', label: 'WA' }, { value: 'WV', label: 'WV' },
-  { value: 'WI', label: 'WI' }, { value: 'WY', label: 'WY' }
+  { value: 'AL', label: 'Alabama' },
+  { value: 'AK', label: 'Alaska' },
+  { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' },
+  { value: 'CA', label: 'California' },
+  { value: 'CO', label: 'Colorado' },
+  { value: 'CT', label: 'Connecticut' },
+  { value: 'DE', label: 'Delaware' },
+  { value: 'DC', label: 'District Of Columbia' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'GA', label: 'Georgia' },
+  { value: 'GU', label: 'Guam' },
+  { value: 'HI', label: 'Hawaii' },
+  { value: 'ID', label: 'Idaho' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'IN', label: 'Indiana' },
+  { value: 'IA', label: 'Iowa' },
+  { value: 'KS', label: 'Kansas' },
+  { value: 'KY', label: 'Kentucky' },
+  { value: 'LA', label: 'Louisiana' },
+  { value: 'ME', label: 'Maine' },
+  { value: 'MD', label: 'Maryland' },
+  { value: 'MA', label: 'Massachusetts' },
+  { value: 'MI', label: 'Michigan' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'MS', label: 'Mississippi' },
+  { value: 'MO', label: 'Missouri' },
+  { value: 'MT', label: 'Montana' },
+  { value: 'NE', label: 'Nebraska' },
+  { value: 'NV', label: 'Nevada' },
+  { value: 'NH', label: 'New Hampshire' },
+  { value: 'NJ', label: 'New Jersey' },
+  { value: 'NM', label: 'New Mexico' },
+  { value: 'NY', label: 'New York' },
+  { value: 'NC', label: 'North Carolina' },
+  { value: 'ND', label: 'North Dakota' },
+  { value: 'OH', label: 'Ohio' },
+  { value: 'OK', label: 'Oklahoma' },
+  { value: 'OR', label: 'Oregon' },
+  { value: 'PA', label: 'Pennsylvania' },
+  { value: 'RI', label: 'Rhode Island' },
+  { value: 'SC', label: 'South Carolina' },
+  { value: 'SD', label: 'South Dakota' },
+  { value: 'TN', label: 'Tennessee' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'UT', label: 'Utah' },
+  { value: 'VT', label: 'Vermont' },
+  { value: 'VA', label: 'Virginia' },
+  { value: 'WA', label: 'Washington' },
+  { value: 'WV', label: 'West Virginia' },
+  { value: 'WI', label: 'Wisconsin' },
+  { value: 'WY', label: 'Wyoming' }
 ];
 
 export default {
@@ -205,7 +275,7 @@ export default {
     initialUser: { type: Object, required: true },
     initialCompany: { type: Object, required: false, default: null },
     initialBillingAddress: { type: Object, required: false, default: null },
-    initialShippingAddress: { type: Object, required: false, default: null },
+    initialShippingAddresses: { type: Array, required: false, default: () => [] },
     hasSubscription: { type: Boolean, required: false, default: false }
   },
   data() {
@@ -219,21 +289,27 @@ export default {
         email: this.initialUser ? this.initialUser.email : '',
         phone_number: this.initialUser ? this.initialUser.phone_number : '',
         companyName: this.initialCompany ? this.initialCompany.name : '',
-        sameAsBilling: false,
+        shippings: this.initialShippingAddresses ? this.initialShippingAddresses.map(s => {
+          return {
+            id: s.id,
+            address_id: s.address_id,
+            sameAsBilling: false,
+            line1: s.address ? s.address.line1 : '',
+            line2: s.address ? s.address.line2 : '',
+            city: s.address ? s.address.city : '',
+            state: s.address ? s.address.state : 'CA',
+            zip_code: s.address ? s.address.zip_code : '',
+            special_instructions: s.address ? s.address.special_instructions : '',
+          };
+        }) : [],
         billing: {
           line1: this.initialBillingAddress ? this.initialBillingAddress.line1 : '',
           line2: this.initialBillingAddress ? this.initialBillingAddress.line2 : '',
           city: this.initialBillingAddress ? this.initialBillingAddress.city : '',
           state: this.initialBillingAddress ? this.initialBillingAddress.state : 'CA',
           zip_code: this.initialBillingAddress ? this.initialBillingAddress.zip_code : '',
+          special_instructions: this.initialBillingAddress ? this.initialBillingAddress.special_instructions : '',
         },
-        shipping: {
-          line1: this.initialShippingAddress ? this.initialShippingAddress.line1 : '',
-          line2: this.initialShippingAddress ? this.initialShippingAddress.line2 : '',
-          city: this.initialShippingAddress ? this.initialShippingAddress.city : '',
-          state: this.initialShippingAddress ? this.initialShippingAddress.state : 'CA',
-          zip_code: this.initialShippingAddress ? this.initialShippingAddress.zip_code : '',
-        }
       },
       display: {
         fullName: this.initialUser ? `${this.initialUser.first_name} ${this.initialUser.last_name || ''}`.trim() : '',
@@ -241,7 +317,7 @@ export default {
         phone_number: this.initialUser ? this.initialUser.phone_number : '',
         companyName: this.initialCompany ? this.initialCompany.name : '',
         billing: this.initialBillingAddress ? { ...this.initialBillingAddress } : null,
-        shipping: this.initialShippingAddress ? { ...this.initialShippingAddress } : null,
+        shippings: this.initialShippingAddresses ? [ ...this.initialShippingAddresses ] : [],
       }
     };
   },
@@ -249,33 +325,53 @@ export default {
     'form.billing': {
       deep: true,
       handler(newVal) {
-        if (this.form.sameAsBilling) {
-          this.form.shipping = { ...newVal };
+        if (this.form.shippings && this.form.shippings.length) {
+          this.form.shippings.forEach(shipping => {
+            if (shipping.sameAsBilling) {
+              shipping.line1 = newVal.line1;
+              shipping.line2 = newVal.line2;
+              shipping.city = newVal.city;
+              shipping.state = newVal.state;
+              shipping.zip_code = newVal.zip_code;
+              shipping.special_instructions = newVal.special_instructions;
+            }
+          });
         }
-      }
-    },
-    'form.sameAsBilling'(newVal) {
-      if (newVal) {
-        this.form.shipping = { ...this.form.billing };
       }
     }
   },
   mounted() {
-    // Check if shipping matches billing initially
-    if (this.initialBillingAddress && this.initialShippingAddress) {
+    // Check sameAsBilling for each shipping address initially
+    if (this.initialBillingAddress && this.form.shippings && this.form.shippings.length) {
       const b = this.initialBillingAddress;
-      const s = this.initialShippingAddress;
-      if (b.line1 === s.line1 && b.line2 === s.line2 && b.city === s.city && b.state === s.state && b.zip_code === s.zip_code) {
-        this.form.sameAsBilling = true;
-      }
-    } else if (!this.initialShippingAddress && this.initialBillingAddress) {
-      this.form.sameAsBilling = true;
+      this.form.shippings.forEach(shipping => {
+        if (
+          b.line1 === shipping.line1 &&
+          b.line2 === shipping.line2 &&
+          b.city === shipping.city &&
+          b.state === shipping.state &&
+          b.zip_code === shipping.zip_code
+        ) {
+          shipping.sameAsBilling = true;
+        }
+      });
     }
   },
   methods: {
     startEditing() {
       this.errors = [];
       this.isEditing = true;
+    },
+    toggleSameAsBilling(index) {
+      let shipping = this.form.shippings[index];
+      if (shipping.sameAsBilling) {
+        shipping.line1 = this.form.billing.line1;
+        shipping.line2 = this.form.billing.line2;
+        shipping.city = this.form.billing.city;
+        shipping.state = this.form.billing.state;
+        shipping.zip_code = this.form.billing.zip_code;
+        shipping.special_instructions = this.form.billing.special_instructions;
+      }
     },
     cancelEditing() {
       // Restore values from display object
@@ -286,17 +382,22 @@ export default {
       if (this.display.billing) {
         this.form.billing = { ...this.display.billing };
       }
-      if (this.display.shipping) {
-        this.form.shipping = { ...this.display.shipping };
-      }
-      
-      // Recalculate sameAsBilling
-      if (this.display.billing && this.display.shipping) {
-        const b = this.display.billing;
-        const s = this.display.shipping;
-        this.form.sameAsBilling = (b.line1 === s.line1 && b.line2 === s.line2 && b.city === s.city && b.state === s.state && b.zip_code === s.zip_code);
-      } else if (!this.display.shipping && this.display.billing) {
-        this.form.sameAsBilling = true;
+      if (this.display.shippings) {
+        this.form.shippings = this.display.shippings.map(s => {
+          const b = this.display.billing;
+          const isSame = b && (b.line1 === s.address.line1 && b.line2 === s.address.line2 && b.city === s.address.city && b.state === s.address.state && b.zip_code === s.address.zip_code);
+          return {
+            id: s.id,
+            address_id: s.address_id,
+            sameAsBilling: isSame,
+            line1: s.address ? s.address.line1 : '',
+            line2: s.address ? s.address.line2 : '',
+            city: s.address ? s.address.city : '',
+            state: s.address ? s.address.state : 'CA',
+            zip_code: s.address ? s.address.zip_code : '',
+            special_instructions: s.address ? s.address.special_instructions : '',
+          };
+        });
       }
 
       this.isEditing = false;
@@ -314,7 +415,7 @@ export default {
           this.display.phone_number = u.phone_number;
           this.display.companyName = u.company ? u.company.name : '';
           this.display.billing = u.company ? u.company.address : null;
-          this.display.shipping = response.data.shippingAddress;
+          this.display.shippings = response.data.shippingAddresses;
           
           this.isEditing = false;
         } else {

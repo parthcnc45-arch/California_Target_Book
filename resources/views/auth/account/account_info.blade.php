@@ -40,7 +40,7 @@
             :initial-user="{{ json_encode($user) }}"
             :initial-company="{{ json_encode($user->company) }}"
             :initial-billing-address="{{ json_encode($user->company ? $user->company->address : null) }}"
-            :initial-shipping-address="{{ json_encode(count($sub['books']) ? $sub['books'][0]->address : null) }}"
+            :initial-shipping-addresses="{{ json_encode($sub['books']) }}"
             :has-subscription="{{ count($sub['books']) ? 'true' : 'false' }}">
         </account-info-form>
     </section>

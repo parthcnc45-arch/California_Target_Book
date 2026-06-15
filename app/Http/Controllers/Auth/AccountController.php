@@ -58,7 +58,7 @@ class AccountController extends Controller
 
         // Can't find invoice
         try {
-            $invoice = \Stripe\Invoice::retrieve($currentCycle->invoice_id);
+            $invoice = ($currentCycle && $currentCycle->invoice_id) ? \Stripe\Invoice::retrieve($currentCycle->invoice_id) : null;
         } catch (\Exception $e) {
             $invoice = null;
         }
@@ -108,8 +108,8 @@ class AccountController extends Controller
             'sub' => [
                 'cycle' => $currentCycle,
                 'status' => $sub->status(),
-                'end' => $latestCycle->ends_on ? (new Carbon($latestCycle->ends_on))->toFormattedDateString() : null,
-                'start' => $currentCycle->starts_on ? (new Carbon($currentCycle->starts_on))->toFormattedDateString() : null,
+                'end' => ($latestCycle && $latestCycle->ends_on) ? (new Carbon($latestCycle->ends_on))->toFormattedDateString() : null,
+                'start' => ($currentCycle && $currentCycle->starts_on) ? (new Carbon($currentCycle->starts_on))->toFormattedDateString() : null,
                 'base_account' => $base_account,
                 'role' => $sub->pivot->role,
                 'addons' => $sub->addons()->get(),
@@ -339,13 +339,15 @@ class AccountController extends Controller
             'billing.city' => 'required|string|max:255',
             'billing.state' => 'required|string|max:2',
             'billing.zip_code' => 'required|string|max:20',
+            'billing.special_instructions' => 'nullable|string|max:255',
 
-            // Shipping Address (required unless sameAsBilling is true)
-            'shipping.line1' => 'required_unless:sameAsBilling,true|nullable|string|max:255',
-            'shipping.line2' => 'nullable|string|max:255',
-            'shipping.city' => 'required_unless:sameAsBilling,true|nullable|string|max:255',
-            'shipping.state' => 'required_unless:sameAsBilling,true|nullable|string|max:2',
-            'shipping.zip_code' => 'required_unless:sameAsBilling,true|nullable|string|max:20',
+            // Shipping Addresses
+            'shippings.*.line1' => 'required_unless:shippings.*.sameAsBilling,true|nullable|string|max:255',
+            'shippings.*.line2' => 'nullable|string|max:255',
+            'shippings.*.city' => 'required_unless:shippings.*.sameAsBilling,true|nullable|string|max:255',
+            'shippings.*.state' => 'required_unless:shippings.*.sameAsBilling,true|nullable|string|max:2',
+            'shippings.*.zip_code' => 'required_unless:shippings.*.sameAsBilling,true|nullable|string|max:20',
+            'shippings.*.special_instructions' => 'nullable|string|max:255',
         ]);
 
         $validator->validate();
@@ -384,24 +386,33 @@ class AccountController extends Controller
         // 4. Update Shipping Address
         $sub = $user->latestSubscription();
         if ($sub) {
-            $bookSub = $sub->book_subscriptions()->first();
-            $shippingData = $data['sameAsBilling'] ? $data['billing'] : $data['shipping'];
-            
-            if ($bookSub) {
-                $shippingAddr = $bookSub->address;
-                if (!$shippingAddr) {
-                    $shippingAddr = \App\Address::create($shippingData);
-                    $bookSub->address_id = $shippingAddr->id;
-                    $bookSub->save();
-                } else {
-                    $shippingAddr->update($shippingData);
-                }
-            } else {
-                if (!$data['sameAsBilling']) {
-                    $shippingAddr = \App\Address::create($shippingData);
-                    $sub->book_subscriptions()->create([
-                        'address_id' => $shippingAddr->id
-                    ]);
+            $shippings = $request->input('shippings', []);
+            foreach ($shippings as $ship) {
+                $bookSub = $sub->book_subscriptions()->find($ship['id']);
+                if ($bookSub) {
+                    $shippingData = $ship['sameAsBilling'] ? $data['billing'] : $ship;
+                    $shippingAddr = $bookSub->address;
+                    if (!$shippingAddr) {
+                        $shippingAddr = \App\Address::create([
+                            'line1' => $shippingData['line1'] ?? '',
+                            'line2' => $shippingData['line2'] ?? null,
+                            'city' => $shippingData['city'] ?? '',
+                            'state' => $shippingData['state'] ?? '',
+                            'zip_code' => $shippingData['zip_code'] ?? '',
+                            'special_instructions' => $shippingData['special_instructions'] ?? null,
+                        ]);
+                        $bookSub->address_id = $shippingAddr->id;
+                        $bookSub->save();
+                    } else {
+                        $shippingAddr->update([
+                            'line1' => $shippingData['line1'] ?? '',
+                            'line2' => $shippingData['line2'] ?? null,
+                            'city' => $shippingData['city'] ?? '',
+                            'state' => $shippingData['state'] ?? '',
+                            'zip_code' => $shippingData['zip_code'] ?? '',
+                            'special_instructions' => $shippingData['special_instructions'] ?? null,
+                        ]);
+                    }
                 }
             }
         }
@@ -409,7 +420,7 @@ class AccountController extends Controller
         return response()->json([
             'success' => true,
             'user' => $user->fresh(['company.address']),
-            'shippingAddress' => ($sub && $sub->book_subscriptions()->first()) ? $sub->book_subscriptions()->first()->address : null,
+            'shippingAddresses' => $sub ? $sub->load('book_subscriptions.address')->book_subscriptions : collect(),
         ]);
     }
 
@@ -441,7 +452,15 @@ class AccountController extends Controller
     public function showRenew(Request $request) {
         $u = Auth::user();
         $sub = $u->activeSubscription();
+        if (!$sub) {
+            return redirect()->route('auth.account')
+                ->with(['message' => "No active subscription found."]);
+        }
         $cycle = $sub->getLatestCycle();
+        if (!$cycle || empty($cycle->ends_on)) {
+            return redirect()->route('auth.account')
+                ->with(['message' => "Could not retrieve the subscription cycle end date."]);
+        }
         $card='';
 
         // only allow renewal if cycle is within 90 days of ending
@@ -458,7 +477,7 @@ class AccountController extends Controller
             'subscription' => $sub,
             'bookSubscriptions' => $sub->book_subscriptions()->with('address')->get(),
             'addons' => $sub->addons()->get(),
-            'cycle_end' => (new Carbon($cycle->ends_on))->toFormattedDateString(),
+            'cycle_end' => $end->toFormattedDateString(),
             'currentPaymentMethod' => $cycle->payment_method,
            'card' => $card,
         ]);
@@ -508,11 +527,12 @@ class AccountController extends Controller
         $sub->frequency = (int) $data['subscription_length'];
         $sub->save();
 
-        $currentCycle = $sub->getCurrentCycle();
+        $currentCycle = $sub->getCurrentCycle() ?: $sub->getLatestCycle();
+        $startsOn = ($currentCycle && $currentCycle->ends_on) ? $currentCycle->ends_on : Carbon::now()->toDateString();
 
         $cycle = $sub->cycles()->create([
             'payment_method' => $data['payment_method'],
-            'starts_on' => $currentCycle->ends_on,
+            'starts_on' => $startsOn,
         ]);
 
         if ($sub->frequency === 12) {

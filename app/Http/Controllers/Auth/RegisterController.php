@@ -51,7 +51,7 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('submitSubscription');
+        $this->middleware('guest')->except('register');
     }
     public function testLog(Request $request){
         Log::info('Incoming Request [testLog]:', $request->all());
@@ -327,20 +327,76 @@ class RegisterController extends Controller
         // Get all data except admin options
         $data = $request->except(CreatesUser::$create_user_admin_options);
 
+        $rules = [];
+        if (!Auth::check()) {
+            $rules['password'] = 'required|string|min:6|confirmed';
+        }
+
         // defined in CreatesUser
-        $this->create_user_validator($data)->validate();
+        $this->create_user_validator($data, $rules)->validate();
+
+        $userEmail = $data['email'] ?? null;
+        $userExists = false;
+        $isVerified = false;
+        if ($userEmail) {
+            $existingUser = User::where('email', $userEmail)->first();
+            if ($existingUser) {
+                $userExists = true;
+                $isVerified = (int)$existingUser->verified === 1;
+            }
+        }
+
+        // 1. Get or Create GoHighLevel Contact first to avoid race conditions and match Stripe perfectly
+        $ghlContactId = null;
+        try {
+            $tempUser = (object) [
+                'first_name' => $data['first_name'] ?? '',
+                'last_name'  => $data['last_name'] ?? '',
+                'email'      => $data['email'] ?? '',
+                'phone'      => $data['phone_number'] ?? '',
+            ];
+            $ghlContactId = $this->getOrCreateGHLContact($tempUser);
+            if ($ghlContactId) {
+                $data['ghl_contact_id'] = $ghlContactId;
+            }
+        } catch (\Exception $e) {
+            Log::error('GoHighLevel Pre-Sync Contact Error in RegisterController:register: ' . $e->getMessage());
+        }
 
         // Default options
         $data['send_invoice'] = true;
 
         $user = $this->createUser($data);
 
+        if ($ghlContactId) {
+            Log::info('GHL Contact successfully synchronized in RegisterController:register', [
+                'user_id' => $user->id,
+                'ghl_contact_id' => $ghlContactId,
+            ]);
+        }
+
         event(new Registered($user));
         event(new NewSubscriber($user));
 
-        if (array_key_exists('is_paid_for',$data) && $data['is_paid_for']) {
-            dispatch(new SendVerificationEmail($user->id));
+        if (array_key_exists('is_paid_for', $data) && $data['is_paid_for']) {
+            if (!$userExists) {
+                // New user
+                if (empty($request->input('password'))) {
+                    // Checkout flow without password field -> send Set Password link
+                    $token = \Illuminate\Support\Facades\Password::broker()->createToken($user);
+                    dispatch(new SendSetPassword($user, $token));
+                } else {
+                    // Standard registration page -> send standard verification email
+                    dispatch(new SendVerificationEmail($user->id));
+                }
+            } else {
+                // Existing user
+                if (!$isVerified) {
+                    dispatch(new SendVerificationEmail($user->id));
+                }
+            }
         } else {
+            // Unpaid (e.g. check/invoice payment) -> send instructions
             dispatch(new SendPaymentInstructionsEmail($user->id));
         }
 
@@ -360,8 +416,6 @@ class RegisterController extends Controller
         return $request->wantsJson()
         ? new JsonResponse(['success'=>true,'message'=>'Thank you for Subscription'], 200)
         : redirect()->route('register.thank-you');
-
-        // return redirect()->route('register.thank-you');
     }
 
     /**
@@ -496,54 +550,6 @@ class RegisterController extends Controller
             'company_id' => $companyId,
             'register_by' => "laravel",
         ]);
-
-        return response()->json(['success' => true, 'user' => $user]);
-    }
-
-    public function submitSubscription(Request $request)
-    {
-        $data = $request->all();
-        \Illuminate\Support\Facades\Log::info('Public Subscription Create Request Data:', $data);
-        
-        $this->create_user_validator($data)->validate();
-
-        // 1. Get or Create GoHighLevel Contact first to avoid race conditions and match Stripe perfectly
-        $ghlContactId = null;
-        try {
-            $tempUser = (object) [
-                'first_name' => $data['first_name'] ?? '',
-                'last_name'  => $data['last_name'] ?? '',
-                'email'      => $data['email'] ?? '',
-                'phone'      => $data['phone_number'] ?? '',
-            ];
-            $ghlContactId = $this->getOrCreateGHLContact($tempUser);
-            if ($ghlContactId) {
-                $data['ghl_contact_id'] = $ghlContactId;
-            }
-        } catch (\Exception $e) {
-            Log::error('GoHighLevel Pre-Sync Contact Error in RegisterController:submitSubscription: ' . $e->getMessage());
-        }
-
-        // 2. Now create the user in Laravel DB and Stripe Subscription
-        $user = $this->createUser($data);
-
-        if ($ghlContactId) {
-            Log::info('GHL Contact successfully synchronized in RegisterController:submitSubscription', [
-                'user_id' => $user->id,
-                'ghl_contact_id' => $ghlContactId,
-            ]);
-        }
-
-        event(new Registered($user));
-        event(new NewSubscriber($user));
-
-        if (!empty($data['is_paid_for'])) {
-            $token = \Illuminate\Support\Facades\Password::broker()->createToken($user);
-            dispatch(new SendSetPassword($user, $token));
-        } else {
-            // Send base account payment instructions
-            dispatch(new SendPaymentInstructionsEmail($user->id));
-        }
 
         return response()->json(['success' => true, 'user' => $user]);
     }

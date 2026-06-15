@@ -874,4 +874,3 @@ Route::post('/account/delete', function(\Illuminate\Http\Request $request) {
     
     return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
 });
-Route::post('/submit-subscription', 'Auth\RegisterController@submitSubscription')->name('submit-subscription');

@@ -1,58 +1,120 @@
 <template>
 
   <div>
+    <div v-if="layout === 'checkout'">
+      <div class="form-group">
+        <label class="form-label">Address Line 1 <span class="required">*</span></label>
+        <vue-google-autocomplete
+            ref="address"
+            required
+            :name="name + '[line1]'"
+            :id="name"
+            v-model="address.line1"
+            placeholder=""
+            autocomplete="nope"
+            classname="form-control"
+            v-on:placechanged="getAddressData"
+            country="us">
+        </vue-google-autocomplete>
+        <div class="invalid-feedback">Required</div>
+      </div>
 
-    <div class="col-md-6 mb-sm form-group clear">
-      <label class="control-label">Address Line 1</label>
-      <vue-google-autocomplete
-          ref="address"
-          required
-          :name="name + '[line1]'"
-          :id="name"
-          v-model="address.line1"
-          placeholder=""
-          autocomplete="nope"
-          classname="form-control form-control-sm"
-          v-on:placechanged="getAddressData"
-          country="us">
-      </vue-google-autocomplete>
+      <div class="form-group">
+        <label class="form-label">Address Line 2</label>
+        <input class="form-control"
+            placeholder=""
+            v-model="address.line2"
+            :name="name + '[line2]'"/>
+      </div>
 
+      <div class="form-row">
+        <div class="form-group" style="flex: 2;">
+          <label class="form-label">City <span class="required">*</span></label>
+          <input type="text" required v-model="address.city" :name="name + '[city]'"
+              class="form-control" placeholder="Sacramento"/>
+          <div class="invalid-feedback">Required</div>
+        </div>
+
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">State <span class="required">*</span></label>
+          <select class="form-control" v-model="address.state" required
+              :name="name + '[state]'">
+            <option value="">State</option>
+            <option v-for="(state, abbr) of states" :value="abbr">{{state}}</option>
+          </select>
+          <div class="invalid-feedback">Required</div>
+        </div>
+
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">ZIP <span class="required">*</span></label>
+          <input type="text" required :name="name + '[zip_code]'"
+              v-model="address.zip_code"
+              class="form-control" placeholder="95814"/>
+          <div class="invalid-feedback">Required</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Special Instructions</label>
+        <input type="text" v-model="address.special_instructions"
+            :name="name + '[special_instructions]'"
+            class="form-control" placeholder=""/>
+      </div>
     </div>
 
-    <div class="col-md-6 mb-sm form-group">
-      <label class="control-label">Address Line 2</label>
-      <input class="form-control form-control-sm"
-          v-model="address.line2"
-          :name="name + '[line2]'"/>
-    </div>
+    <div v-else>
+      <div class="col-md-6 mb-sm form-group clear">
+        <label class="control-label">Address Line 1</label>
+        <vue-google-autocomplete
+            ref="address"
+            required
+            :name="name + '[line1]'"
+            :id="name"
+            v-model="address.line1"
+            placeholder=""
+            autocomplete="nope"
+            classname="form-control form-control-sm"
+            v-on:placechanged="getAddressData"
+            country="us">
+        </vue-google-autocomplete>
 
-    <div class="col-sm-4 mb-sm form-group">
-      <label class="control-label">City</label>
-      <input type="text" required v-model="address.city" :name="name + '[city]'"
-          class="form-control form-control-sm"/>
-    </div>
+      </div>
 
-    <div class="col-sm-4 mb-sm form-group">
-      <label class="control-label">State</label>
-      <select class="form-control form-control-sm" v-model="address.state" required
-          :name="name + '[state]'">
+      <div class="col-md-6 mb-sm form-group">
+        <label class="control-label">Address Line 2</label>
+        <input class="form-control form-control-sm"
+            v-model="address.line2"
+            :name="name + '[line2]'"/>
+      </div>
 
-        <option v-for="(state, abbr) of states" :value="abbr">{{state}}</option>
-      </select>
-    </div>
+      <div class="col-sm-4 mb-sm form-group">
+        <label class="control-label">City</label>
+        <input type="text" required v-model="address.city" :name="name + '[city]'"
+            class="form-control form-control-sm"/>
+      </div>
 
-    <div class="col-sm-4 mb-sm form-group">
-      <label class="control-label">Zip Code</label>
-      <input type="text" required :name="name + '[zip_code]'"
-          v-model="address.zip_code"
-          class="form-control form-control-sm"/>
-    </div>
+      <div class="col-sm-4 mb-sm form-group">
+        <label class="control-label">State</label>
+        <select class="form-control form-control-sm" v-model="address.state" required
+            :name="name + '[state]'">
 
-    <div class="col-md-12 mb-sm form-group">
-      <label class="control-label">Special Instructions</label>
-      <input type="text" v-model="address.special_instructions"
-          :name="name + '[special_instructions]'"
-          class="form-control form-control-sm"/>
+          <option v-for="(state, abbr) of states" :value="abbr">{{state}}</option>
+        </select>
+      </div>
+
+      <div class="col-sm-4 mb-sm form-group">
+        <label class="control-label">Zip Code</label>
+        <input type="text" required :name="name + '[zip_code]'"
+            v-model="address.zip_code"
+            class="form-control form-control-sm"/>
+      </div>
+
+      <div class="col-md-12 mb-sm form-group">
+        <label class="control-label">Special Instructions</label>
+        <input type="text" v-model="address.special_instructions"
+            :name="name + '[special_instructions]'"
+            class="form-control form-control-sm"/>
+      </div>
     </div>
   </div>
 
@@ -119,7 +181,7 @@
   export default {
     components: {VueGoogleAutocomplete},
 
-    props: ['name', 'input', 'errors'],
+    props: ['name', 'input', 'errors', 'layout'],
 
     data: () => ({
       address: {

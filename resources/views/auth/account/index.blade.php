@@ -309,17 +309,19 @@
     }
 
     .status-pill {
-        padding: 2px 8px;
-        font-size: 10px;
+        padding: 3px 10px;
         font-weight: 600;
         border-radius: 12px;
-        margin-left: 8px;
+        margin-left: 18px;
         display: inline-block;
     }
 
     .active-status {
-        background-color: #e6f4ea;
-        color: #137333;
+        background-color: hsl(145.29deg 76.92% 35.69%);
+        padding-left: .625rem;
+        padding-right: .625rem;
+        color: white;
+        border-width: 4px;
     }
 
     /* Card Details */
@@ -473,10 +475,6 @@
         </nav>
 
         <div class="sidebar-actions">
-            <a href="https://app.californiatargetbook.com" class="btn btn-open-app w-100">
-                <span>Open Book App</span>
-                <i class="bi bi-box-arrow-up-right"></i>
-            </a>
             <a href="/logout" class="nav-link signout-link"><i class="bi bi-box-arrow-left"></i> Sign Out</a>
         </div>
     </aside>

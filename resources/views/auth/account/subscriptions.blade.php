@@ -345,8 +345,11 @@
         margin-top: 2px;
     }
     .badge-active {
-        background-color: #e6f4ea;
-        color: #137333;
+
+        background-color: hsl(145.29deg 76.92% 35.69%);
+        color: white;
+        border-width: 4px;
+
         font-size: 11px;
         font-weight: 600;
         padding: 4px 10px;

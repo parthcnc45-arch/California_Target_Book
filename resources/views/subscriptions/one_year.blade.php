@@ -494,7 +494,7 @@
     .form-control.is-invalid {
         border-color: var(--primary-red) !important;
     }
-    .form-label.is-invalid {
+    .form-label.is-invalid, .control-label.is-invalid {
         color: var(--primary-red) !important;
     }
     .invalid-feedback {
@@ -859,13 +859,20 @@
         </div>
 
         <div class="addon-card" id="addon-deck-card">
-            <div class="addon-header-row" style="display: flex; justify-content: space-between; width: 100%;">
-                <label class="custom-checkbox">
+            <div class="addon-header-row" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                <label class="custom-checkbox" style="margin-top: 8px;">
                     <input type="checkbox" id="addon-deck">
                     <span class="checkmark"></span>
                     Post-Election Deck
                 </label>
-                <span class="addon-price-muted" style="font-style: italic;">One-time charge</span>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                    <span class="addon-price-muted" style="font-style: italic;">One-time charge</span>
+                    <div class="qty-selector" id="deck-qty-selector" style="display: none;">
+                        <button type="button" class="qty-btn" id="deck-qty-minus"><i class="bi bi-dash"></i></button>
+                        <input type="text" class="qty-input" id="addon-deck-qty" value="1" readonly>
+                        <button type="button" class="qty-btn" id="deck-qty-plus"><i class="bi bi-plus"></i></button>
+                    </div>
+                </div>
             </div>
             <div class="deck-options" style="display: none; margin-top: 16px; flex-direction: column; gap: 12px; width: 100%;">
                 <label class="deck-radio-label selected">
@@ -901,69 +908,52 @@
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label">First Name <span class="required">*</span></label>
-                <input type="text" class="form-control" name="first_name" placeholder="John" required>
+                <input type="text" class="form-control" name="first_name" placeholder="John" value="{{ old('first_name') ?? (auth()->user()->first_name ?? '') }}" required>
                 <div class="invalid-feedback">Required</div>
             </div>
             <div class="form-group">
                 <label class="form-label">Last Name <span class="required">*</span></label>
-                <input type="text" class="form-control" name="last_name" placeholder="Smith" required>
+                <input type="text" class="form-control" name="last_name" placeholder="Smith" value="{{ old('last_name') ?? (auth()->user()->last_name ?? '') }}" required>
                 <div class="invalid-feedback">Required</div>
             </div>
         </div>
 
         <div class="form-group">
             <label class="form-label">Email <span class="required">*</span></label>
-            <input type="email" class="form-control" name="email" placeholder="john@example.com" required>
+            <input type="email" class="form-control" name="email" placeholder="john@example.com" value="{{ old('email') ?? (auth()->user()->email ?? '') }}" required>
             <div class="invalid-feedback">Required</div>
         </div>
 
+        @guest
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">Phone Number</label>
-                <input type="text" class="form-control" name="phone_number" placeholder="(555) 123-4567">
+                <label class="form-label">Password <span class="required">*</span></label>
+                <input type="password" class="form-control" name="password" placeholder="" required>
+                <div class="invalid-feedback">Required</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Confirm Password <span class="required">*</span></label>
+                <input type="password" class="form-control" name="password_confirmation" placeholder="" required>
+                <div class="invalid-feedback">Required</div>
+            </div>
+        </div>
+        @endguest
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Phone Number <span class="required">*</span></label>
+                <input type="text" class="form-control" name="phone_number" placeholder="(555) 123-4567" value="{{ old('phone_number') ?? (auth()->user()->phone_number ?? '') }}" required>
+                <div class="invalid-feedback">Required</div>
             </div>
             <div class="form-group">
                 <label class="form-label">Company Name <span class="required">*</span></label>
-                <input type="text" class="form-control" name="company_name" placeholder="Acme Corp" required>
+                <input type="text" class="form-control" name="company_name" placeholder="Acme Corp" value="{{ old('company_name') ?? (auth()->user()->company->name ?? '') }}" required>
                 <div class="invalid-feedback">Required</div>
             </div>
         </div>
 
         <h3 class="section-title" style="margin-top: 32px;">Billing Address</h3>
-        
-        <div class="form-group">
-            <label class="form-label">Street <span class="required">*</span></label>
-            <input type="text" class="form-control" name="billing_line1" placeholder="123 Main St" required>
-            <div class="invalid-feedback">Required</div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group" style="flex: 2;">
-                <label class="form-label">City <span class="required">*</span></label>
-                <input type="text" class="form-control" name="billing_city" placeholder="Sacramento" required>
-                <div class="invalid-feedback">Required</div>
-            </div>
-            <div class="form-group" style="flex: 1;">
-                <label class="form-label">State <span class="required">*</span></label>
-                <select class="form-control" name="billing_state" required>
-                    <option value="">State</option>
-                    <option value="CA">CA</option>
-                </select>
-                <div class="invalid-feedback">Required</div>
-            </div>
-            <div class="form-group" style="flex: 1;">
-                <label class="form-label">ZIP <span class="required">*</span></label>
-                <input type="text" class="form-control" name="billing_zip" placeholder="95814" required>
-                <div class="invalid-feedback">Required</div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Country <span class="required">*</span></label>
-            <select class="form-control" name="billing_country">
-                <option value="US">United States</option>
-            </select>
-        </div>
+        <ctb-address-block :input="{{ json_encode(old('billing') ?? (auth()->user()->company->address ?? (object)[])) }}" name="billing" layout="checkout"></ctb-address-block>
 
         <div class="checkbox-group" style="margin-top: 16px;">
             <input type="checkbox" id="same-shipping" checked>
@@ -971,41 +961,7 @@
         </div>
 
         <div id="shipping-address-block" style="display: none; margin-top: 32px;">
-            <h3 class="section-title">Shipping Address</h3>
-            
-            <div class="form-group">
-                <label class="form-label">Street <span class="required">*</span></label>
-                <input type="text" class="form-control" name="shipping_line1" placeholder="123 Main St" required>
-                <div class="invalid-feedback">Required</div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group" style="flex: 2;">
-                    <label class="form-label">City <span class="required">*</span></label>
-                    <input type="text" class="form-control" name="shipping_city" placeholder="Sacramento" required>
-                    <div class="invalid-feedback">Required</div>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label class="form-label">State <span class="required">*</span></label>
-                    <select class="form-control" name="shipping_state" required>
-                        <option value="">State</option>
-                        <option value="CA">CA</option>
-                    </select>
-                    <div class="invalid-feedback">Required</div>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label class="form-label">ZIP <span class="required">*</span></label>
-                    <input type="text" class="form-control" name="shipping_zip" placeholder="95814" required>
-                    <div class="invalid-feedback">Required</div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Country <span class="required">*</span></label>
-                <select class="form-control" name="shipping_country">
-                    <option value="US">United States</option>
-                </select>
-            </div>
+            <div id="shipping-addresses-container"></div>
         </div>
 
         <h3 class="section-title" style="margin-top: 32px;">Payment Method</h3>
@@ -1066,7 +1022,7 @@
 
                 <div class="summary-item" id="summary-addon-deck" style="display: none;">
                     <div>
-                        <div class="summary-item-title" id="summary-deck-title">Post-Election Deck Only (Subscriber)</div>
+                        <div class="summary-item-title"><span id="summary-deck-title">Post-Election Deck Only (Subscriber)</span> <span id="summary-deck-qty" style="font-weight: 400; color: var(--text-muted); display: none;">x 1</span></div>
                         <div class="summary-item-desc">One-time charge</div>
                     </div>
                     <div class="summary-item-price" id="summary-deck-price">$300</div>
@@ -1111,6 +1067,7 @@
         let userPrice = 100;
         let hasDeckAddon = false;
         let deckPrice = 300;
+        let deckQty = 1;
         let deckTitle = "Post-Election Deck Only (Subscriber)";
         let currentTotal = basePrice;
 
@@ -1142,9 +1099,15 @@
 
             // Deck Addon
             if(hasDeckAddon) {
-                total += deckPrice;
+                let currentTotalDeck = deckQty * deckPrice;
+                total += currentTotalDeck;
                 $('#summary-deck-title').text(deckTitle);
-                $('#summary-deck-price').text('$' + deckPrice.toLocaleString());
+                if (deckQty > 1) {
+                    $('#summary-deck-qty').text('x ' + deckQty).show();
+                } else {
+                    $('#summary-deck-qty').hide();
+                }
+                $('#summary-deck-price').text('$' + currentTotalDeck.toLocaleString());
                 $('#summary-addon-deck').show();
                 $('#note-deck').show();
             } else {
@@ -1181,6 +1144,80 @@
             }
         }
 
+        function renderShippingAddresses() {
+            let container = $('#shipping-addresses-container');
+            let isSame = $('#same-shipping').is(':checked');
+            
+            if (isSame) {
+                $('#shipping-address-block').hide();
+                container.empty();
+                return;
+            }
+
+            let qty = 0;
+            let title = "Shipping Address";
+            if (hasDeckAddon) {
+                qty = deckQty;
+            } else if (isPrint) {
+                qty = 1;
+            }
+
+            if (qty === 0) {
+                $('#shipping-address-block').hide();
+                container.empty();
+                return;
+            }
+
+            // Save existing values to avoid overwriting typed input
+            let existing = [];
+            $('.shipping-address-item').each(function(index) {
+                existing.push({
+                    line1: $(this).find('input[name*="[line1]"]').val() || '',
+                    line2: $(this).find('input[name*="[line2]"]').val() || '',
+                    city: $(this).find('input[name*="[city]"]').val() || '',
+                    state: $(this).find('select[name*="[state]"]').val() || '',
+                    zip_code: $(this).find('input[name*="[zip_code]"]').val() || ''
+                });
+            });
+
+            container.empty();
+            $('#shipping-address-block').show();
+
+            let AddressBlockClass = Vue.extend(Vue.component('ctb-address-block'));
+
+            for (let i = 0; i < qty; i++) {
+                let data = existing[i] || { line1: '', line2: '', city: '', state: 'CA', zip_code: '' };
+                let itemTitle = qty > 1 ? `${title} ${i + 1}` : title;
+                
+                let itemDiv = $(`
+                    <div class="shipping-address-item" style="${i > 0 ? 'margin-top: 24px; padding-top: 24px; border-top: 1px dashed var(--border-color);' : ''}">
+                        <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 12px;">${itemTitle}</h4>
+                    </div>
+                `);
+
+                // Instantiate and mount AddressBlock Vue component
+                let instance = new AddressBlockClass({
+                    propsData: {
+                        name: `shipping_${i}`,
+                        input: {
+                            line1: data.line1,
+                            line2: data.line2,
+                            city: data.city,
+                            state: data.state,
+                            zip_code: data.zip_code
+                        },
+                        layout: 'checkout'
+                    }
+                });
+                
+                let targetDiv = $('<div class="shipping-address-instance"></div>');
+                itemDiv.append(targetDiv);
+                container.append(itemDiv);
+                
+                instance.$mount(targetDiv[0]);
+            }
+        }
+
         // Plan Selection
         $('.format-card').on('click', function() {
             $('.format-card').removeClass('selected');
@@ -1192,6 +1229,7 @@
                 isPrint = false;
             }
             updateSummary();
+            renderShippingAddresses();
         });
 
         // Additional User Checkbox
@@ -1199,10 +1237,10 @@
             hasUserAddon = $(this).is(':checked');
             if(hasUserAddon) {
                 $('#addon-user-card').addClass('selected');
-                $('.qty-selector').css('display', 'flex');
+                $('#addon-user-card .qty-selector').css('display', 'flex');
             } else {
                 $('#addon-user-card').removeClass('selected');
-                $('.qty-selector').hide();
+                $('#addon-user-card .qty-selector').hide();
                 userQty = 1;
                 $('#addon-user-qty').val(userQty);
             }
@@ -1219,6 +1257,7 @@
             renderAddonEmails();
         });
 
+        // User Qty Buttons
         $('#qty-minus').on('click', function(e) {
             e.preventDefault();
             if(userQty > 1) {
@@ -1235,6 +1274,7 @@
             if(hasDeckAddon) {
                 $('#addon-deck-card').addClass('selected');
                 $('.deck-options').css('display', 'flex');
+                $('#deck-qty-selector').css('display', 'flex');
                 
                 // set selected deck option
                 let selectedOption = $('input[name="deck_type"]:checked');
@@ -1247,8 +1287,31 @@
             } else {
                 $('#addon-deck-card').removeClass('selected');
                 $('.deck-options').hide();
+                $('#deck-qty-selector').hide();
+                deckQty = 1;
+                $('#addon-deck-qty').val(deckQty);
             }
             updateSummary();
+            renderShippingAddresses();
+        });
+
+        // Deck Qty Buttons
+        $('#deck-qty-plus').on('click', function(e) {
+            e.preventDefault();
+            deckQty++;
+            $('#addon-deck-qty').val(deckQty);
+            updateSummary();
+            renderShippingAddresses();
+        });
+
+        $('#deck-qty-minus').on('click', function(e) {
+            e.preventDefault();
+            if(deckQty > 1) {
+                deckQty--;
+                $('#addon-deck-qty').val(deckQty);
+                updateSummary();
+                renderShippingAddresses();
+            }
         });
 
         // Deck Radio Options
@@ -1267,15 +1330,7 @@
 
         // Shipping Address Toggle
         $('#same-shipping').on('change', function() {
-            if($(this).is(':checked')) {
-                $('#shipping-address-block').hide();
-                // Disable validation for shipping block if hidden
-                $('#shipping-address-block .form-control').prop('required', false).removeClass('is-invalid');
-                $('#shipping-address-block .form-label').removeClass('is-invalid');
-            } else {
-                $('#shipping-address-block').show();
-                $('#shipping-address-block .form-control[placeholder]').prop('required', true);
-            }
+            renderShippingAddresses();
         });
         $('#same-shipping').trigger('change');
 
@@ -1288,13 +1343,39 @@
             $('.form-group .form-control[required]').each(function() {
                 if(!$(this).val()) {
                     $(this).addClass('is-invalid');
-                    $(this).siblings('.form-label').addClass('is-invalid');
+                    $(this).siblings('.form-label, .control-label').addClass('is-invalid');
                     isValid = false;
                 } else {
                     $(this).removeClass('is-invalid');
-                    $(this).siblings('.form-label').removeClass('is-invalid');
+                    $(this).siblings('.form-label, .control-label').removeClass('is-invalid');
                 }
             });
+
+            // Password custom validation for guest users
+            let passwordInput = $('input[name="password"]');
+            let confirmInput = $('input[name="password_confirmation"]');
+            if (passwordInput.length && confirmInput.length) {
+                let passwordVal = passwordInput.val();
+                let confirmVal = confirmInput.val();
+
+                if (passwordVal && passwordVal.length < 6) {
+                    passwordInput.addClass('is-invalid');
+                    passwordInput.siblings('.invalid-feedback').text('Password must be at least 6 characters');
+                    passwordInput.siblings('.form-label, .control-label').addClass('is-invalid');
+                    isValid = false;
+                } else if (passwordVal) {
+                    passwordInput.siblings('.invalid-feedback').text('Required');
+                }
+
+                if (passwordVal && passwordVal !== confirmVal) {
+                    confirmInput.addClass('is-invalid');
+                    confirmInput.siblings('.invalid-feedback').text('Passwords do not match');
+                    confirmInput.siblings('.form-label, .control-label').addClass('is-invalid');
+                    isValid = false;
+                } else if (passwordVal && passwordVal === confirmVal) {
+                    confirmInput.siblings('.invalid-feedback').text('Required');
+                }
+            }
 
             // Terms Checkbox
             if(!$('#terms').is(':checked')) {
@@ -1334,20 +1415,49 @@
                     if (isPrint) {
                         if ($('#same-shipping').is(':checked')) {
                             book_addresses.push({
-                                line1: $('input[name="billing_line1"]').val(),
-                                line2: null,
-                                city: $('input[name="billing_city"]').val(),
-                                state: $('select[name="billing_state"]').val(),
-                                zip_code: $('input[name="billing_zip"]').val()
+                                line1: $('input[name="billing[line1]"]').val(),
+                                line2: $('input[name="billing[line2]"]').val() || null,
+                                city: $('input[name="billing[city]"]').val(),
+                                state: $('select[name="billing[state]"]').val(),
+                                zip_code: $('input[name="billing[zip_code]"]').val(),
+                                special_instructions: $('input[name="billing[special_instructions]"]').val() || null
                             });
                         } else {
                             book_addresses.push({
-                                line1: $('input[name="shipping_line1"]').val(),
-                                line2: null,
-                                city: $('input[name="shipping_city"]').val(),
-                                state: $('select[name="shipping_state"]').val(),
-                                zip_code: $('input[name="shipping_zip"]').val()
+                                line1: $('input[name="shipping_0[line1]"]').val(),
+                                line2: $('input[name="shipping_0[line2]"]').val() || null,
+                                city: $('input[name="shipping_0[city]"]').val(),
+                                state: $('select[name="shipping_0[state]"]').val(),
+                                zip_code: $('input[name="shipping_0[zip_code]"]').val(),
+                                special_instructions: $('input[name="shipping_0[special_instructions]"]').val() || null
                             });
+                        }
+                    }
+
+                    let deck_addresses = [];
+                    if (hasDeckAddon) {
+                        if ($('#same-shipping').is(':checked')) {
+                            for (let i = 0; i < deckQty; i++) {
+                                deck_addresses.push({
+                                    line1: $('input[name="billing[line1]"]').val(),
+                                    line2: $('input[name="billing[line2]"]').val() || null,
+                                    city: $('input[name="billing[city]"]').val(),
+                                    state: $('select[name="billing[state]"]').val(),
+                                    zip_code: $('input[name="billing[zip_code]"]').val(),
+                                    special_instructions: $('input[name="billing[special_instructions]"]').val() || null
+                                });
+                            }
+                        } else {
+                            for (let i = 0; i < deckQty; i++) {
+                                deck_addresses.push({
+                                    line1: $(`input[name="shipping_${i}[line1]"]`).val(),
+                                    line2: $(`input[name="shipping_${i}[line2]"]`).val() || null,
+                                    city: $(`input[name="shipping_${i}[city]"]`).val(),
+                                    state: $(`select[name="shipping_${i}[state]"]`).val(),
+                                    zip_code: $(`input[name="shipping_${i}[zip_code]"]`).val(),
+                                    special_instructions: $(`input[name="shipping_${i}[special_instructions]"]`).val() || null
+                                });
+                            }
                         }
                     }
 
@@ -1364,14 +1474,17 @@
                         last_name: $('input[name="last_name"]').val(),
                         email: $('input[name="email"]').val(),
                         phone_number: $('input[name="phone_number"]').val(),
+                        password: $('input[name="password"]').val() || null,
+                        password_confirmation: $('input[name="password_confirmation"]').val() || null,
                         company: {
                             name: $('input[name="company_name"]').val(),
                             address: {
-                                line1: $('input[name="billing_line1"]').val(),
-                                line2: null,
-                                city: $('input[name="billing_city"]').val(),
-                                state: $('select[name="billing_state"]').val(),
-                                zip_code: $('input[name="billing_zip"]').val()
+                                line1: $('input[name="billing[line1]"]').val(),
+                                line2: $('input[name="billing[line2]"]').val() || null,
+                                city: $('input[name="billing[city]"]').val(),
+                                state: $('select[name="billing[state]"]').val(),
+                                zip_code: $('input[name="billing[zip_code]"]').val(),
+                                special_instructions: $('input[name="billing[special_instructions]"]').val() || null
                             }
                         },
                         book_addresses: book_addresses,
@@ -1381,15 +1494,22 @@
                         subscription_length: 12,
                         is_paid_for: false,
                         send_invoice: false,
+                        deck_qty: hasDeckAddon ? deckQty : 0,
+                        deck_type: hasDeckAddon ? parseInt($('input[name="deck_type"]:checked').val()) : 0,
+                        deck_title: hasDeckAddon ? deckTitle : '',
+                        deck_addresses: deck_addresses,
                         custom_total_amount: currentTotal * 100
                     };
 
                     // Send via AJAX
+                    console.log('Sending payload:', payload);
                     $.ajax({
-                        url: '/submit-subscription',
+                        url: "{{ route('register') }}",
                         type: 'POST',
+                        dataType: 'json',
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                            'Accept': 'application/json'
                         },
                         contentType: 'application/json',
                         data: JSON.stringify(payload),
@@ -1402,11 +1522,10 @@
                                 $('#success-email').text(email);
                                 
                                 $('.checkout-container').hide();
-                                debugger;
                                 $('.success-container').show();
                                 $('html, body').animate({ scrollTop: 0 }, 300);
                             } else {
-                                console.error("Parth");
+                                console.error("Tesing");
                                 alert('Error: ' + (res.message || 'Unknown error'));
                                 $btn.prop('disabled', false).text(originalText);
                             }
@@ -1450,7 +1569,7 @@
             
             const options = {
                 mode: 'payment',
-                amount: 110000, // Amount in cents
+                amount: currentTotal,
                 currency: 'usd',
                 paymentMethodCreation: 'manual',
                 appearance: {

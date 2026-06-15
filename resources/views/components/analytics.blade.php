@@ -20,11 +20,11 @@
     },
   });
 
-  @if ( Auth::id() )
+  @if ( Auth::user() )
   gtag('set', {
     'user': String({{ Auth::id() }}),
-    'company': String({{ Auth::user()->company_id }}),
-    'is_admin': Boolean({{ Auth::user()->isAdmin() }}),
+    'company': String({{ Auth::user()->company_id ?? '' }}),
+    'is_admin': Boolean({{ Auth::user()->isAdmin() ? 'true' : 'false' }}),
   });
   @endif
 

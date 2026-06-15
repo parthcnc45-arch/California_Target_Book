@@ -66,6 +66,7 @@ trait CreatesUser {
         'company.address.city' => 'required|string|max:255',
         'company.address.state' => 'required|string|max:255',
         'company.address.zip_code' => 'required|string|max:255',
+        'company.address.special_instructions' => 'nullable|string|max:255',
 
         // required if sub length is not a trial
         'payment_method' => 'required_unless:subscription_length,0|string',
@@ -83,7 +84,16 @@ trait CreatesUser {
         'book_addresses.*.zip_code' => 'required|string|max:255',
         'book_addresses.*.special_instructions' => 'nullable|string|max:255',
 
+        'deck_addresses.*.line1' => 'required|string|max:255',
+        'deck_addresses.*.line2' => 'nullable|string|max:255',
+        'deck_addresses.*.city' => 'required|string|max:255',
+        'deck_addresses.*.state' => 'required|string|max:255',
+        'deck_addresses.*.zip_code' => 'required|string|max:255',
+        'deck_addresses.*.special_instructions' => 'nullable|string|max:255',
+
         'addons.*' => 'required|distinct|different:email|email|max:255',
+        'deck_type' => 'nullable|numeric',
+        'deck_title' => 'nullable|string|max:255',
       ], $override_rules),
       /**
        * Messages
@@ -101,6 +111,11 @@ trait CreatesUser {
           'book_addresses.*.city.required' => 'This field is required.',
           'book_addresses.*.state.required' => 'This field is required.',
           'book_addresses.*.zip_code.required' => 'This field is required.',
+
+          'deck_addresses.*.line1.required' => 'This field is required.',
+          'deck_addresses.*.city.required' => 'This field is required.',
+          'deck_addresses.*.state.required' => 'This field is required.',
+          'deck_addresses.*.zip_code.required' => 'This field is required.',
 
           'addons.*.required' => 'Please fill in the addon email.',
           'addons.*.email' => 'Please fill in a valid e-mail address.',
@@ -248,18 +263,29 @@ trait CreatesUser {
     /**
      * Persist new user
      */
+    $plainPassword = $data['password'] ?? null;
+    $isNewUser = empty($user);
+
+    if ($isNewUser && empty($plainPassword)) {
+        $plainPassword = \Illuminate\Support\Str::random(10);
+    }
+
     $userBody = [
         'first_name' => $data['first_name'],
         'last_name' => $data['last_name'],
         'email' => $data['email'],
         'phone_number' => $data['phone_number'],
-        'password' => !empty($data['password']) ? bcrypt($data['password']) : null,
         'email_token' => base64_encode($data['email']),
         'stripe_id' => $cust['id'],
         'company_id' => $company->id,
         'register_by' => $registerby,
     ];
-    if (empty($user)) {
+
+    if (!empty($plainPassword)) {
+        $userBody['password'] = bcrypt($plainPassword);
+    }
+
+    if ($isNewUser) {
         $baseUser = User::create($userBody);
     } else {
         $baseUser = $user;
@@ -318,9 +344,11 @@ trait CreatesUser {
     }
 
     /**
-     * Create book subscriptions from addresses
+     * Create book subscriptions from addresses (books & decks)
      */
-    $addresses = collect($data['book_addresses']??[]);
+    $bookAddresses = $data['book_addresses'] ?? [];
+    $deckAddresses = $data['deck_addresses'] ?? [];
+    $addresses = collect(array_merge($bookAddresses, $deckAddresses));
 
     $book_subs = $addresses->map(function ($addr) use ($subscription) {
         $address = Address::create($addr);
@@ -405,13 +433,6 @@ trait CreatesUser {
         $cycle->save();
     } else if ($cycle->payment_method === 'stripe') {
         try {
-            // Calculate total amount based on actual count of books and addons
-            if (array_key_exists('custom_total_amount', $data) && is_numeric($data['custom_total_amount'])) {
-                $total_amount = (int) $data['custom_total_amount'];
-            } else {
-                $total_amount = $base_cost + (($book_cost ?? 0) * $book_subs->count()) + (($addon_cost ?? 0) * $addons->count());
-            }
-            // Step 1: Create a Plan in Stripe (Highly compatible with older SDK versions)
             $frequency = (int)$subscription->frequency;
             $interval = 'month';
             $interval_count = $frequency;
@@ -426,7 +447,31 @@ trait CreatesUser {
                 $interval_count = 7; // Trial
             }
 
-            // Generate Dynamic Product Name and ID
+            // Step 1: Create a pending Stripe Invoice Item for the Post-Election Deck if requested
+            $deck_qty = (int) ($data['deck_qty'] ?? 0);
+            if ($deck_qty > 0) {
+                $deck_type = (int) ($data['deck_type'] ?? 300);
+                $deck_title = $data['deck_title'] ?? "Post-Election Deck Only (Subscriber)";
+
+                $deckProductId = ($deck_type === 200) ? 'prod_deck_presentation' : 'prod_deck_only';
+                try {
+                    \Stripe\Product::retrieve($deckProductId);
+                } catch (\Exception $e) {
+                    \Stripe\Product::create([
+                        'id' => $deckProductId,
+                        'name' => $deck_title,
+                        'type' => 'good',
+                    ]);
+                }
+
+                $baseUser->addInvoiceItem([
+                    'unit_amount_decimal' => (string) ($deck_type * 100),
+                    'quantity' => $deck_qty,
+                    'description' => $deck_title,
+                ]);
+            }
+
+            // Generate Dynamic Product Name and ID for the base subscription
             $hasPrint = $book_subs->count() > 0;
             $formatString = $hasPrint ? 'Online Access & Print' : 'Online Access Only';
             
@@ -452,8 +497,9 @@ trait CreatesUser {
                 ]);
             }
 
+            // Create base subscription plan with only the base cost
             $stripePlan = \Stripe\Plan::create([
-                'amount' => $total_amount, // already in cents
+                'amount' => $base_cost, // Only the base subscription cost in cents
                 'currency' => 'usd',
                 'interval' => $interval,
                 'interval_count' => $interval_count,
@@ -461,12 +507,49 @@ trait CreatesUser {
                 'id' => 'plan_' . uniqid() . '_' . $frequency . 'm',
             ]);
 
-            // Step 2: Create the Stripe Subscription using the Plan inside items array
+            $subscriptionItems = [
+                ['plan' => $stripePlan->id],
+            ];
+
+            // Step 2: Handle Additional Online User as a recurring subscription item
+            if ($addons->count() > 0) {
+                $addonProductId = 'prod_additional_online_user';
+                try {
+                    \Stripe\Product::retrieve($addonProductId);
+                } catch (\Exception $e) {
+                    \Stripe\Product::create([
+                        'id' => $addonProductId,
+                        'name' => 'Additional Online User',
+                        'type' => 'service',
+                    ]);
+                }
+
+                $addonPlanId = 'plan_addon_user_' . $frequency . 'm';
+                $addonPlanAmount = ($frequency === 24) ? 20000 : 10000; // $200 for 2-yr, $100 for 1-yr
+
+                try {
+                    \Stripe\Plan::retrieve($addonPlanId);
+                } catch (\Exception $e) {
+                    \Stripe\Plan::create([
+                        'id' => $addonPlanId,
+                        'amount' => $addonPlanAmount,
+                        'currency' => 'usd',
+                        'interval' => $interval,
+                        'interval_count' => $interval_count,
+                        'product' => $addonProductId,
+                    ]);
+                }
+
+                $subscriptionItems[] = [
+                    'plan' => $addonPlanId,
+                    'quantity' => $addons->count(),
+                ];
+            }
+
+            // Step 3: Create the Stripe Subscription using the items array containing all recurring items
             $stripeSubParams = [
                 'customer' => $cust->id,
-                'items' => [
-                    ['plan' => $stripePlan->id],
-                ],
+                'items' => $subscriptionItems,
                 'metadata' => [
                     'cycle_id' => $cycle->id,
                     'subscription_id' => $subscription->id,
@@ -816,18 +899,23 @@ trait CreatesUser {
     if ($subscription) {
         // Update the status of the subscription
         $sub_id = $subscription->id;
+        $cycle = null;
         if($next_payment_date != '' || $end_date != ''){
             $cycle = $subscription->getLatestCycle();
         }
 
         if($next_payment_date != '' && $next_payment_date != '0'){
             $data = array('ends_on'=>$next_payment_date);
-            $cycle->update($data);
+            if ($cycle) {
+                $cycle->update($data);
+            }
         }
         else{
             if($end_date != ''){
                 $data = array('ends_on'=>$end_date);
-                $cycle->update($data);
+                if ($cycle) {
+                    $cycle->update($data);
+                }
             }
         }
         $subscription->status = $status;

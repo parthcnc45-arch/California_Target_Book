@@ -44,6 +44,10 @@
         background-color: var(--bg-light);
     }
 
+    main {
+        width: 100%;
+    }
+
     /* Account Portal Layout */
     .account-portal {
         display: flex;
@@ -212,24 +216,33 @@
     }
 
     .btn-open-app {
-        border: 1px solid var(--border-color);
-        background-color: #ffffff;
-        color: #475569;
-        font-size: 12.5px;
-        font-weight: 600;
+        border: 1px solid #cbd5e1;
+        background-color: #ffe4e4;
+        color: black;
+        font-size: 13px;
+        font-weight: 500;
         padding: 8px 12px;
         border-radius: 6px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 8px;
         text-decoration: none !important;
         transition: all 0.2s;
+        margin-top: 16px;
     }
 
     .btn-open-app:hover {
         background-color: #f8fafc;
-        border-color: #cbd5e1;
-        color: #0f172a;
+        border-color: #a0aec0;
+        color: #1a365d;
+    }
+
+    .btn-open-app i {
+        font-size: 14px;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .signout-link {
@@ -306,18 +319,20 @@
         margin-bottom: 0;
     }
 
-    .status-pill {
-        padding: 2px 8px;
-        font-size: 10px;
+   .status-pill {
+        padding: 3px 10px;
         font-weight: 600;
         border-radius: 12px;
-        margin-left: 8px;
+        margin-left: 18px;
         display: inline-block;
     }
 
     .active-status {
-        background-color: #e6f4ea;
-        color: #137333;
+        background-color: hsl(145.29deg 76.92% 35.69%);
+        padding-left: .625rem;
+        padding-right: .625rem;
+        color: white;
+        border-width: 4px;
     }
 
     /* Card Details */
@@ -464,6 +479,10 @@
             <a href="/account/shipping-tracking" class="nav-link {{ Request::is('account/shipping-tracking') ? 'active' : '' }}"><i class="bi bi-truck"></i> Shipping & Tracking</a>
             <a href="/account/settings" class="nav-link {{ Request::is('account/settings') ? 'active' : '' }}"><i class="bi bi-gear"></i> Settings</a>
             <a href="/account/help-support" class="nav-link {{ Request::is('account/help-support') ? 'active' : '' }}"><i class="bi bi-question-circle"></i> Help & Support</a>
+            <a href="/book" class="btn-open-app">
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span>Open Book App</span>
+            </a>
         </nav>
 
         <div class="sidebar-actions">

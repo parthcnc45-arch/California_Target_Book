@@ -2,768 +2,15 @@
 
 @section('title', 'California Target Book Two-Year Subscription')
 
+@section('body_class', 'checkout-body')
+
 @section('styles')
 <!-- Google Fonts - Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<style>
-    :root {
-        --primary-red: #c52026;
-        --primary-blue: #164e82;
-        --bg-light: #ffffff;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-        --border-color: #e2e8ee;
-        --card-bg: #ffffff;
-    }
-
-    body {
-        font-family: 'Inter', -apple-system, sans-serif !important;
-        background-color: var(--bg-light) !important;
-        color: var(--text-main);
-        margin: 0;
-        padding: 0;
-    }
-
-    #app {
-        background-color: var(--bg-light) !important;
-        min-height: 100vh;
-    }
-
-    h1, h2, h3, h4, h5, h6, label, p, div {
-        font-family: 'Inter', -apple-system, sans-serif;
-    }
-
-    /* Page Header */
-    .checkout-header {
-        background-color: var(--primary-blue);
-        color: #ffffff;
-        padding: 48px 24px;
-        text-align: center;
-    }
-
-    .checkout-header h1 {
-        color: white !important ;
-        font-size: 2.25rem;
-        font-weight: 700;
-        margin: 0 0 16px 0;
-        letter-spacing: -0.5px;
-    }
-
-    .checkout-header p {
-        font-size: 15px;
-        color: #e0e7ff;
-        margin: 0 0 24px 0;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-        line-height: 1.5;
-    }
-
-    .header-badges {
-        display: flex;
-        justify-content: center;
-        gap: 24px;
-        flex-wrap: wrap;
-    }
-
-    .badge-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        color: #e0e7ff;
-    }
-
-    .badge-item i {
-        font-size: 14px;
-    }
-
-    /* Layout */
-    .checkout-container {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 40px 24px;
-        display: flex;
-        gap: 40px;
-        align-items: flex-start;
-    }
-
-    .checkout-main {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .checkout-sidebar {
-        width: 340px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 24px;
-    }
-
-    @media (max-width: 900px) {
-        .checkout-container {
-            flex-direction: column;
-        }
-        .checkout-sidebar {
-            width: 100%;
-            position: static;
-        }
-    }
-
-    /* Section Styles */
-    .section-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--text-main);
-        margin: 32px 0 8px 0;
-    }
-    
-    .section-title:first-child {
-        margin-top: 0;
-    }
-
-    .section-subtitle {
-        font-size: 13px;
-        color: var(--text-muted);
-        margin: 0 0 20px 0;
-    }
-
-    /* Price Header */
-    .price-header {
-        margin-bottom: 32px;
-    }
-    .price-amount {
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--text-main);
-    }
-    .price-period {
-        font-size: 14px;
-        color: var(--text-muted);
-        font-weight: 500;
-    }
-    .price-meta {
-        font-size: 13px;
-        color: var(--text-muted);
-        margin-top: 4px;
-        display: flex;
-        gap: 16px;
-    }
-
-    /* Format Selection Cards */
-    .format-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 32px;
-    }
-
-    .format-card {
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 20px;
-        background: var(--card-bg);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        position: relative;
-    }
-
-    .format-card:hover {
-        border-color: #cbd5e1;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-
-    .format-card.selected {
-        border: 2px solid var(--primary-red);
-        background-color: #fffafb;
-    }
-
-    .format-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 12px;
-    }
-
-    .format-title-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .format-icon {
-        color: var(--primary-red);
-        font-size: 20px;
-    }
-
-    .format-title {
-        font-weight: 600;
-        font-size: 15px;
-        color: var(--text-main);
-    }
-
-    .format-radio {
-        width: 20px;
-        height: 20px;
-        border: 1px solid #cbd5e1;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .format-card.selected .format-radio {
-        background-color: var(--primary-red);
-        border-color: var(--primary-red);
-        position: relative;
-    }
-
-    .format-card.selected .format-radio::after {
-        content: "";
-        position: absolute;
-        left: 7px;
-        top: 4px;
-        width: 4px;
-        height: 8px;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-    }
-
-    .format-desc {
-        font-size: 13px;
-        color: var(--text-muted);
-        line-height: 1.5;
-        margin-bottom: 16px;
-    }
-
-    .format-features {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .format-features li {
-        font-size: 12px;
-        color: #475569;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    .format-features li:last-child {
-        margin-bottom: 0;
-    }
-    
-    .format-features li i {
-        color: #10b981;
-        font-size: 14px;
-        margin-top: -1px;
-    }
-
-    /* Add-ons */
-    .addon-card {
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 16px 20px;
-        background: var(--card-bg);
-        margin-bottom: 16px;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.2s ease;
-    }
-
-    .addon-card:hover {
-        border-color: #cbd5e1;
-    }
-
-    .addon-card.selected {
-        border-color: var(--primary-red);
-        background-color: #ffffff;
-    }
-
-    /* Custom Checkbox */
-    .custom-checkbox {
-        display: block;
-        position: relative;
-        padding-left: 28px;
-        margin-bottom: 0;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--text-main);
-        user-select: none;
-    }
-    .custom-checkbox input {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-        height: 0;
-        width: 0;
-    }
-    .custom-checkbox .checkmark {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 18px;
-        width: 18px;
-        background-color: #fff;
-        border: 1px solid #cbd5e1;
-        border-radius: 4px;
-        transition: all 0.2s;
-    }
-    .custom-checkbox:hover input ~ .checkmark {
-        border-color: #94a3b8;
-    }
-    .custom-checkbox input:checked ~ .checkmark {
-        background-color: var(--primary-red);
-        border-color: var(--primary-red);
-    }
-    .custom-checkbox .checkmark:after {
-        content: "";
-        position: absolute;
-        display: none;
-    }
-    .custom-checkbox input:checked ~ .checkmark:after {
-        display: block;
-    }
-    .custom-checkbox .checkmark:after {
-        left: 5px;
-        top: 2px;
-        width: 6px;
-        height: 10px;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-    }
-
-    .addon-content {
-        flex: 1;
-    }
-
-    .addon-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--text-main);
-        margin-bottom: 4px;
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    .addon-price {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-main);
-    }
-
-    .addon-price-muted {
-        color: var(--text-muted);
-        font-weight: 400;
-        font-size: 12px;
-    }
-
-    .addon-desc {
-        font-size: 12px;
-        color: var(--text-muted);
-        line-height: 1.5;
-    }
-
-    /* Qty Selector */
-    .qty-selector {
-        display: none;
-        align-items: center;
-        border: 1px solid #cbd5e1;
-        border-radius: 4px;
-        background: white;
-        overflow: hidden;
-    }
-    .qty-btn {
-        background: none;
-        border: none;
-        padding: 4px 10px;
-        cursor: pointer;
-        font-size: 14px;
-        color: var(--text-main);
-    }
-    .qty-btn:hover {
-        background: #f1f5f9;
-    }
-    .qty-input {
-        width: 30px;
-        text-align: center;
-        border: none;
-        border-left: 1px solid #cbd5e1;
-        border-right: 1px solid #cbd5e1;
-        padding: 4px 0;
-        font-size: 13px;
-    }
-
-    /* Deck Radio Options */
-    .deck-radio-label {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 16px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        cursor: pointer;
-        background: white;
-        transition: all 0.15s;
-    }
-    .deck-radio-label:hover {
-        border-color: #cbd5e1;
-    }
-    .deck-radio-label.selected {
-        border-color: var(--primary-red);
-        background: #fffafb;
-    }
-    .deck-radio-label input[type="radio"] {
-        margin-top: 0;
-        accent-color: var(--primary-red);
-        width: 16px;
-        height: 16px;
-    }
-    .deck-radio-title {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--text-main);
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 4px;
-    }
-    .deck-radio-title span {
-        font-weight: 600;
-    }
-    .deck-radio-desc {
-        font-size: 13px;
-        color: var(--text-muted);
-    }
-
-    /* Forms */
-    .form-row {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 16px;
-    }
-
-    .form-group {
-        flex: 1;
-        margin-bottom: 16px;
-    }
-    .form-row .form-group {
-        margin-bottom: 0;
-    }
-
-    .form-label {
-        display: block;
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--text-main);
-        margin-bottom: 0px !important;
-    }
-    
-    .form-label .required {
-        color: var(--primary-red);
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 10px 12px;
-        font-size: 14px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        background-color: var(--card-bg);
-        color: var(--text-main);
-        transition: border-color 0.15s;
-        box-sizing: border-box;
-        height: auto !important;
-        box-shadow: none !important;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #94a3b8;
-        box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.1) !important;
-    }
-
-    /* Validation Styles */
-    .form-control.is-invalid {
-        border-color: var(--primary-red) !important;
-    }
-    .form-label.is-invalid, .control-label.is-invalid {
-        color: var(--primary-red) !important;
-    }
-    .invalid-feedback {
-        display: none;
-        color: var(--primary-red);
-        font-size: 12px;
-        margin-top: 6px;
-    }
-    .form-control.is-invalid ~ .invalid-feedback {
-        display: block;
-    }
-
-    /* Checkboxes */
-    .checkbox-group {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        margin-bottom: 12px;
-    }
-    .checkbox-group input[type="checkbox"] {
-        margin-top: 3px;
-        accent-color: var(--primary-red);
-    }
-    .checkbox-group label {
-        font-size: 13px;
-        color: var(--text-main);
-        line-height: 1.5;
-        margin: 0;
-        font-weight: 400;
-    }
-    .checkbox-group label a {
-        color: var(--primary-red);
-        text-decoration: underline;
-    }
-    .checkbox-group.is-invalid label {
-        color: var(--primary-red) !important;
-    }
-    .checkbox-group.is-invalid ~ .invalid-feedback {
-        display: block;
-    }
-
-    .bot-protection {
-        background-color: #f8fafc;
-        border: 1px dashed var(--border-color);
-        border-radius: 6px;
-        padding: 24px;
-        text-align: center;
-        font-size: 12px;
-        color: var(--text-muted);
-        margin: 24px 0;
-    }
-
-    /* Submit Button */
-    .btn-submit {
-        background-color: var(--primary-red);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        padding: 14px 24px;
-        font-size: 15px;
-        font-weight: 600;
-        width: 100%;
-        max-width: 300px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .btn-submit:hover {
-        background-color: #a91b21;
-    }
-
-    .submit-note {
-        font-size: 12px;
-        color: var(--text-muted);
-        margin-top: 12px;
-    }
-
-    /* Order Summary Sidebar */
-    .summary-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 24px;
-    }
-
-    .summary-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--text-main);
-        margin: 0 0 16px 0;
-    }
-
-    .summary-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    .summary-item-title {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-main);
-        margin-bottom: 4px;
-    }
-    .summary-item-title span {
-        font-weight: 400;
-        color: var(--text-muted);
-    }
-
-    .summary-item-desc {
-        font-size: 12px;
-        color: var(--text-muted);
-    }
-
-    .summary-item-price {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--text-main);
-    }
-
-    .summary-total {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 16px;
-    }
-
-    .summary-total-label {
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--text-main);
-    }
-
-    .summary-total-price {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--text-main);
-    }
-
-    .summary-notes {
-        margin-top: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    .summary-note {
-        font-size: 11px;
-        color: var(--text-muted);
-        display: flex;
-        align-items: flex-start;
-        gap: 6px;
-    }
-    .summary-note i {
-        color: #94a3b8;
-        font-size: 12px;
-        margin-top: 1px;
-    }
-    .summary-note.blue i {
-        color: #3b82f6;
-    }
-    .summary-note.orange i {
-        color: #f97316;
-    }
-
-    /* Coupon Section */
-    .coupon-row {
-        display: flex;
-        gap: 16px;
-        align-items: center;
-        margin-bottom: 24px;
-    }
-    .coupon-input-wrapper {
-        flex: 1;
-    }
-    .coupon-input {
-        width: 100%;
-        padding: 10px 12px;
-        font-size: 14px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        background-color: var(--card-bg);
-        color: var(--text-main);
-        transition: border-color 0.15s;
-        box-sizing: border-box;
-        height: 42px;
-    }
-    .coupon-input:focus {
-        outline: none;
-        border-color: #94a3b8;
-        box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.1) !important;
-    }
-    .btn-coupon-apply {
-        background-color: #b54d4d;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        padding: 0 32px;
-        font-size: 14.5px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        white-space: nowrap;
-        height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .btn-coupon-apply:hover {
-        background-color: #9c3f3f;
-    }
-
-    /* Success Page Styles */
-    .success-container {
-        max-width: 650px;
-        margin: 0 auto;
-        padding: 80px 24px;
-        text-align: center;
-    }
-
-    .success-icon {
-        color: #22c55e;
-        font-size: 56px;
-        margin-bottom: 20px;
-        display: inline-block;
-    }
-
-    .success-title {
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--text-main);
-        margin: 0 0 12px 0;
-        letter-spacing: -0.5px;
-    }
-
-    .success-text {
-        font-size: 14.5px;
-        color: var(--text-muted);
-        line-height: 1.6;
-        margin: 0 0 28px 0;
-        max-width: 480px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .btn-home {
-        background-color: white;
-        color: var(--text-main);
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        padding: 10px 24px;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.2s ease;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        font-family: 'Inter', -apple-system, sans-serif;
-    }
-
-    .btn-home:hover {
-        background-color: #f8fafc;
-        border-color: #94a3b8;
-        color: var(--text-main);
-        text-decoration: none;
-    }
-
-</style>
+<link href="/css/portal_custom.css" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -836,7 +83,7 @@
         <p class="section-subtitle">Enhance your subscription with additional features.</p>
 
         <div class="addon-card" id="addon-user-card">
-            <div class="addon-header-row" style="display: flex; justify-content: space-between; width: 100%;">
+            <div class="addon-header-row">
                 <label class="custom-checkbox">
                     <input type="checkbox" id="addon-user">
                     <span class="checkmark"></span>
@@ -844,10 +91,10 @@
                 </label>
                 <span class="addon-price">$100/ea</span>
             </div>
-            <div class="addon-body-row" style="display: flex; justify-content: space-between; align-items: center; padding-left: 28px; margin-top: 6px;">
-                <div class="addon-desc" style="margin-bottom: 0;">
+            <div class="addon-body-row">
+                <div class="addon-desc checkout-mb0">
                     Adds extra annual online user seats to your subscription.<br>
-                    <span style="color: #94a3b8; font-style: italic;">Billed annually per user</span>
+                    <span class="checkout-text-muted-italic">Billed annually per user</span>
                 </div>
                 <div class="qty-selector">
                     <button type="button" class="qty-btn" id="qty-minus"><i class="bi bi-dash"></i></button>
@@ -855,18 +102,18 @@
                     <button type="button" class="qty-btn" id="qty-plus"><i class="bi bi-plus"></i></button>
                 </div>
             </div>
-            <div id="addon-user-emails-container" style="display: none; padding-left: 28px; margin-top: 16px;"></div>
+            <div id="addon-user-emails-container" class="addon-emails-container"></div>
         </div>
 
         <div class="addon-card" id="addon-deck-card">
-            <div class="addon-header-row" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                <label class="custom-checkbox" style="margin-top: 8px;">
+            <div class="addon-deck-header-row">
+                <label class="custom-checkbox checkout-mt8">
                     <input type="checkbox" id="addon-deck">
                     <span class="checkmark"></span>
                     Post-Election Deck
                 </label>
-                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                    <span class="addon-price-muted" style="font-style: italic;">One-time charge</span>
+                <div class="deck-qty-wrapper">
+                    <span class="addon-price-muted checkout-text-italic">One-time charge</span>
                     <div class="qty-selector" id="deck-qty-selector" style="display: none;">
                         <button type="button" class="qty-btn" id="deck-qty-minus"><i class="bi bi-dash"></i></button>
                         <input type="text" class="qty-input" id="addon-deck-qty" value="1" readonly>
@@ -874,17 +121,17 @@
                     </div>
                 </div>
             </div>
-            <div class="deck-options" style="display: none; margin-top: 16px; flex-direction: column; gap: 12px; width: 100%;">
+            <div class="deck-options" style="display: none;">
                 <label class="deck-radio-label selected">
                     <input type="radio" name="deck_type" value="300" checked>
-                    <div class="deck-radio-content" style="width: 100%;">
+                    <div class="deck-radio-content">
                         <div class="deck-radio-title">Post-Election Deck Only (Subscriber) <span>$300</span></div>
                         <div class="deck-radio-desc">Post-election deck presentation file, subscriber rate</div>
                     </div>
                 </label>
                 <label class="deck-radio-label">
                     <input type="radio" name="deck_type" value="200">
-                    <div class="deck-radio-content" style="width: 100%;">
+                    <div class="deck-radio-content">
                         <div class="deck-radio-title">Post-Election Deck + Presentation (Subscriber) <span>$200</span></div>
                         <div class="deck-radio-desc">Post-election deck with live or recorded presentation add-on for subscribers</div>
                     </div>
@@ -894,7 +141,7 @@
 
         <form id="payment-form">
         
-        <h3 class="section-title" style="margin-top: 32px;">Have a Coupon?</h3>
+        <h3 class="section-title checkout-mt32">Have a Coupon?</h3>
         <p class="section-subtitle">If you have a coupon, for the California Target Book, apply it here.</p>
         <div class="coupon-row">
             <div class="coupon-input-wrapper">
@@ -903,7 +150,7 @@
             <button type="button" class="btn-coupon-apply">Apply</button>
         </div>
 
-        <h3 class="section-title" style="margin-top: 40px;">Your details</h3>
+        <h3 class="section-title checkout-mt40">Your details</h3>
         
         <div class="form-row">
             <div class="form-group">
@@ -952,19 +199,19 @@
             </div>
         </div>
 
-        <h3 class="section-title" style="margin-top: 32px;">Billing Address</h3>
+        <h3 class="section-title checkout-mt32">Billing Address</h3>
         <ctb-address-block :input="{{ json_encode(old('billing') ?? (auth()->user()->company->address ?? (object)[])) }}" name="billing" layout="checkout"></ctb-address-block>
 
-        <div class="checkbox-group" style="margin-top: 16px;">
+        <div class="checkbox-group checkout-mt16">
             <input type="checkbox" id="same-shipping" checked>
             <label for="same-shipping">Shipping address is the same as billing</label>
         </div>
 
-        <div id="shipping-address-block" style="display: none; margin-top: 32px;">
+        <div id="shipping-address-block" class="shipping-address-block">
             <h3 class="section-title">Shipping Information</h3>
             <div id="shipping-addresses-container"></div>
             
-            <div class="form-group" style="margin-top: 16px;">
+            <div class="form-group checkout-mt16">
                 <label class="form-label">Country <span class="required">*</span></label>
                 <select class="form-control" name="shipping_country">
                     <option value="US">United States</option>
@@ -972,28 +219,28 @@
             </div>
         </div>
 
-        <h3 class="section-title" style="margin-top: 32px;">Payment Method</h3>
-        <div id="payment-element" style="margin-bottom: 24px; min-height: 200px; padding: 16px; border: 1px solid var(--border-color); border-radius: 6px; background-color: #ffffff;">
-            <div style="margin: 20px auto; text-align: center; color: #64748b; font-size: 14px;">
+        <h3 class="section-title checkout-mt32">Payment Method</h3>
+        <div id="payment-element" class="payment-element-container">
+            <div class="payment-options-loader">
                 Loading payment options...
             </div>
         </div>
-        <div id="payment-message" class="invalid-feedback" style="display: none; margin-bottom: 16px;"></div>
+        <div id="payment-message" class="invalid-feedback payment-message-feedback"></div>
 
-        <div style="margin-top: 32px;">
+        <div class="checkout-mt32">
             <div class="checkbox-group">
                 <input type="checkbox" id="terms" required>
-                <label for="terms">I agree to the <a href="#">terms & conditions</a> provided by the company. <span class="required" style="color: var(--primary-red);">*</span></label>
+                <label for="terms">I agree to the <a href="#">terms & conditions</a> provided by the company. <span class="required">*</span></label>
             </div>
-            <div class="invalid-feedback" id="terms-feedback" style="margin-top: -8px; margin-bottom: 12px; margin-left: 26px;">You must agree to the terms</div>
+            <div class="invalid-feedback checkout-terms-feedback" id="terms-feedback">You must agree to the terms</div>
             <div class="checkbox-group">
                 <input type="checkbox" id="text-consent">
                 <label for="text-consent">By providing my phone number, I agree to receive text messages from California Target Book.</label>
             </div>
         </div>
 
-        <div style="margin-top: 32px; display: flex; justify-content: center; margin-bottom: 24px;">
-            <div style="height: 76px; overflow: hidden; border-radius: 3px;">
+        <div class="recaptcha-container">
+            <div class="recaptcha-inner">
                 <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
             </div>
         </div>
@@ -1142,8 +389,8 @@
             for(let i=0; i<userQty; i++) {
                 let val = existingValues[i] ? existingValues[i] : '';
                 container.append(`
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label class="form-label" style="font-size: 12px;">Additional User ${i+1} Email <span class="required">*</span></label>
+                    <div class="form-group checkout-mb12">
+                        <label class="form-label checkout-fs12">Additional User ${i+1} Email <span class="required">*</span></label>
                         <input type="email" class="form-control addon-email-input" placeholder="user${i+1}@example.com" value="${val}" required>
                         <div class="invalid-feedback">Required</div>
                     </div>
@@ -1197,8 +444,8 @@
                 let itemTitle = qty > 1 ? `${title} ${i + 1}` : title;
                 
                 let itemDiv = $(`
-                    <div class="shipping-address-item" style="${i > 0 ? 'margin-top: 24px; padding-top: 24px; border-top: 1px dashed var(--border-color);' : ''}">
-                        <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 12px;">${itemTitle}</h4>
+                    <div class="shipping-address-item${i > 0 ? ' shipping-address-item-divider' : ''}">
+                        <h4 class="shipping-address-item-title">${itemTitle}</h4>
                     </div>
                 `);
 
@@ -1574,9 +821,10 @@
             
             const options = {
                 mode: 'payment',
-                amount: 220000, // Amount in cents
+                amount: currentTotal, // Amount in cents
                 currency: 'usd',
                 paymentMethodCreation: 'manual',
+                paymentMethodTypes: ['card'],
                 appearance: {
                     theme: 'stripe',
                     variables: {

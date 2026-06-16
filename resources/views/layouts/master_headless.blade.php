@@ -35,7 +35,7 @@
         <link href="/css/jquery.smartmenus.bootstrap.css" rel="stylesheet">
         <link href="/css/tabs.css" rel="stylesheet">
         <link href="/css/tabstyles.css" rel="stylesheet">
-    <link href="/css/ctb_styles.css" rel="stylesheet">
+    <!-- <link href="/css/ctb_styles.css" rel="stylesheet"> -->
         <link href="{{ mix('css/app.css') }}" rel="stylesheet" />
 
         <!-- Custom Fonts -->
@@ -151,7 +151,7 @@
 
     </head>
 
-    <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+    <body class="@yield('body_class')" id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
 
         <div id="app">
             <main>

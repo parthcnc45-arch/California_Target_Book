@@ -1,0 +1,403 @@
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #EEEEF1;
+}
+
+#ctb-dashboard {
+    background-color: #11101E;
+}
+.ctb-container {
+    max-width: 1260px;
+    margin-inline: auto;
+}
+#ctb-dashboard .col-md-1.content {
+    padding: 18.5px;
+    border-right: 1px solid #E0E0E040;
+    
+}
+#ctb-dashboard .active {
+    background-color: #292840;
+}
+.dashboard-item h5 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    margin-top: 15px;
+    text-transform: uppercase;
+}
+
+#ctb-breadcrumb {
+    border-bottom: 1px solid #DEE2E7;
+}
+.breadcrumb-content {
+    padding: 10px;
+}
+
+#ctb-main-container-sec {
+    background-color: #EEEEF1;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+.ctb-main-container {
+    max-width: 1260px;
+    margin-inline: auto;
+}
+
+/* Global Style Start */
+.ctb-rabban {
+    padding: 12px;
+    background-color: #EAEAED;
+    border-radius: 6px;
+    border: 1px solid  #D5D5DB;
+}
+.ctb-rabban h5 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    margin-bottom: 0px;
+    color:#0F0E21;
+}
+.ctb-rabban span {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+    color: #828192;
+}
+.ctb-border-radius {
+    border-radius: 6px;
+}
+.table thead th {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+}
+.table tbody th {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 21px;
+    color: #324B83;
+}
+.table tbody td h4 {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 30px;
+}
+.table tbody th a {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 21px;
+    text-decoration: none;
+    color: #498EE9;
+}
+.table tbody th p {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 21px;
+    color:  #828192;
+}
+.table>:not(caption)>*>* {
+    background-color: transparent;
+}
+.table tbody tr:nth-child(even) {
+    background-color: #FBFBFB;
+}
+.table tbody tr:last-child {
+    border-color: transparent;
+}
+.ctb-country-content.new .table tbody tr tr:nth-of-type(even) {
+    background-color: red;
+}
+/* .table tbody tr:nth-child(even) {
+    background-color: red !important;
+} */
+.table tbody tr td {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+}
+.table-group-divider.ctb-divider-blue:first-child {
+    border-color: #4866A3;
+}
+.table-group-divider.ctb-divider-red {
+    border-color: #9A4639;
+}
+.table-group-divider.ctb-divider-brown {
+    border-color: #C2CFE0;
+}
+.ctb-block-tab .nav-link.active {
+    background: linear-gradient(135deg, #324B83 0%, #728ACE 100%);
+}
+.ctb-block-tab .nav-link {
+    background-color: #FFFFFF;
+}
+.ctb-block-tab .nav-link {
+    padding: 1rem 2rem;
+}
+/* Global Style End */
+
+.ctb-blog-content {
+    background-color: #FFFFFF;
+    padding: 16px;
+    border-radius: 6px;
+}
+.ctb-blog-box img {
+    width: 100%;
+}
+.ctb-blog-content h3 {
+    font-family: Lato;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+/* Tab CSS Start */
+.ctb-inline-tab .nav-link span {
+    display: block;
+}
+.ctb-inline-tab button.nav-link.active,
+.ctb-inline-tab button.nav-link:hover {
+    color: #498EE9 !important;
+    border-bottom: 2px solid #498EE9;
+    border-radius: 0px;
+}
+.ctb-inline-tab button.nav-link {
+    color: #31343c;
+    background: none !important;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+}
+.ctb-inline-tab button.nav-link span {
+    font-weight: 400;
+    font-size: 14px;
+}
+.ctb-inline-tab.ul#pills-tab {
+    border-bottom: 2px solid rgba(194, 207, 224, 0.5);
+}
+/* Tab CSS End */
+
+
+
+
+/* Summery Tab Start */
+.ctb-summery-blog-box img {
+    width: 100%;
+}
+.ctb-summery-blog-content h2 {
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    color: #2F2D4A;
+}
+.ctb-overlaps-content h3,
+.ctb-census-data-content h3 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 30px;
+}
+/* Summery Tab End */
+
+
+
+/* Incumbent Start */
+.ctb-incumbent-box {
+    border-radius: 6px;
+}
+.ctb-incumbent-description a {
+    font-family: 'Lato', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 36px;
+    text-decoration: none;
+    color: #4472AF;
+}
+.ctb-incumbent-description h6 {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #828192;
+}
+.ctb-incumbent-description p {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+}
+/* Incumbent End */
+
+/* District Tab Start */
+.ctb-normal-district p {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 30px;
+}
+.ctb-normal-district p span:nth-child(1) {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+    color:#B6433E;
+}
+.ctb-normal-district p span:nth-child(2) {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+    color: #498EE9;
+}
+.ctb-normal-district-table .table thead th {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 21px;
+    color: #828192;
+}
+.ctb-normal-district-table .table tbody td {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 21px;
+    color: #0F0E21;
+}
+.ctb-district-normal-box h4 {
+    font-family: 'Lato', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 36px;
+}
+.ctb-district-normal-box p {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 21px;
+}
+.ctb-district-registration h3,
+.ctb-district-ethnic-container h3,
+.ctb-district-counties-container h3,
+.ctb-district-congressional-container h3,
+.ctb-district-state-senate-container h3,
+.ctb-district-complete-container h3,
+.ctb-district-partial-container h3 {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 30px;
+}
+/* District Tab End */
+
+/* ***************** */
+/* Cities Tab Start */
+.ctb-cities-info:hover {
+    background: linear-gradient(135deg, #324B83 0%, #728ACE 100%);
+    color: white;
+}
+.ctb-cities-top-table .table tbody td:nth-child(4) h4 {
+    color: #B6433E;
+}
+.ctb-cities-top-table .table tbody td h4 {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 30px;
+    color: #2F2D4A;
+}
+.ctb-cities-top-table .table tbody td span {
+    font-family: Lato;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #828192;
+}
+.ctb-cities-top-container h2,
+.ctb-cities-shasta-container h2 {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 40px;
+    color:  #0F0E21;
+}
+.ctb-cities-top-container span,
+.ctb-cities-shasta-container span {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 200%;
+    color: #828192;
+}
+.ctb-cities-info h3 {
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    margin-bottom: 0px;
+}
+.ctb-cities-info span {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+}
+/* Cities Tab End */
+
+/* Old Results Tab Start */
+.analysis-condidates h6 {
+    font-family: 'Lato', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 36px;
+    color: #B6433E;
+}
+.analysis-condidates p {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    color: #828192;
+}
+/* Old Results Tab End */
+
+/* Difference Report Tab Start */
+.difference-report-container h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 30px;
+}
+.difference-report-search {
+    position: relative;
+}
+.difference-report-search img {
+    position: absolute;
+    top: 11px;
+    left: 8px;
+}
+.difference-report-AD03 tbody td:last-child {
+    color: #B6433E;
+}
+/* Difference Report Tab End */
+
+
+
+
+
+
+
+/* Responsive Mobile Start */
+@media (max-width:767px) {
+    .w-50 {
+        width: 100% !important;
+    }
+}
+/* Responsive  */

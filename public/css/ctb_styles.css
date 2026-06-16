@@ -1,0 +1,258 @@
+.greybg {
+	background-color: #E6E6E6;
+}
+
+.graybg {
+	background-color: #F7F7F7
+}
+
+.whitebg {
+	background-color: white;
+}
+
+.yellowbg {
+	background-color: #F7FEAA;
+}
+
+body,
+html {
+	background-color: white;
+}
+
+.analysis {
+	font-family: 'Lato';
+}
+
+.analysis p {
+	font-size: 1.3em;
+	padding: 5%;
+	line-height: 1.7;
+	text-align: justify;
+}
+
+.analysis strong,
+b {
+	font-weight: bold;
+	color: blue;
+}
+
+.campaign_head {
+	color: FireBrick;
+	font-weight: bold;
+	font-variant: small-caps;
+	text-align: center;
+	font-family: 'Lato';
+}
+
+.analysis img {
+	border-radius: 10px;
+	float: left;
+	padding: 2%;
+	max-width: 100px;
+}
+
+.vote_container {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	border: 2px solid black;
+	display: inline-block;
+}
+
+table:not(.table) th {
+	text-align: center !important;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 1.1em;
+	color: white;
+	font-style: 'Lato';
+	background: rgb(82, 133, 216);
+	/* Old browsers */
+	background: -moz-linear-gradient(top, rgba(82, 133, 216, 1) 0%, rgba(5, 11, 21, 1) 46%, rgba(0, 1, 2, 1) 50%, rgba(4, 9, 16, 1) 53%, rgba(29, 67, 127, 1) 76%, rgba(21, 48, 91, 1) 87%, rgba(10, 23, 44, 1) 100%) !important;
+	/* FF3.6-15 */
+	background: -webkit-linear-gradient(top, rgba(82, 133, 216, 1) 0%, rgba(5, 11, 21, 1) 46%, rgba(0, 1, 2, 1) 50%, rgba(4, 9, 16, 1) 53%, rgba(29, 67, 127, 1) 76%, rgba(21, 48, 91, 1) 87%, rgba(10, 23, 44, 1) 100%) !important;
+	/* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, rgba(82, 133, 216, 1) 0%, rgba(5, 11, 21, 1) 46%, rgba(0, 1, 2, 1) 50%, rgba(4, 9, 16, 1) 53%, rgba(29, 67, 127, 1) 76%, rgba(21, 48, 91, 1) 87%, rgba(10, 23, 44, 1) 100%) !important;
+	/* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+/*
+.bluebg {
+background: rgb(235,241,246) !important; 
+background: -moz-linear-gradient(top,  rgba(235,241,246,1) 0%, rgba(171,211,238,1) 50%,           rgba(137,195,235,1) 51%, rgba(213,235,251,1) 100%) !important; 
+background: -webkit-linear-gradient(top,  rgba(235,241,246,1) 0%,rgba(171,211,238,1) 50%,rgba(137,195,235,1) 51%,rgba(213,235,251,1) 100%) !important; 
+background: linear-gradient(to bottom,  rgba(235,241,246,1) 0%,rgba(171,211,238,1) 50%,rgba(137,195,235,1) 51%,rgba(213,235,251,1) 100%) !important; /
+}
+
+.redbg {
+background: #f0d4d4; 
+background: -moz-linear-gradient(top, #f0d4d4 0%, #eccaca 50%, #e7bbbb 51%, #fefefe 100%); 
+background: -webkit-linear-gradient(top, #f0d4d4 0%,#eccaca 50%,#e7bbbb 51%,#fefefe 100%); 
+background: linear-gradient(to bottom, #f0d4d4 0%,#eccaca 50%,#e7bbbb 51%,#fefefe 100%); 
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0d4d4', endColorstr='#fefefe',GradientType=0 ); 
+}
+
+*/
+
+.bluebg {
+	color: blue;
+	background-color: white;
+}
+
+.redbg {
+	color: red;
+	background-color: white;
+}
+
+.greybg {
+	background: rgb(238, 238, 238);
+	/* Old browsers */
+	background: -moz-linear-gradient(top, rgba(238, 238, 238, 1) 0%, rgba(204, 204, 204, 1) 100%);
+	/* FF3.6-15 */
+	background: -webkit-linear-gradient(top, rgba(238, 238, 238, 1) 0%, rgba(204, 204, 204, 1) 100%);
+	/* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, rgba(238, 238, 238, 1) 0%, rgba(204, 204, 204, 1) 100%);
+	/* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+.winner {
+	font-weight: bold;
+	font-variant: small-caps;
+}
+
+.primary_div {
+	font-family: 'PT Sans Narrow';
+	float: left;
+	margin: 10px;
+	font-size: 1.4em;
+}
+
+.primary_table th {
+	background-color: black;
+}
+
+.primary_table td {
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	text-align: right;
+}
+
+.canddiv {
+	background-color: #F8F8F8;
+	margin-top: 10px;
+	padding: 1%;
+	font-family: 'Lato';
+	line-height: 1.5;
+	display: inline-block;
+	font-size: 1em;
+}
+
+.canddiv p {
+	font-size: 1em;
+}
+
+.canddiv img {
+	float: left;
+	border-radius: 10px;
+	margin: 0px 5px 1px 0px;
+}
+
+.demdiv {
+	border: 2px solid blue;
+	border-radius: 10px;
+	background-color: #F3F4FE;
+}
+
+.grndiv {
+	border: 2px solid green;
+	border-radius: 10px;
+}
+
+.repdiv {
+	border: 2px solid red;
+	border-radius: 10px;
+	background-color: #FFF4F4;
+}
+
+.inddiv {
+	border: 2px solid gray;
+	border-radius: 10px;
+}
+
+.financials {
+	font-size: 1.1em;
+	font-family: 'PT Sans Narrow';
+	width: 100%;
+	margin: 10px;
+	background-color: white;
+	padding: 1%;
+	text-align: right;
+}
+
+.primary_div .img_cell {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.tab-bar span {
+	padding: 5px;
+}
+
+footer {
+	width: 100vw;
+	background-color: #3F3E3E;
+	color: white;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	margin-top: 50px;
+	padding: 20px;
+}
+
+a {
+	color: blue;
+}
+
+footer a {
+	color: red;
+}
+
+	.sacto {
+			background: url('../img/sacto_bright.jpg') no-repeat;
+			background-size: cover;
+	}
+
+	.sacto h1 {
+			font-family: 'Bellefair';
+	}
+
+	.boldme {
+			font-weight: bold;
+	}
+
+	.redme {
+			color: red;
+	}
+
+	.blueme {
+			color: blue;
+	}
+
+*.btn {
+    font-family: "Lato", serif;
+}
+.btn-primary {
+    color: #fff;
+    background-color: #2e6da4;
+    border-color: #b64242;
+		background: #c14747;
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+	background: #ca4a4a !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	color: #000 !important;
+}

@@ -1,0 +1,125 @@
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #EEEEF1;
+}
+
+#ctb-dashboard {
+    background-color: #11101E;
+}
+.ctb-container {
+    max-width: 1260px;
+    margin-inline: auto;
+}
+#ctb-dashboard .col-md-1.content {
+    padding: 18.5px;
+    border-right: 1px solid #E0E0E040;
+    
+}
+#ctb-dashboard .col-md-1.content.active {
+    background-color: #292840;
+}
+.dashboard-item h5 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    margin-top: 15px;
+    text-transform: uppercase;
+}
+
+#ctb-breadcrumb {
+    border-bottom: 1px solid #DEE2E7;
+}
+.breadcrumb-content {
+    padding: 10px;
+}
+
+#ctb-main-container-sec {
+    background-color: #EEEEF1;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+.ctb-main-container {
+    max-width: 1260px;
+    margin-inline: auto;
+}
+
+/* Global Style Start */
+.ctb-rabban {
+    padding: 12px;
+    background-color: #D5D5DB;
+    border-radius: 6px;
+}
+.ctb-rabban h5 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    margin-bottom: 0px;
+}
+/* Global Style End */
+
+.ctb-blog-details-box {
+    border-radius: 6px;
+}
+.ctb-blog-details-lastest-content h3 {
+    font-family: 'Lato', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 36px;
+}
+.ctb-blog-details-lastest-content p {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+}
+.ctb-blog-details-lastest-content img {
+    width: 100%;
+    border-radius: 6px;
+}
+.ctb-blog-main-content-box p {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+}
+.ctb-blog-main-content {
+    background-color: #F0F2F5;
+    border-radius: 6px;
+}
+.ctb-social-content img {
+    width: 100%;
+}
+
+
+.ctb-lastest-blog {
+    background-color: #FFFFFF;
+    border-radius: 6px;
+}
+.ctb-lastest-blog:hover {
+    background-color: #11101E;
+}
+.ctb-lastest-blog:hover h3, 
+.ctb-lastest-blog:hover p {
+    color: #FFFFFF;
+}
+.ctb-latest-blog-img img {
+    width: 100%;
+}
+.ctb-latest-blog-content {
+    padding: 5px 0px;
+}
+.ctb-latest-blog-content h3 {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+    margin-bottom: 5px;
+}
+.ctb-latest-blog-content p {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    margin-bottom: 0px;
+}

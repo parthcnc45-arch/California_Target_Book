@@ -1,0 +1,175 @@
+body {
+  font-family: "Nunito", sans-serif;
+}
+#ctb-dashboard {
+  background-color: #11101e;
+}
+.ctb-container {
+  max-width: 1440px;
+  margin-inline: auto;
+}
+#ctb-dashboard .col-md-1.content {
+  padding: 18.5px;
+  border-right: 1px solid #e0e0e040;
+}
+#ctb-dashboard .col-md-1.content.active {
+  background-color: #292840;
+}
+.dashboard-item h5 {
+  font-size: 12px;
+  margin-top: 15px;
+  text-transform: uppercase;
+}
+#ctb-breadcrumb {
+  border-bottom: 1px solid #dee2e7;
+}
+.breadcrumb-content {
+  padding: 10px;
+}
+#ctb-main-container-sec {
+  background-color: #eeeef1;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.ctb-main-container {
+  max-width: 1260px;
+  margin-inline: auto;
+}
+
+/* Global Style Start */
+/* .ctb-rabban {
+  padding: 12px;
+  background-color: #d5d5db;
+  border-radius: 6px;
+} */
+.ctb-rabban h5 {
+  font-family: "Nunito", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  margin-bottom: 0px;
+}
+
+Global Style End
+
+.ctb-blog-content {
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 6px;
+}
+.ctb-blog-box img {
+  width: 100%;
+}
+.ctb-blog-content h3 {
+  font-family: Lato;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
+.ctb-election-details {
+  background-color: #ffffff;
+  border-radius: 6px;
+}
+.ctb-election-details li {
+  margin-left: 10px;
+  padding: 24px;
+}
+.ctb-election-details li a {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.01em;
+  text-align: left;
+  color: #2f2d4a;
+}
+
+/* Search Bar */
+.ctb-filter {
+  margin-block: 16px;
+}
+.ctb-filter > div {
+  width: 100%;
+}
+.ctb-search {
+  background-image: url(../imgs/search-icon.svg);
+  background-repeat: no-repeat;
+  background-position: 10px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.21px;
+  color: #11101e;
+  padding: 8px 20px 8px 30px;
+  width: 100%;
+  height: 48px;
+  border: 1px solid #d5d5db;
+  border-radius: 6px;
+  outline: none;
+}
+.ctb-search::placeholder {
+  color: #b3b8bb;
+}
+.ctb-filters-btns {
+  gap: 10px;
+}
+.ctb-filters-btns > button {
+  font-family: "Nunito", sans-serif;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #d5d5db;
+  outline: none;
+}
+.ctb-filters-btns > button:hover {
+  background-color: #11101e;
+  color: #fff;
+}
+.ctb-blogs {
+  gap: 16px;
+}
+.ctb-blog-box {
+  width: 266px;
+}
+.ctb-fav-box {
+  padding: 32px;
+  background-color: #fff;
+  border-radius: 6px;
+}
+.ctb-fav-box h2 {
+  color: #11101e;
+  font-family: Lato;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+}
+.ctb-fav-box span {
+  color: #767686;
+  font-family: Lato;
+  font-size: 12px;
+  line-height: 18px;
+}
+.ctb-fav {
+  gap: 16px;
+  margin-top: 16px;
+}
+@media only screen and (max-width: 768px) {
+  .ctb-filter {
+    display: block;
+    padding: 10px;
+  }
+  .ctb-filters-btns {
+    justify-content: center;
+    margin-top: 16px;
+  }
+  .ctb-blogs {
+    display: block;
+  }
+  .ctb-blog-box {
+    margin: 16px auto;
+    width: 85%;
+  }
+  .ctb-fav {
+    width: 85%;
+    margin: 16px auto;
+  }
+}

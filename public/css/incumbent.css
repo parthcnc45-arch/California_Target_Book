@@ -1,0 +1,130 @@
+body {
+  font-family: "Nunito", sans-serif;
+}
+
+/* Global Style Start */
+/* .ctb-rabban {
+  padding: 12px;
+  background-color: #d5d5db;
+  border-radius: 6px;
+} */
+.ctb-rabban h5 {
+  font-family: "Nunito", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  margin-bottom: 0px;
+}
+.ctb-bannerImg {
+  width: 100%;
+}
+.ctb-incumbentBox-avatar {
+  margin-top: -100px;
+  margin-bottom: 20px;
+}
+.ctb-incumbentBox-content {
+  background-color: #fff;
+  border-radius: 0 0 6px 6px;
+  padding: 24px;
+}
+.ctb-incumbentBox-content h2 {
+  color: #000;
+  font-family: "Lato";
+  font-size: 24px;
+}
+.ctb-incumbentBox-content span {
+  color: #767686;
+  font-family: "Lato";
+  font-size: 12px;
+  padding: 10px 0;
+}
+.ctb-incumbentBox-content p {
+  color: #767686;
+  font-family: "Lato";
+  font-size: 12px;
+}
+.ctb-facebook-btn,
+.ctb-twitter-btn {
+  border: 1px solid;
+  /* border-color: #385c8e; */
+  border-radius: 6px;
+  padding: 10px;
+  background-color: #fff;
+  text-shadow: 0px 1px 40px #c2cfe0;
+  font-family: "Lato";
+  font-size: 16px;
+  letter-spacing: 0.16px;
+}
+.ctb-facebook-btn {
+  border-color: #385c8e;
+}
+.ctb-twitter-btn {
+  border-color: #2aa9e0;
+}
+.ctb-facebook-btn img,
+.ctb-twitter-btn img {
+  padding-right: 10px;
+}
+.ctb-facebook-btn {
+  margin-right: 10px;
+}
+.cbt-assignments-box,
+.cbt-positions-box,
+.cbt-works-box {
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 24px;
+  margin-top: 16px;
+}
+.ctb-assignment-title,
+.ctb-position-title {
+  color: #2f2d4a;
+  font-family: "Lato";
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 2px solid;
+  padding-bottom: 16px;
+}
+.ctb-assignment-title {
+  border-color: #728ace;
+}
+.ctb-position-title {
+  border-color: #c69b2d;
+}
+.table-assignments thead th {
+  border-bottom: 2px solid #728ace;
+  color: #2f2d4a;
+  font-family: "Lato";
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 10px;
+}
+.table-assignments tbody td {
+  padding: 16px 10px;
+}
+.table-positions thead th {
+  border-bottom: 2px solid #c69b2d;
+  color: #2f2d4a;
+  font-family: "Lato";
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 10px;
+}
+.table-positions tbody td {
+  padding: 16px 10px;
+}
+.table-works thead th {
+  border-bottom: 2px solid #174f7f;
+  color: #2f2d4a;
+  font-family: "Lato";
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 10px;
+}
+.table-works tbody td {
+  padding: 16px 10px;
+}
+.table-works tbody td:first-child {
+  color: #324b83;
+  font-weight: 700;
+}

@@ -2,21 +2,21 @@
 
 @section('portal_content')
     @if($pending_bank)
-        <div class="alert alert-info border-0 rounded-3 mb-4 p-4 shadow-sm" style="background-color: #e0f2fe; color: #0369a1;">
-            <div class="d-flex" style="display: flex;">
-                <i class="bi bi-bank me-3" style="font-size: 24px; margin-right: 16px;"></i>
+        <div class="alert alert-info border-0 rounded-3 mb-4 p-4 shadow-sm bank-pending-alert">
+            <div class="d-flex">
+                <i class="bi bi-bank me-3 bank-pending-icon"></i>
                 <div class="w-100">
-                    <h4 class="fw-bold mb-2" style="font-size: 15px; font-weight: 700; margin-top: 0; margin-bottom: 8px;">Pending Bank Account</h4>
-                    <p class="mb-3" style="font-size: 13.5px; margin-bottom: 12px;">
+                    <h4 class="fw-bold mb-2 bank-pending-title">Pending Bank Account</h4>
+                    <p class="mb-3 bank-pending-text">
                         Your bank account is still awaiting verification. 
                         Check your bank account for 2 small deposits (under $1.00) and click the button below to verify.
                     </p>
-                    <p class="mb-3 font-monospace" style="font-size: 12px; line-height: 1.6; font-family: monospace; margin-bottom: 12px;">
+                    <p class="mb-3 font-monospace bank-pending-details">
                         Account Holder: {{ $pending_bank->account_holder_name }}<br>
                         Routing Number: {{ $pending_bank->routing_number }}<br>
                         Account Number: XXXXXX{{ $pending_bank->last4 }}
                     </p>
-                    <button class="btn btn-primary btn-sm px-3" @click="showVerifyBankModal = true" style="border-radius: 6px;">Verify Bank</button>
+                    <button class="btn btn-primary btn-sm px-3 btn-verify-bank" @click="showVerifyBankModal = true">Verify Bank</button>
                 </div>
             </div>
         </div>

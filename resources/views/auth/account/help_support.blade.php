@@ -1,79 +1,9 @@
 @extends('layouts.portal')
-
-@section('portal_styles')
-<style>
-    .faq-list {
-        display: flex;
-        flex-direction: column;
-    }
-    .faq-item {
-        border-bottom: 1px solid #f1f5f9;
-    }
-    .faq-item:last-child {
-        border-bottom: none;
-    }
-    .faq-trigger {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        padding: 16px 0;
-        background: none;
-        border: none;
-        text-align: left;
-        font-size: 13.5px;
-        font-weight: 600;
-        color: #1e293b;
-        cursor: pointer;
-        transition: color 0.15s ease;
-    }
-    .faq-trigger:hover {
-        color: var(--primary-color);
-    }
-    .faq-icon {
-        font-size: 12px;
-        color: var(--text-muted);
-        transition: transform 0.2s ease, color 0.15s ease;
-    }
-    .faq-item.active .faq-icon {
-        transform: rotate(180deg);
-        color: var(--primary-color);
-    }
-    .faq-content {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .faq-answer {
-        padding-bottom: 16px;
-        font-size: 13px;
-        color: var(--text-muted);
-        line-height: 1.6;
-    }
-    .kb-footer {
-        text-align: center;
-        margin-top: 12px;
-        font-size: 13px;
-        color: var(--text-muted);
-    }
-    .kb-link {
-        color: var(--primary-color);
-        font-weight: 600;
-        text-decoration: none;
-        transition: color 0.15s ease;
-    }
-    .kb-link:hover {
-        color: #b91c1c;
-        text-decoration: underline;
-    }
-</style>
-@endsection
-
 @section('portal_content')
     <section id="section-help-support" class="portal-section active">
         <header class="section-header">
-            <div class="header-avatar" style="background-color: #ec4899; color: #ffffff; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; margin-right: 12px; flex-shrink: 0;">
-                <i class="bi bi-question-circle" style="font-size: 18px; display: flex; align-items: center; justify-content: center;"></i>
+            <div class="header-avatar bg-pink-avatar">
+                <i class="bi bi-question-circle icon-flex-18"></i>
             </div>
             <div>
                 <div class="header-title-container">
@@ -83,12 +13,12 @@
             </div>
         </header>
 
-        <div style="display: flex; flex-direction: column; gap: 24px; width: 100%;">
-            <div class="portal-card" style="margin-top: 0;">
+        <div class="flex-column-gap-24">
+            <div class="portal-card portal-mt-0">
                 <div class="card-header-custom">
                     <h2 class="card-title-custom">Frequently Asked Questions</h2>
                 </div>
-                <div class="card-body-custom" style="padding: 4px 24px 12px 24px;">
+                <div class="card-body-custom settings-card-body">
                     <div class="faq-list">
                         <div class="faq-item active">
                             <button type="button" class="faq-trigger">
@@ -149,22 +79,22 @@
                 </div>
             </div>
 
-            <div class="portal-card" style="margin-top: 0;">
+            <div class="portal-card portal-mt-0">
                 <div class="card-header-custom">
                     <h2 class="card-title-custom">Contact Support</h2>
                 </div>
-                <div class="card-body-custom" style="padding: 20px 24px;">
+                <div class="card-body-custom card-body-padding-20-24">
                     <form id="support-contact-form">
                         @csrf
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; font-size: 12.5px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px;">Subject</label>
-                            <input type="text" id="contact-subject" name="subject" required style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); box-sizing: border-box;" placeholder="Brief description of your issue">
+                        <div class="portal-mb-16">
+                            <label class="form-label-style">Subject</label>
+                            <input type="text" id="contact-subject" name="subject" required class="form-input-style" placeholder="Brief description of your issue">
                         </div>
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; font-size: 12.5px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px;">Message </label>
-                            <textarea id="contact-message" name="message" required rows="4" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); box-sizing: border-box; resize: vertical;" placeholder="Describe your question or issue in detail…"></textarea>
+                        <div class="portal-mb-16">
+                            <label class="form-label-style">Message </label>
+                            <textarea id="contact-message" name="message" required rows="4" class="form-input-style" placeholder="Describe your question or issue in detail…"></textarea>
                         </div>
-                        <button type="submit" id="submit-contact-btn" style="background-color: var(--primary-color); color: white; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 0.15s;" onmouseover="this.style.backgroundColor='#b91c1c'" onmouseout="this.style.backgroundColor='var(--primary-color)'">Submit Message</button>
+                        <button type="submit" id="submit-contact-btn" class="btn-submit-support">Submit Message</button>
                     </form>
                 </div>
             </div>
@@ -174,9 +104,9 @@
             </div>
         </div>
 
-        <div id="custom-toast" style="display: none; position: fixed; bottom: 24px; right: 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); padding: 16px 20px; z-index: 9999; max-width: 350px;">
-            <h4 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #1e293b;" id="toast-title">Message sent</h4>
-            <p style="margin: 0; font-size: 13px; color: #64748b;" id="toast-body">We'll get back to you within 1-2 business days.</p>
+        <div id="custom-toast" class="portal-toast" style="display: none;">
+            <h4 class="portal-toast-title" id="toast-title">Message sent</h4>
+            <p class="portal-toast-body" id="toast-body">We'll get back to you within 1-2 business days.</p>
         </div>
     </section>
 @endsection

@@ -76,7 +76,7 @@
 
     </head>
 
-    <body class="{{ Auth::check() && Auth::user()->isAdmin() ? 'admin' : '' }}" id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+    <body class="{{ Auth::check() && Auth::user()->isAdmin() ? 'admin' : '' }} @yield('body_class')" id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
 
         <div id="app">
 

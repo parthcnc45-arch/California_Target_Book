@@ -108,45 +108,37 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-user-email="john.smith@example.com">
-                                <td><span class="team-member-name">John Smith</span></td>
-                                <td><span class="team-member-email">john.smith@example.com</span></td>
+                            <tr data-user-email="{{ $sub['base_account']->email }}">
+                                <td><span class="team-member-name">{{ $sub['base_account']->name() }}</span></td>
+                                <td><span class="team-member-email">{{ $sub['base_account']->email }}</span></td>
                                 <td><span class="team-member-role">Owner</span></td>
                                 <td><span class="badge-team-active">Active</span></td>
                                 <td></td>
                             </tr>
-                            <tr data-addon-id="1" data-user-email="sarah.jones@example.com">
-                                <td><span class="team-member-name">Sarah Jones</span></td>
-                                <td><span class="team-member-email">sarah.jones@example.com</span></td>
+                            @foreach($sub['addons'] as $addon)
+                            <tr data-addon-id="{{ $addon->id }}" data-user-email="{{ $addon->email }}">
+                                <td><span class="team-member-name">{{ trim($addon->name()) ?: '' }}</span></td>
+                                <td><span class="team-member-email">{{ $addon->email }}</span></td>
                                 <td><span class="team-member-role">Member</span></td>
-                                <td><span class="badge-team-active">Active</span></td>
+                                <td>
+                                    @if($addon->verified)
+                                        <span class="badge-team-active">Active</span>
+                                    @else
+                                        <span class="badge-team-pending">Pending</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <div class="flex-center-gap-12">
-                                        <button type="button" class="btn-member-manage">
+                                        <button type="button" class="btn-member-manage btn-reassign-addon" data-id="{{ $addon->id }}" data-name="{{ trim($addon->name()) ?: 'Pending Profile' }}">
                                             <i class="bi bi-arrow-repeat"></i> Reassign
                                         </button>
-                                        <button type="button" class="btn-member-remove btn-remove-addon" data-id="1">
+                                        <button type="button" class="btn-member-remove btn-remove-addon" data-id="{{ $addon->id }}">
                                             <i class="bi bi-trash"></i> Remove
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                            <tr data-addon-id="2" data-user-email="mike.brown@example.com">
-                                <td><span class="team-member-name">Pending Profile</span></td>
-                                <td><span class="team-member-email">mike.brown@example.com</span></td>
-                                <td><span class="team-member-role">Member</span></td>
-                                <td><span class="badge-team-pending">Pending</span></td>
-                                <td>
-                                    <div class="flex-center-gap-12">
-                                        <button type="button" class="btn-member-manage">
-                                            <i class="bi bi-arrow-repeat"></i> Reassign
-                                        </button>
-                                        <button type="button" class="btn-member-remove btn-remove-addon" data-id="2">
-                                            <i class="bi bi-trash"></i> Remove
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
 
@@ -203,18 +195,19 @@
                 <div class="modal-body modal-body-mt-16">
                     <div class="form-group form-group-mb-16">
                         <label class="form-label-custom-sm">Name</label>
-                        <input type="text" class="form-input form-input-highlight" value="Jane Doe">
+                        <input type="text" id="reassign-new-name" class="form-input form-input-highlight" placeholder="John Doe">
                     </div>
                     <div class="form-group form-group-mb-24">
                         <label class="form-label-custom-sm">Email</label>
-                        <input type="email" class="form-input form-input-custom" value="jane@example.com">
+                        <input type="email" id="reassign-new-email" class="form-input form-input-custom" placeholder="jane@example.com">
                     </div>
+                    <div id="reassign-message" style="display:none; font-size:12.5px; margin-top: 4px; font-weight: 500;"></div>
                 </div>
                 <div class="modal-footer modal-footer-confirm-sm">
                     <button type="button" class="btn-cancel btn-modal-cancel" id="btn-cancel-reassign">
                         Cancel
                     </button>
-                    <button type="button" class="btn-reassign btn-modal-primary">
+                    <button type="button" class="btn-reassign btn-modal-primary" id="btn-reassign-submit">
                         Reassign
                     </button>
                 </div>
@@ -234,7 +227,7 @@
                     <button type="button" class="btn-cancel btn-modal-cancel" id="btn-cancel-remove">
                         Cancel
                     </button>
-                    <button type="button" class="btn-reassign btn-modal-danger">
+                    <button type="button" class="btn-reassign btn-modal-danger" id="btn-remove-submit">
                         Remove
                     </button>
                 </div>
@@ -285,8 +278,18 @@
         });
 
         // Reassign modal event listeners
-        $('.btn-member-manage').on('click', function(e) {
+        var addonIdToReassign = null;
+        var $rowToReassign = null;
+        $(document).on('click', '.btn-reassign-addon', function(e) {
             e.preventDefault();
+            addonIdToReassign = $(this).data('id');
+            var name = $(this).data('name');
+            $rowToReassign = $(this).closest('tr');
+            
+            $('#reassign-modal').find('.modal-header-subtext').html('Replace <strong>' + name + '</strong> with a new team member.');
+            $('#reassign-new-name').val('');
+            $('#reassign-new-email').val('');
+            $('#reassign-message').hide().empty();
             $('#reassign-modal').fadeIn(150).css('display', 'flex');
         });
 
@@ -301,9 +304,101 @@
             }
         });
 
-        // Remove modal event listeners
-        $('.btn-member-remove').on('click', function(e) {
+        $('#btn-reassign-submit').on('click', function(e) {
             e.preventDefault();
+            if (!addonIdToReassign) return;
+            
+            var name = $.trim($('#reassign-new-name').val());
+            var email = $.trim($('#reassign-new-email').val());
+            var $messageDiv = $('#reassign-message');
+
+            if (!name) {
+                $messageDiv.html('<span style="color:#ef4444;">Please enter a name.</span>').show();
+                return;
+            }
+            if (!email) {
+                $messageDiv.html('<span style="color:#ef4444;">Please enter an email address.</span>').show();
+                return;
+            }
+
+            var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+            if(!emailReg.test(email)) {
+                $messageDiv.html('<span style="color:#ef4444;">Please enter a valid email address.</span>').show();
+                return;
+            }
+
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Reassigning...');
+            $messageDiv.html('<span style="color:#475569;">Reassigning seat...</span>').show();
+
+            $.ajax({
+                url: '{{ route("auth.account.subscriptions.addons.reassign") }}',
+                method: 'POST',
+                data: {
+                    id: addonIdToReassign,
+                    name: name,
+                    email: email,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    $btn.prop('disabled', false).text('Reassign');
+                    if (response.success) {
+                        $('#reassign-modal').fadeOut(150);
+                        
+                        // Update the row values dynamically in the table
+                        $rowToReassign.attr('data-addon-id', response.addon.id);
+                        $rowToReassign.attr('data-user-email', response.addon.email);
+                        $rowToReassign.find('.team-member-name').text(response.addon.name);
+                        $rowToReassign.find('.team-member-email').text(response.addon.email);
+                        
+                        var $statusSpan = $rowToReassign.find('td:nth-child(4) span');
+                        if (response.addon.status === 'Active') {
+                            $statusSpan.attr('class', 'badge-team-active').text('Active');
+                        } else {
+                            $statusSpan.attr('class', 'badge-team-pending').text('Pending');
+                        }
+
+                        // Update data attributes on reassign button
+                        var $reassignBtn = $rowToReassign.find('.btn-reassign-addon');
+                        $reassignBtn.attr('data-id', response.addon.id);
+                        $reassignBtn.attr('data-name', response.addon.name);
+
+                        // Update delete button data ID
+                        $rowToReassign.find('.btn-remove-addon').attr('data-id', response.addon.id);
+
+                        // Update active badge count
+                        var activeBadgeCount = 0;
+                        $('#team-members-table tbody tr').each(function() {
+                            if ($(this).find('.badge-team-active').length > 0) {
+                                activeBadgeCount++;
+                            }
+                        });
+                        $('#team-active-badge').text(activeBadgeCount + ' active');
+                    } else {
+                        $messageDiv.html('<span style="color:#ef4444;">' + response.message + '</span>').show();
+                    }
+                },
+                error: function(xhr) {
+                    $btn.prop('disabled', false).text('Reassign');
+                    var errorMsg = 'Failed to reassign seat.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    $messageDiv.html('<span style="color:#ef4444;">' + errorMsg + '</span>').show();
+                }
+            });
+        });
+
+        // Remove modal event listeners
+        var addonIdToRemove = null;
+        var $rowToRemove = null;
+        $(document).on('click', '.btn-remove-addon', function(e) {
+            e.preventDefault();
+            addonIdToRemove = $(this).data('id');
+            $rowToRemove = $(this).closest('tr');
+            var name = $rowToRemove.find('.team-member-name').text();
+            var email = $rowToRemove.find('.team-member-email').text();
+            $('#remove-modal').find('.modal-body-text-confirm-p').html('Remove <strong>' + name + '</strong> (' + email + ') from this subscription? They will lose access immediately.');
             $('#remove-modal').fadeIn(150).css('display', 'flex');
         });
 
@@ -316,6 +411,55 @@
             if ($(e.target).is('#remove-modal')) {
                 $('#remove-modal').fadeOut(150);
             }
+        });
+
+        $('#btn-remove-submit').on('click', function(e) {
+            e.preventDefault();
+            if (!addonIdToRemove) return;
+            
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Removing...');
+
+            $.ajax({
+                url: '{{ route("auth.account.subscriptions.addons.remove") }}',
+                method: 'POST',
+                data: {
+                    id: addonIdToRemove,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    $btn.prop('disabled', false).text('Remove');
+                    $('#remove-modal').fadeOut(150);
+                    if (response.success) {
+                        $rowToRemove.remove();
+                        // Update counts
+                        var totalSeats = $('#team-members-table tbody tr').length;
+                        $('#team-seats-count').text(totalSeats);
+                        $('#seats-summary-count').text(totalSeats);
+                        
+                        // Update active badge count
+                        var activeBadgeCount = 0;
+                        $('#team-members-table tbody tr').each(function() {
+                            if ($(this).find('.badge-team-active').length > 0) {
+                                activeBadgeCount++;
+                            }
+                        });
+                        $('#team-active-badge').text(activeBadgeCount + ' active');
+
+                        checkSeatLimit();
+                    } else {
+                        alert(response.message || 'Failed to remove user.');
+                    }
+                },
+                error: function(xhr) {
+                    $btn.prop('disabled', false).text('Remove');
+                    var errorMsg = 'Failed to remove user.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    alert(errorMsg);
+                }
+            });
         });
 
         // Check seat limit function
@@ -387,11 +531,15 @@
                                 <td><span class="team-member-name">${response.addon.name}</span></td>
                                 <td><span class="team-member-email">${response.addon.email}</span></td>
                                 <td><span class="team-member-role">${response.addon.role}</span></td>
-                                <td><span class="badge-team-pending">${response.addon.status}</span></td>
+                                <td>
+                                    <span class="${response.addon.status === 'Active' ? 'badge-team-active' : 'badge-team-pending'}">
+                                        ${response.addon.status}
+                                    </span>
+                                </td>
                                 <td>
                                     <div class="flex-center-gap-12">
-                                        <button type="button" class="btn-member-manage cursor-not-allowed-opacity-50">
-                                            <i class="bi bi-sliders"></i> Manage
+                                        <button type="button" class="btn-member-manage btn-reassign-addon" data-id="${response.addon.id}" data-name="${response.addon.name}">
+                                            <i class="bi bi-arrow-repeat"></i> Reassign
                                         </button>
                                         <button type="button" class="btn-member-remove btn-remove-addon" data-id="${response.addon.id}">
                                             <i class="bi bi-trash"></i> Remove
@@ -406,6 +554,15 @@
                         var totalSeats = $('#team-members-table tbody tr').length;
                         $('#team-seats-count').text(totalSeats);
                         $('#seats-summary-count').text(totalSeats);
+
+                        // Update active badge count
+                        var activeBadgeCount = 0;
+                        $('#team-members-table tbody tr').each(function() {
+                            if ($(this).find('.badge-team-active').length > 0) {
+                                activeBadgeCount++;
+                            }
+                        });
+                        $('#team-active-badge').text(activeBadgeCount + ' active');
 
                         // Re-enable/Check Limits
                         checkSeatLimit();
@@ -432,3 +589,4 @@
     });
 </script>
 @endsection
+

@@ -172,6 +172,11 @@ Route::group([
         'as' => 'auth.account.subscriptions.addons.remove',
     ]);
 
+    Route::post('/subscriptions/addons/reassign', [
+        'uses' => 'Auth\AccountController@reassignAddon',
+        'as' => 'auth.account.subscriptions.addons.reassign',
+    ]);
+
 
     Route::get('/transaction-history', [
         'uses' => 'Auth\AccountController@transactionHistory',

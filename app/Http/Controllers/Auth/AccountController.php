@@ -868,6 +868,63 @@ class AccountController extends Controller
         }
     }
 
+    public function reassignAddon(Request $request)
+    {
+        $user = Auth::user();
+        $sub = $user->latestSubscription();
+        if (empty($sub)) {
+            return response()->json(['success' => false, 'message' => 'No active subscription found.'], 400);
+        }
+
+        $addonId = $request->input('id');
+        $name = $request->input('name');
+        $email = $request->input('email');
+
+        if (empty($addonId)) {
+            return response()->json(['success' => false, 'message' => 'User ID is required.'], 400);
+        }
+        if (empty($email)) {
+            return response()->json(['success' => false, 'message' => 'Email is required.'], 400);
+        }
+
+        // Verify the addon actually belongs to this subscription
+        $oldAddon = $sub->addons()->where('users.id', $addonId)->first();
+        if (empty($oldAddon)) {
+            return response()->json(['success' => false, 'message' => 'Addon user not found in this subscription.'], 404);
+        }
+
+        // Parse Name into first_name and last_name
+        $parts = explode(' ', trim($name), 2);
+        $firstName = $parts[0] ?? '';
+        $lastName = $parts[1] ?? '';
+
+        try {
+            // 1. Detach old user
+            $oldAddon->subscriptions()->detach($sub->id);
+
+            // 2. Add new user
+            $newAddon = $sub->addUser($email, [
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User reassigned successfully.',
+                'addon' => [
+                    'id' => $newAddon->id,
+                    'name' => trim($newAddon->name()) ?: 'Pending Profile',
+                    'email' => $newAddon->email,
+                    'role' => 'Member',
+                    'status' => $newAddon->verified ? 'Active' : 'Pending',
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Addon reassignment failed: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to reassign user: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function purchaseSeats()
     {
         $data = $this->getAccountData();

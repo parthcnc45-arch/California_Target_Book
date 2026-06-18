@@ -3,7 +3,7 @@
 	console.log(<?php echo json_encode($reg_old_fourcode); ?>)
 	function drawPieChart() {
 		var total=<?php echo json_encode($reg_old_fourcode_ttl); ?>;
-
+		console.log("Testing",total)
 		var REP=<?php echo json_encode($reg_old_fourcode['REP']??0); ?>;
 		var DEM=<?php echo json_encode($reg_old_fourcode['DEM']??0); ?>;
 		var NPP=<?php echo json_encode($reg_old_fourcode['NPP']??0); ?>;
@@ -24,15 +24,15 @@
 
 
 		]);
-		// var data = google.visualization.arrayToDataTable([
+		var data = google.visualization.arrayToDataTable([
 
-		// 	['PARTY', 'Percent'],
-		// 	['DEM', 29.6],
-		// 	['REP', 42.00],
-		// 	['NPP', 18.30],
-		// 	['OTH', 10.00]
+			['PARTY', 'Percent'],
+			['DEM', 29.6],
+			['REP', 42.00],
+			['NPP', 18.30],
+			['OTH', 10.00]
 
-		// ]);
+		]);
 
 		var options = {
 			title: 'Current Registration',

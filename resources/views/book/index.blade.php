@@ -50,7 +50,7 @@
                                             <img src="img/districts.svg" alt="kharkulla" />
                                             <div class="ctx-content mt-3">
                                                 <h3>Home</h3>
-                                                <p>Index page.</p>
+                                                <p>Welcome to the Subscriber Dashboard.</p>
                                             </div>
                                         </div>
                                     </a>

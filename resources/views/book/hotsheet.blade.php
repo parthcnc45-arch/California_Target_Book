@@ -19,7 +19,7 @@
                         <div class="col-md-12">
                             <div class="ctb-rabban headingDiv d-flex justify-content-between">
                                 <h5>Hot Sheets Details</h5>
-                                <a href="{{ route('book.generatePDF', ['article' => $hotsheet->post_id]) }}" class="text-decoration-none" id="downloadPdfButton">Download PDF</a>
+                                <!-- <a href="{{ route('book.generatePDF', ['article' => $hotsheet->post_id]) }}" class="text-decoration-none" id="downloadPdfButton">Download PDF</a> -->
                                 {{-- <form action="{{ route('book.generatePDF') }}" method="post">
                                     @csrf
                                     <input type="hidden" name="article" value="{{ base64_encode(json_encode($hotsheet)) }}">

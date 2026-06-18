@@ -15,7 +15,7 @@
  * Public Routes
  */
 Route::get('/', function () {
-    return view('new');
+    return view('home');
 })->name('home');
 
 Route::get('/subscriptions/one-year', function () {
@@ -30,6 +30,29 @@ Route::get('/home', 'HomeController@index')->name('home.dashboard');
 
 Route::get('/new', function () {
     return view('new');
+});
+
+Route::get('/test-bio', function () {
+    Util::require_ctb_api();
+    $districtsService = app(App\Services\CTB\Districts::class);
+    
+    $senateDistricts = $districtsService->find('.SN');
+    
+    $html = '<ul>';
+    foreach ($senateDistricts as $dist) {
+        $partyClass = $districtsService->getParty($dist->PARTY);
+        $html .= '<li>';
+        $html .= '<a href="/book/new/' . e($dist->DIST) . '">';
+        $html .= e($dist->DIST) . ' ';
+        $html .= '<small class="pull-right ' . e($partyClass) . '">';
+        $html .= e($dist->LEGISLATOR);
+        $html .= '</small>';
+        $html .= '</a>';
+        $html .= '</li>';
+    }
+    $html .= '</ul>';
+    
+    return $senateDistricts;
 });
 
 // Route::get('/about', function () {
@@ -243,7 +266,10 @@ Route::group([
 
     Route::group([ 'prefix' => 'hotsheet', 'namespace' => 'Book' ], function () {
         Route::get('/', 'HotsheetController@index')->name('book.hotsheet');
+        Route::post('/filter', 'HotsheetController@filterArticles')->name('book.hotsheet.filterArticles');
+        Route::post('/favorite', 'HotsheetController@favorite')->name('book.hotsheet.favorite');
         Route::get('/{article}', 'HotsheetController@showArticle')->name('book.hotsheet.article');
+        Route::get('/{article}/pdf', 'HotsheetController@generatePDF')->name('book.generatePDF');
     });
 
     Route::group([ 'prefix' => 'redist_news', 'namespace' => 'Book' ], function () {
@@ -264,6 +290,7 @@ Route::group([
 
     //CANDIDATE DIRECTORIES
     Route::get('/e22_roster', function () { return view('old.e22_roster'); });
+    Route::get('/e26_roster', function () { return view('old.e26_roster'); })->name('book.e26_roster');
 
     Route::group([ 'prefix' => 'candidates' ], function () {
         Route::get('/', function () { return view('old.candidates_hub'); });
@@ -791,7 +818,7 @@ Route::group([
    Route::get('/draft_map_viz_1220_interactive', function () { return view('old.draft_map_viz_1220_interactive'); });
 
    Route::get('/sandbox', function () { return view('sandbox'); });
-   Route::get('/new_districts', function () { return view('old.new_districts'); });
+   Route::get('/new_districts', function () { return view('old.new_districts'); })->name('old.new_districts');
 
 
 
@@ -878,4 +905,20 @@ Route::post('/account/delete', function(\Illuminate\Http\Request $request) {
     }
     
     return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+});
+
+Route::get('/optimize-clear', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        return response()->json([
+            'success' => true,
+            'message' => 'php artisan optimize:clear executed successfully.',
+            'output' => \Illuminate\Support\Facades\Artisan::output()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ], 500);
+    }
 });

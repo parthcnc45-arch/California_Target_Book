@@ -100,6 +100,30 @@
             });
             new DataTable('.districtTable');
         </script>
+        <script>
+            // Custom hybrid tab switcher to support Bootstrap 3/5 active classes on list items and anchors
+            $(document).on('click', 'a[data-toggle="pill"], a[data-toggle="tab"], a[data-bs-toggle="pill"], a[data-bs-toggle="tab"]', function (e) {
+                e.preventDefault();
+                var $anchor = $(this);
+                
+                // 1. Sync active class on parent list item (Bootstrap 3/4 styling)
+                var $parentLi = $anchor.closest('li.nav-item, li');
+                $parentLi.addClass('active').siblings().removeClass('active');
+                
+                // 2. Sync active class on the link itself (Bootstrap 5 styling)
+                $anchor.addClass('active');
+                $anchor.closest('li').siblings().find('a.nav-link').removeClass('active');
+
+                // 3. Sync active, in, and show classes on the corresponding tab pane
+                var targetPane = $anchor.attr('href') || $anchor.attr('data-bs-target');
+                if (targetPane && targetPane.startsWith('#')) {
+                    var $target = $(targetPane);
+                    if ($target.length) {
+                        $target.addClass('active in show').siblings('.tab-pane').removeClass('active in show');
+                    }
+                }
+            });
+        </script>
         <!-- <script type="text/javascript">
             $.ajaxSetup({
                 headers: {

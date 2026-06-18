@@ -23,6 +23,8 @@
 		$cached = populate_cached($id);
 		$cached['fourcode'] = $id;
 
+    
+
 		$fourcode = $id;
 		$type = mb_substr($fourcode, 0, 2);
 
@@ -37,7 +39,7 @@
             $type = "BD";
             $dist = mb_substr($fourcode, 3, 1);
 		}
-		$old_fourcode = $old_fourcodes['new'][$fourcode];
+		$old_fourcode = $old_fourcodes['new'][$fourcode] ?? $fourcode;
 		$dist_dscr = get_district_info($fourcode);
 		$cand_tables = locate_candidates($fourcode);
 		$zip_div = get_redist_zips($fourcode);
@@ -140,7 +142,7 @@
                                             </div>
                                         </div>
                                         <div class="mt-3 d-grid summary_Registration">
-                                            <div id="donutchart" class="py-3 bg-white ctb-border-radius"></div>
+                                            <div id="donutchart" style="width:100%; height:400px;" class="py-3 bg-white ctb-border-radius"></div>
                                             <div id="chart1_AD29" class="py-3 bg-white ctb-border-radius"></div>
                                             <div id="chart2_AD29" class="py-3 bg-white ctb-border-radius"></div>
                                         </div>
@@ -378,37 +380,41 @@
                                         </div>
                                         <div class="row mt-3 d-grid district_Registration_boxes row_before_none">
                                             <?php
-                                                $dom = new DOMDocument();
+                                                if (isset($cached['LAST_REG'])) {
+                                                    $dom = new DOMDocument();
 
-                                                libxml_use_internal_errors(true);
-                                                $dom->loadHTML($cached['LAST_REG']);
-                                                libxml_use_internal_errors(false);
+                                                    libxml_use_internal_errors(true);
+                                                    $dom->loadHTML($cached['LAST_REG']);
+                                                    libxml_use_internal_errors(false);
 
-                                                $tableRows = $dom->getElementsByTagName('tbody')->item(0)->getElementsByTagName('tr');
+                                                    $tableRows = $dom->getElementsByTagName('tbody')->item(0)->getElementsByTagName('tr');
 
-                                                foreach ($tableRows as $row) {
-                                                    $tableData = $row->getElementsByTagName('td');
+                                                    foreach ($tableRows as $row) {
+                                                        $tableData = $row->getElementsByTagName('td');
 
-                                                    $rowData = [];
+                                                        $rowData = [];
 
-                                                    foreach ($tableData as $td) {
-                                                        $rowData[] = $td->textContent;
+                                                        foreach ($tableData as $td) {
+                                                            $rowData[] = $td->textContent;
+                                                        }
+                                                        // print_r($rowData) ;
+
+                                                        echo'<div class="col-md-12 p-0">
+                                                            <div class="ctb-district-normal-box bg-white p-3 ctb-border-radius"><h4>'
+                                                                .$rowData[1].' '.$rowData[2].
+                                                            '</h4>
+                                                                <p class="mb-0">'.$rowData[0].'</p>
+                                                            </div>
+                                                        </div>';
                                                     }
-                                                    // print_r($rowData) ;
-
-                                                    echo'<div class="col-md-12 p-0">
-                                                        <div class="ctb-district-normal-box bg-white p-3 ctb-border-radius"><h4>'
-                                                            .$rowData[1].' '.$rowData[2].
-                                                        '</h4>
-                                                            <p class="mb-0">'.$rowData[0].'</p>
-                                                        </div>
-                                                    </div>';
+                                                } else {
+                                                    echo '<div class="col-md-12 p-0"><div class="ctb-district-normal-box bg-white p-3 ctb-border-radius"><h4>No registration data available</h4></div></div>';
                                                 }
                                             ?>
                                         </div>
                                         <div class="row">
                                             <div class="governer_rows">
-                                                {!! $cached['TOPLINE'] !!}
+                                                {!! $cached['TOPLINE'] ?? '' !!}
                                             </div>
                                         </div>
                                         <div class="row mt-3">
@@ -605,19 +611,19 @@
                                     <!-- Cities -->
                                     <div class="tab-pane fade" id="pills-cities"  >
                                         <div class="row mt-3">
-                                            <?php echo($cached['CITIES']); ?>
+                                            <?php echo($cached['CITIES'] ?? ''); ?>
                                         </div>
                                     </div>
                                     <!-- Old Results -->
                                     <div class="tab-pane fade" id="pills-old-results" >
                                         <div class="row mt-3">
-                                            <?php echo($cached['PAST_RESULTS']); ?>
+                                            <?php echo($cached['PAST_RESULTS'] ?? ''); ?>
                                         </div>
                                     </div>
                                     <!-- Difference Report -->
                                     <div class="tab-pane fade" id="pills-difference-report" >
                                         <section id='Diff' class='table-striped' style='line-height: 1em;'>
-                                            <?php echo($cached['DIFF']); ?>
+                                            <?php echo($cached['DIFF'] ?? ''); ?>
                                         </section>
                                     </div>
                                     <!-- Incument -->
@@ -693,6 +699,7 @@
 
         function populate_cached($fourcode) {
             $conn = Util::get_ctb_conn();
+            $retval = [];
             $sql = "SELECT * FROM ctb_redist_cached_1220 WHERE fourcode = '$fourcode' LIMIT 150";
             $result = $conn->query($sql);
             if ($result->num_rows > 0) {
@@ -700,7 +707,7 @@
                 $type = $row['type'];
                     $retval[$type] = $row['html'];
                 }
-            }
+            }   
             return $retval;
         }
 
@@ -1143,6 +1150,10 @@
                 case "SD":
                     $c19_q = "State Senate District";
                     break;
+
+                default:
+                    $c19_q = '';
+                    break;  
             }
 
             $sql = "SELECT fourcode, district, name, population, cvap_19, hisp, ind, black, asian, white, target, deviation FROM ctb_redist_cvap_1220";
@@ -1185,8 +1196,12 @@
                 );
 
             foreach($dists as $fourcode) {
-                $old_fourcode = $old_fourcodes['new'][$fourcode];
+                $old_fourcode = $old_fourcodes['new'][$fourcode] ?? $fourcode;
                 $x = $cvap_data[$fourcode]??[];
+                if (empty($x)) {
+                    $cvap_table[$fourcode] = '';
+                    continue;
+                }
                 $y = $cvap_11[$old_fourcode]??[];
                 $z = $cvap_19[$old_fourcode]??[];
 
@@ -1348,6 +1363,8 @@
                 case "CD":
                 $long_type = "cddist";
                 break;
+                default:
+                    return [];
             }
 
 
@@ -1578,18 +1595,26 @@
                 FROM supe_dists_ca_legislative
                 WHERE year = '2020' && fourcode = '$fourcode'";
             $result = $conn->query($sql);
+            $z = null;
             if($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
                     $z = $row['SHAPE'];
                 }
             }
+            if (!$z) {
+                return [];
+            }
             $sql = "SELECT cand_id FROM ctb_e22_cand_geo WHERE ST_Intersects( SHAPE, ST_GeomFromText ( '$z', 1) )";
             $result = $conn->query($sql);
+            $cand_arr = [];
             if($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
                     $cand_id = $row['cand_id'];
                     $cand_arr[$cand_id] = $cand_id;
                 }
+            }
+            if (empty($cand_arr)) {
+                return [];
             }
 
 

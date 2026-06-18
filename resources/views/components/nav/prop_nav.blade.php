@@ -33,7 +33,7 @@
                                         <span class="px-0 font-weight-bold text-white">{{ $propositions->getName($prop) }}</span>
 				     </div>
                                         <br><b><small class='font-weight-bold text-success'>Cleared for General Election Ballot</small></b><br>
-                                        <h4 class="text-capitalize text-dark text-wrap">{{ strtolower($prop->prop_dscr)  }}</h4>
+                                        <h4 class="text-dark text-uppercase text-wrap">{{ strtolower($prop->prop_dscr)  }}</h4>
 
                                     </a>
 				    </div>
@@ -139,7 +139,7 @@
                                 ?>
 
 
-                                <br><h4 class="text-dark text-capitalize text-wrap">{{ strtolower(@$prop->prop_dscr)  }}</small></h4>
+                                <br><h4 class="text-dark text-uppercase text-wrap">{{ strtolower(@$prop->prop_dscr)  }}</small></h4>
                             </a>
 			   </div>
 			  </div>

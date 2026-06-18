@@ -13,6 +13,7 @@
 
 <?php
 
+set_time_limit(0);
 Util::require_ctb_api();
 $endjava = Array();
 global $pages, $fed_filed, $total_raised, $total_spent, $dist_totals;

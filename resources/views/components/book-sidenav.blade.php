@@ -41,7 +41,7 @@
                     </a>
                 </li>
                 <li>
-                    <a @click="setNav('candidates')"
+                    <a href="/book/e26_roster"
                         :class="{'active': current === 'candidates'}">
                         <div class="icon i-2 i-transparent">@inline('/img/icons/candidate.svg')</div>
                         <span>Candidates</span>

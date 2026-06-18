@@ -2,22 +2,58 @@
 <div class="row">
     <div class="ctb-directory-column">
         <ul class="nav nav-pills mb-3 general-pill-tab" id="pills-tab" >
-            <li class="nav-item active">
-                <a class="nav-link" data-toggle="pill" href="#pills-now"> 2024</a>
+            <li class="nav-item" :class="{ active: subMenus.finance === '2026' || !subMenus.finance }">
+                <a class="nav-link" @click="subMenus.finance = '2026'" style="cursor: pointer;"> 2026</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="pill" href="#pills-state"> State</a>
+            <li class="nav-item" :class="{ active: subMenus.finance === '2024' }">
+                <a class="nav-link" @click="subMenus.finance = '2024'" style="cursor: pointer;"> 2024</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="pill" href="#pills-federal">Federal</a>
+            <li class="nav-item" :class="{ active: subMenus.finance === 'state' }">
+                <a class="nav-link" @click="subMenus.finance = 'state'" style="cursor: pointer;"> State</a>
+            </li>
+            <li class="nav-item" :class="{ active: subMenus.finance === 'federal' }">
+                <a class="nav-link" @click="subMenus.finance = 'federal'" style="cursor: pointer;">Federal</a>
             </li>
         </ul>
     </div>
     <div class="ctb-directory-column">
         <div class="tab-content" id="pills-tabContent">
 
+            <!--BEGIN TESTING TAB-->
+            <div class="tab-pane fade" :class="{ 'active in': subMenus.finance === '2026' || !subMenus.finance }" id="pills-2026">
+                <!--ALL - LIST VIEW -->
+                <div v-if="!verboseMode">            
+                    <li>
+                        <a class="text-decoration-none" href="/book/e26_finances">
+                            2026 CA Candidate Finance Summaries
+                        </a>
+                    </li>
+                    <li>
+                        <a class="text-decoration-none" href="/book/e26_props">
+                            2026 Ballot Measure Finance Summaries
+                        </a>
+                    </li>
+                    <li>
+                        <a class="text-decoration-none" href='/book/e26_finances_t'>
+                            2026 Fed Candidate Finance Summaries (All)
+                        </a>
+                    </li>
+                    <li>
+                        <a class="text-decoration-none" href='/book/ca_ielist_p26'>
+                            2026 State Independent Expenditures
+                        </a>
+                    </li>
+                    <li>
+                        <a class="text-decoration-none" href='/book/ca_ielist_fed_p26'>
+                            2026 Federal Independent Expenditures (CA)
+                        </a>
+                    </li>
+                </div>
+            </div>
+            <!--END TESTING TAB-->
+
             <!--BEGIN MAIN TAB-->
-            <div class="tab-pane active fade in" id="pills-now">
+            <div class="tab-pane fade" :class="{ 'active in': subMenus.finance === '2024' }" id="pills-now">
                 <!--ALL - LIST VIEW -->
                 <div v-if="!verboseMode">            
                     <li>
@@ -175,7 +211,7 @@
 
             <!--BEGIN STATE TAB-->
                 
-            <div class="tab-pane fade" id="pills-state">
+            <div class="tab-pane fade" :class="{ 'active in': subMenus.finance === 'state' }" id="pills-state">
                 <div v-if="!verboseMode">            
                     <ul>
                         <li>
@@ -571,7 +607,7 @@
 
 
             <!--BEGIN FEDERAL TAB-->
-            <div class="tab-pane fade" id="pills-federal">
+            <div class="tab-pane fade" :class="{ 'active in': subMenus.finance === 'federal' }" id="pills-federal">
                 <div v-if="!verboseMode">            
                     <ul>
                         <li>

@@ -51,6 +51,7 @@
 <?php
     function retrieve_info($fourcode)
     {
+        
         $conn = Util::get_ctb_conn();
         $id='';
         $retval=[];
@@ -80,8 +81,7 @@
             }
         }
 
-
-        $sql = "SELECT text from ctb_cand_bios WHERE cand_id = '$id' ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT text from ctb_cand_bios WHERE cand_id = 'S4CA00555' ORDER BY id DESC LIMIT 1";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {

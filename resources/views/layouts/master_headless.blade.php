@@ -146,7 +146,7 @@
 
 
         <script>
-            window.STRIPE_PUB_KEY = "{{ env('STRIPE_PUB_KEY') }}";
+            window.STRIPE_PUB_KEY = "{{ config('app.STRIPE_PUB_KEY') }}";
         </script>
 
     </head>

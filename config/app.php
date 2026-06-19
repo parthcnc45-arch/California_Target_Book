@@ -55,6 +55,7 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
 
     'STRIPE_KEY' => env('STRIPE_KEY'),
+    'STRIPE_PUB_KEY' => env('STRIPE_PUB_KEY'),
 
     'GHL_TOKEN' => env('GHL_API_TOKEN', 'pit-9edbcb56-3ea3-4e72-b633-a54a943ec8cf'),
     'GHL_LOCATION_ID' => env('GHL_LOCATION_ID', 'Fvvh7SvvoDgMQg4PNPCB'),

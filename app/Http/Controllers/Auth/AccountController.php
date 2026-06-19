@@ -610,6 +610,13 @@ class AccountController extends Controller
             ]);
         });
 
+        // Store renewed additional online users count in Owner's row
+        $owner = User::find($sub->account_id);
+        if ($owner) {
+            $owner->additional_online_users = $addons->count();
+            $owner->save();
+        }
+
         /**
          * Issue stripe invoice
          */
@@ -783,10 +790,12 @@ class AccountController extends Controller
             return response()->json(['success' => false, 'message' => 'No active subscription found.'], 400);
         }
 
-        // Enforce 5 seats limit (1 Owner + max 4 addons)
+        // Enforce dynamic seats limit based on owner's additional_online_users
+        $owner = User::find($sub->account_id);
+        $maxAddons = $owner ? (int) ($owner->additional_online_users ?? 0) : 4;
         $addonsCount = $sub->addons()->count();
-        if ($addonsCount >= 4) {
-            return response()->json(['success' => false, 'message' => 'You have reached the limit of 5 seats. Remove a member to invite more.'], 400);
+        if ($addonsCount >= $maxAddons) {
+            return response()->json(['success' => false, 'message' => 'You have reached the limit of ' . $maxAddons . ' seats. Remove a member to invite more.'], 400);
         }
 
         $validation = [
@@ -894,7 +903,7 @@ class AccountController extends Controller
         }
 
         // Parse Name into first_name and last_name
-        $parts = explode(' ', trim($name), 2);
+        $parts = explode(' ', trim($name ?? ''), 2);
         $firstName = $parts[0] ?? '';
         $lastName = $parts[1] ?? '';
 

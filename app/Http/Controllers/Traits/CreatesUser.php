@@ -618,13 +618,17 @@ trait CreatesUser {
               $ghlService = new \App\Services\GHLPaymentService();
               $ghlService->syncSubscriptionToLaravel($baseUser, $subscription, $data);
           }
-      } catch (\Exception $e) {
+       } catch (\Exception $e) {
           \Illuminate\Support\Facades\Log::error('GHL Sync Failed in createUser flow: ' . $e->getMessage(), [
               'user_id' => $baseUser->id,
               'exception' => $e
           ]);
       }
     }
+    // Save additional online users count in Owner's row
+    $baseUser->additional_online_users = count($data['addons'] ?? []);
+    $baseUser->save();
+
     $baseUser['addons'] = $addons;
     return $baseUser;
   }

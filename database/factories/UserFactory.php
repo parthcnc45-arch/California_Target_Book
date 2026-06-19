@@ -33,10 +33,10 @@ $factory->define(App\User::class, function (Faker $faker) {
         'last_name' => $faker->lastName,
         'email' => $email,
         'password' => $password ?: $password = bcrypt('test'),
-        'remember_token' => str_random(10),
+        'remember_token' => \Illuminate\Support\Str::random(10),
         'company_id' => $company->id,
         'verified' => 1,
-        'api_token' => str_random(60),
+        'api_token' => \Illuminate\Support\Str::random(60),
         'stripe_id' => $cust->id,
     ];
 });

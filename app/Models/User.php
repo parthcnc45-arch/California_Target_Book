@@ -62,7 +62,7 @@ class User extends Authenticatable
         parent::boot();
 
         static::creating(function ($model) {
-            $model->attributes['api_token'] = str_random(60);
+            $model->attributes['api_token'] = \Illuminate\Support\Str::random(60);
         });
     }
 

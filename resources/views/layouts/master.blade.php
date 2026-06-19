@@ -31,7 +31,7 @@
 
 
         <script>
-            window.STRIPE_PUB_KEY = "{{ env('STRIPE_PUB_KEY') }}";
+            window.STRIPE_PUB_KEY = "{{ config('app.STRIPE_PUB_KEY') }}";
 
             @auth
             window.user = {
@@ -41,7 +41,7 @@
             @endauth
 
             window.globals = {
-                STRIPE_PUB_KEY: "{{ env('STRIPE_PUB_KEY') }}",
+                STRIPE_PUB_KEY: "{{ config('app.STRIPE_PUB_KEY') }}",
                 ENV: "{{ env('APP_ENV') }}",
                 RELEASE: "{{ config('sentry.release') }}",
 

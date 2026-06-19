@@ -24,7 +24,7 @@
       };
 
       window.globals = {
-        stripe: window.Stripe("{{ env('STRIPE_PUB_KEY') }}"),
+        stripe: window.Stripe("{{ config('app.STRIPE_PUB_KEY') }}"),
 
         SUBSCRIPTION_COST_1YR: {{Globals::SUBSCRIPTION_COST_1YR / 100}},
         SUBSCRIPTION_COST_2YR: {{Globals::SUBSCRIPTION_COST_2YR / 100}},

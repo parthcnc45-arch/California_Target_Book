@@ -40,7 +40,7 @@
                         </tr>
                         <tr>
                             <td class="subscription-info-label">Seats</td>
-                            <td class="subscription-info-value"><span id="seats-summary-count">{{ 1 + count($sub['addons']) }}</span> of 5 used</td>
+                            <td class="subscription-info-value"><span id="seats-summary-count">{{ count($sub['addons']) }}</span> of {{ (int) ($sub['base_account']->additional_online_users ?? 0) }} used</td>
                         </tr>
                         <tr>
                             <td class="subscription-info-label">Add-ons</td>
@@ -66,7 +66,7 @@
 
             <!-- Team Members Accordion -->
             <button class="accordion-toggle" type="button" data-target="#team-list-1">
-                <span>Team Members (<span id="team-seats-count">{{ 1 + count($sub['addons']) }}</span> of 5 seats)</span>
+                <span>Team Members (<span id="team-seats-count">{{ count($sub['addons']) }}</span> of {{ (int) ($sub['base_account']->additional_online_users ?? 0) }} seats)</span>
                 <i class="bi bi-chevron-down accordion-chevron"></i>
             </button>
             <div id="team-list-1" class="accordion-content">
@@ -74,11 +74,11 @@
                     <!-- Seats Progress Bar -->
                     <div class="seats-progress-container">
                         <div class="seats-progress-header">
-                            <span class="seats-progress-text">Seats: <strong id="progress-seats-used">{{ 1 + count($sub['addons']) }}</strong> of <strong id="progress-seats-total">5</strong></span>
-                            <span class="seats-progress-available"><span id="progress-seats-available">{{ 5 - (1 + count($sub['addons'])) }}</span> available</span>
+                            <span class="seats-progress-text">Seats: <strong id="progress-seats-used">{{ count($sub['addons']) }}</strong> of <strong id="progress-seats-total">{{ (int) ($sub['base_account']->additional_online_users ?? 0) }}</strong></span>
+                            <span class="seats-progress-available"><span id="progress-seats-available">{{ max(0, (int) ($sub['base_account']->additional_online_users ?? 0) - count($sub['addons'])) }}</span> available</span>
                         </div>
                         <div class="seats-progress-bar-track">
-                            <div class="seats-progress-bar-fill" style="width: {{ ((1 + count($sub['addons'])) / 5) * 100 }}%;"></div>
+                            <div class="seats-progress-bar-fill" style="width: {{ (int) ($sub['base_account']->additional_online_users ?? 0) > 0 ? min(100, (count($sub['addons']) / (int) ($sub['base_account']->additional_online_users)) * 100) : 0 }}%;"></div>
                         </div>
                     </div>
 
@@ -86,7 +86,7 @@
                     <div class="invite-container invite-container-col">
                         <div class="flex-row-gap-12">
                             <input type="email" id="invite-email" class="form-input invite-input" placeholder="colleague@example.com">
-                            <button type="button" class="btn-invite" id="btn-invite-submit">Invite</button>
+                            <button type="button" class="btn-invite" id="btn-invite-submit"><i class="bi bi-envelope"></i> Invite</button>
                         </div>
                         <div id="invite-message" style="display:none; font-size:12.5px; margin-top: 4px; font-weight: 500;"></div>
                     </div>
@@ -129,7 +129,7 @@
                                 </td>
                                 <td>
                                     <div class="flex-center-gap-12">
-                                        <button type="button" class="btn-member-manage btn-reassign-addon" data-id="{{ $addon->id }}" data-name="{{ trim($addon->name()) ?: 'Pending Profile' }}">
+                                        <button type="button" class="btn-member-manage btn-reassign-addon" data-id="{{ $addon->id }}" data-name="{{ trim($addon->name()) ?: '' }}">
                                             <i class="bi bi-arrow-repeat"></i> Reassign
                                         </button>
                                         <button type="button" class="btn-member-remove btn-remove-addon" data-id="{{ $addon->id }}">
@@ -193,10 +193,6 @@
                     </div>
                 </div>
                 <div class="modal-body modal-body-mt-16">
-                    <div class="form-group form-group-mb-16">
-                        <label class="form-label-custom-sm">Name</label>
-                        <input type="text" id="reassign-new-name" class="form-input form-input-highlight" placeholder="John Doe">
-                    </div>
                     <div class="form-group form-group-mb-24">
                         <label class="form-label-custom-sm">Email</label>
                         <input type="email" id="reassign-new-email" class="form-input form-input-custom" placeholder="jane@example.com">
@@ -234,11 +230,23 @@
             </div>
         </div>
 
+        <!-- Toast Notification -->
+        <div id="custom-toast" class="portal-toast" style="display: none;">
+            <h4 class="portal-toast-title" id="toast-title"></h4>
+            <p class="portal-toast-body" id="toast-body"></p>
+        </div>
+
     </section>
 @endsection
 @section('portal_scripts')
 <script>
     $(document).ready(function() {
+        function showToast(title, body, isError = false) {
+            $('#toast-title').text(title).css('color', isError ? '#ef4444' : '#10b981');
+            $('#toast-body').text(body);
+            $('#custom-toast').stop(true, true).fadeIn(300).delay(4000).fadeOut(300);
+        }
+
         $('.accordion-toggle').on('click', function(e) {
             e.preventDefault();
             var $button = $(this);
@@ -286,9 +294,10 @@
             var name = $(this).data('name');
             $rowToReassign = $(this).closest('tr');
             
+            var email = $rowToReassign.attr('data-user-email') || '';
+            
             $('#reassign-modal').find('.modal-header-subtext').html('Replace <strong>' + name + '</strong> with a new team member.');
-            $('#reassign-new-name').val('');
-            $('#reassign-new-email').val('');
+            $('#reassign-new-email').val(email);
             $('#reassign-message').hide().empty();
             $('#reassign-modal').fadeIn(150).css('display', 'flex');
         });
@@ -308,14 +317,9 @@
             e.preventDefault();
             if (!addonIdToReassign) return;
             
-            var name = $.trim($('#reassign-new-name').val());
             var email = $.trim($('#reassign-new-email').val());
             var $messageDiv = $('#reassign-message');
 
-            if (!name) {
-                $messageDiv.html('<span style="color:#ef4444;">Please enter a name.</span>').show();
-                return;
-            }
             if (!email) {
                 $messageDiv.html('<span style="color:#ef4444;">Please enter an email address.</span>').show();
                 return;
@@ -336,7 +340,7 @@
                 method: 'POST',
                 data: {
                     id: addonIdToReassign,
-                    name: name,
+                    name: '',
                     email: email,
                     _token: '{{ csrf_token() }}'
                 },
@@ -344,6 +348,7 @@
                     $btn.prop('disabled', false).text('Reassign');
                     if (response.success) {
                         $('#reassign-modal').fadeOut(150);
+                        showToast('Success', response.message || 'Seat reassigned successfully.', false);
                         
                         // Update the row values dynamically in the table
                         $rowToReassign.attr('data-addon-id', response.addon.id);
@@ -432,8 +437,9 @@
                     $('#remove-modal').fadeOut(150);
                     if (response.success) {
                         $rowToRemove.remove();
+                        showToast('Success', response.message || 'User removed successfully.', false);
                         // Update counts
-                        var totalSeats = $('#team-members-table tbody tr').length;
+                        var totalSeats = $('#team-members-table tbody tr[data-addon-id]').length;
                         $('#team-seats-count').text(totalSeats);
                         $('#seats-summary-count').text(totalSeats);
                         
@@ -448,7 +454,7 @@
 
                         checkSeatLimit();
                     } else {
-                        alert(response.message || 'Failed to remove user.');
+                        showToast('Error', response.message || 'Failed to remove user.', true);
                     }
                 },
                 error: function(xhr) {
@@ -457,22 +463,22 @@
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMsg = xhr.responseJSON.message;
                     }
-                    alert(errorMsg);
+                    showToast('Error', errorMsg, true);
                 }
             });
         });
 
         // Check seat limit function
         function checkSeatLimit() {
-            var count = $('#team-members-table tbody tr').length;
-            var maxSeats = 5;
+            var count = $('#team-members-table tbody tr[data-addon-id]').length;
+            var maxSeats = {{ (int) ($sub['base_account']->additional_online_users ?? 0) }};
             var available = maxSeats - count;
             if (available < 0) available = 0;
 
             // Update progress bar UI
             $('#progress-seats-used').text(count);
             $('#progress-seats-available').text(available);
-            var percent = (count / maxSeats) * 100;
+            var percent = maxSeats > 0 ? (count / maxSeats) * 100 : 0;
             if (percent > 100) percent = 100;
             $('.seats-progress-bar-fill').css('width', percent + '%');
 
@@ -483,9 +489,17 @@
             } else {
                 $('#invite-email').prop('disabled', false);
                 $('#btn-invite-submit').prop('disabled', false);
-                $('#invite-message').hide();
+                
+                var currentHtml = $('#invite-message').html() || '';
+                if (currentHtml.indexOf('color:#ef4444') !== -1 || currentHtml.indexOf('limit') !== -1) {
+                    $('#invite-message').hide();
+                }
             }
         }
+
+        $('#invite-email').on('input', function() {
+            $('#invite-message').hide();
+        });
 
         // Call initially
         checkSeatLimit();
@@ -497,21 +511,21 @@
             var $messageDiv = $('#invite-message');
 
             if (!email) {
-                $messageDiv.html('<span style="color:#ef4444;">Please enter an email address.</span>').show();
+                showToast('Validation Error', 'Please enter an email address.', true);
                 return;
             }
 
             // Simple email format check
             var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
             if(!emailReg.test(email)) {
-                $messageDiv.html('<span style="color:#ef4444;">Please enter a valid email address.</span>').show();
+                showToast('Validation Error', 'Please enter a valid email address.', true);
                 return;
             }
 
             // Disable UI
             $('#invite-email').prop('disabled', true);
             $('#btn-invite-submit').prop('disabled', true);
-            $messageDiv.html('<span style="color:#475569;">Sending invitation...</span>').show();
+            $messageDiv.html('<span style="color:#475569;"><i class="bi bi-hourglass-split"></i> Sending invitation...</span>').show();
 
             $.ajax({
                 url: '{{ route("auth.account.subscriptions.addons.invite") }}',
@@ -521,9 +535,10 @@
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(response) {
+                    $messageDiv.hide();
                     if (response.success) {
                         $('#invite-email').val('');
-                        $messageDiv.html('<span style="color:#16a34a;">' + response.message + '</span>').show();
+                        showToast('Success', response.message, false);
                         
                         // Append new member to table
                         var newRow = `
@@ -551,7 +566,7 @@
                         $('#team-members-table tbody').append(newRow);
 
                         // Update Counts
-                        var totalSeats = $('#team-members-table tbody tr').length;
+                        var totalSeats = $('#team-members-table tbody tr[data-addon-id]').length;
                         $('#team-seats-count').text(totalSeats);
                         $('#seats-summary-count').text(totalSeats);
 
@@ -567,19 +582,20 @@
                         // Re-enable/Check Limits
                         checkSeatLimit();
                     } else {
-                        $messageDiv.html('<span style="color:#ef4444;">' + response.message + '</span>').show();
+                        showToast('Error', response.message || 'Failed to send invitation.', true);
                         $('#invite-email').prop('disabled', false);
                         $('#btn-invite-submit').prop('disabled', false);
                     }
                 },
                 error: function(xhr) {
+                    $messageDiv.hide();
                     var errorMsg = 'Failed to send invitation. Please try again.';
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMsg = xhr.responseJSON.message;
                     } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.email) {
                         errorMsg = xhr.responseJSON.errors.email[0];
                     }
-                    $messageDiv.html('<span style="color:#ef4444;">' + errorMsg + '</span>').show();
+                    showToast('Error', errorMsg, true);
                     $('#invite-email').prop('disabled', false);
                     $('#btn-invite-submit').prop('disabled', false);
                     checkSeatLimit();

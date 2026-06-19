@@ -2,7 +2,7 @@
 @section('portal_content')
     <section id="section-add-subscription" class="portal-section active">
         <!-- Header: Back Navigation -->
-        <div class="portal-mb-24">
+        <div class="portal-mb-24" style="margin-bottom: 20px;">
             <div class="flex-center-gap-12 portal-mb-6">
                 <a href="{{ route('auth.account.subscriptions') }}" class="back-nav-link">
                     <i class="bi bi-arrow-left"></i>
@@ -13,7 +13,7 @@
         </div>
 
         <!-- Cards List -->
-        <div class="portal-flex-wrap-gap-24">
+        <div class="portal-flex-wrap-gap-24" style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
             <!-- Card 1: One-Year Subscription -->
             <div class="sub-option-card">
                 <h2 class="sub-option-title">One-Year Subscription</h2>

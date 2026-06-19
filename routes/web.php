@@ -15,7 +15,7 @@
  * Public Routes
  */
 Route::get('/', function () {
-    return view('home');
+    return view('new');
 })->name('home');
 
 Route::get('/subscriptions/one-year', function () {
@@ -921,4 +921,41 @@ Route::get('/optimize-clear', function () {
             'message' => 'Error: ' . $e->getMessage()
         ], 500);
     }
+});
+
+Route::get('/session-test', function () {
+    session(['test_key' => 'test_value_' . time()]);
+    return response()->json([
+        'session_id' => session()->getId(),
+        'test_value' => session('test_key'),
+        'csrf_token' => csrf_token(),
+        'storage_writable' => is_writable(storage_path('framework/sessions')),
+        'all_session_data' => session()->all(),
+    ]);
+});
+
+Route::get('/clear-cache', function () {
+
+    Artisan::call('optimize:clear');
+
+    return [
+        'bootstrap_cache_writable' => is_writable(base_path('bootstrap/cache')),
+        'storage_writable' => is_writable(storage_path()),
+        'message' => 'checked'
+    ];
+});
+Route::get('/stripe-key', function () {
+    return [
+        'env' => env('STRIPE_PUB_KEY'),
+        'config' => config('app.STRIPE_PUB_KEY'),
+    ];
+});
+Route::get('/env-check', function () {
+    return [
+        'STRIPE_PUB_KEY' => env('STRIPE_PUB_KEY'),
+        'STRIPE_KEY' => env('STRIPE_KEY'),
+    ];
+});
+Route::get('/env-path', function () {
+    return base_path('.env');
 });

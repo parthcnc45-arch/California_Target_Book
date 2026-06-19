@@ -31,7 +31,7 @@ class AddonInvitation extends Mailable
         return $this->view('email.addon-invitation')->with([
             'baseUserName' => $this->baseUser->name(),
             'baseUserEmail' => $this->baseUser->email,
-            'company_name' => $this->baseUser->company()->first()->name,
+            'company_name' => optional($this->baseUser->company)->name ?: 'California Target Book',
             'email_token' => $this->addonUser->email_token
         ]);
     }

@@ -2647,14 +2647,19 @@ body.landing-body footer {
 /* --------------------------------------------------------------------------
    10. Auth Card Pages Styles (from login.blade.php / signup.blade.php / reset.blade.php / email.blade.php)
    -------------------------------------------------------------------------- */
-body.auth-card-body {
+body.auth-card-body,
+body:has(.login-container-wrapper) {
     background-color: #f9fafb !important;
     font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
 body.auth-card-body .nav-container,
 body.auth-card-body footer,
-body.auth-card-body .navbar {
+body.auth-card-body .navbar,
+body:has(.login-container-wrapper) .nav-container,
+body:has(.login-container-wrapper) footer,
+body:has(.login-container-wrapper) .navbar,
+main:has(.login-container-wrapper) footer {
     display: none !important;
 }
 
@@ -2863,7 +2868,9 @@ body.auth-card-body .navbar {
 /* --------------------------------------------------------------------------
    11. Checkout Pages Styles (from subscriptions/one_year.blade.php / subscriptions/two_year.blade.php)
    -------------------------------------------------------------------------- */
-body.checkout-body {
+body.checkout-body,
+body:has(.checkout-container),
+body:has(.checkout-header) {
     --primary-red: #c52026;
     --primary-blue: #164e82;
     --bg-light: #ffffff;
@@ -2879,7 +2886,9 @@ body.checkout-body {
     padding: 0;
 }
 
-body.checkout-body #app {
+body.checkout-body #app,
+body:has(.checkout-container) #app,
+body:has(.checkout-header) #app {
     background-color: var(--bg-light) !important;
     min-height: 100vh;
 }
@@ -2892,7 +2901,25 @@ body.checkout-body h5,
 body.checkout-body h6, 
 body.checkout-body label, 
 body.checkout-body p, 
-body.checkout-body div {
+body.checkout-body div,
+body:has(.checkout-container) h1, 
+body:has(.checkout-container) h2, 
+body:has(.checkout-container) h3, 
+body:has(.checkout-container) h4, 
+body:has(.checkout-container) h5, 
+body:has(.checkout-container) h6, 
+body:has(.checkout-container) label, 
+body:has(.checkout-container) p, 
+body:has(.checkout-container) div,
+body:has(.checkout-header) h1, 
+body:has(.checkout-header) h2, 
+body:has(.checkout-header) h3, 
+body:has(.checkout-header) h4, 
+body:has(.checkout-header) h5, 
+body:has(.checkout-header) h6, 
+body:has(.checkout-header) label, 
+body:has(.checkout-header) p, 
+body:has(.checkout-header) div {
     font-family: 'Inter', -apple-system, sans-serif;
 }
 

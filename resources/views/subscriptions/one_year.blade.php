@@ -811,8 +811,10 @@
         try {
             // Using a Stripe test publishable key just to render the UI locally without error.
             // Replace this with your actual environment key in production.
-            const stripeKey = '{{ env('STRIPE_PUB_KEY', 'pk_test_TYooMQauvdEDq54NiTphI7jx') }}';
+            const stripeKey = '{{ config('app.STRIPE_PUB_KEY') ?: 'pk_test_TYooMQauvdEDq54NiTphI7jx' }}';
             stripe = Stripe(stripeKey);
+
+            console.log('Stripe key:', stripeKey);
             
             const options = {
                 mode: 'payment',

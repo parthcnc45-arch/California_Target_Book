@@ -102,7 +102,7 @@ class Subscription extends Model
                 'last_name' => $body['last_name'],
                 'company_id' => $baseAccount->company_id,
                 'email_token' => base64_encode($addonEmail),
-                'api_token' => str_random(60),
+                'api_token' => \Illuminate\Support\Str::random(60),
             ]);
         } else {
             $addonBody = $existing;

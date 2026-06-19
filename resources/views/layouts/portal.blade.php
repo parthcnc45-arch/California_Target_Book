@@ -22,7 +22,7 @@
     <!-- Left Sidebar -->
     <aside class="portal-sidebar">
         <div class="sidebar-brand">
-            <img src="{{asset('img/ctb-logo-6QqsiqVS.png')}}" alt="California Target Book Logo" class="brand-logo">
+            <img src="/img/ctb-logo-6QqsiqVS.png" alt="California Target Book Logo" class="brand-logo">
         </div>
         <div class="sidebar-profile">
             <div class="profile-avatar">

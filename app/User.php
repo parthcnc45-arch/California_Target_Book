@@ -38,6 +38,7 @@ class User extends Authenticatable
         'api_token',
         'notes',
         'register_by',
+        'additional_online_users',
     ];
 
     /**

@@ -15,5 +15,6 @@ class VerifyCsrfToken extends Middleware
         'api/*',
         'register',
         'register-addon',
+        'register-emails',
     ];
 }

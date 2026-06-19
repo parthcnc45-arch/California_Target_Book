@@ -771,6 +771,23 @@
                                 $('.checkout-container').hide();
                                 $('.success-container').show();
                                 $('html, body').animate({ scrollTop: 0 }, 300);
+
+                                // Trigger GHL sync and email dispatching in the background via AJAX
+                                $.ajax({
+                                    url: "/register-emails",
+                                    type: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    contentType: 'application/json',
+                                    data: JSON.stringify({}),
+                                    success: function(emailRes) {
+                                        console.log('Background emails processed:', emailRes);
+                                    },
+                                    error: function(emailErr) {
+                                        console.error('Failed to trigger background emails:', emailErr);
+                                    }
+                                });
                             } else {
                                 console.error("Tesing");
                                 alert('Error: ' + (res.message || 'Unknown error'));

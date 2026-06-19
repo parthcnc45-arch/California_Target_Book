@@ -485,16 +485,23 @@ trait CreatesUser {
 
             $productId = 'prod_' . md5($productName);
 
-            try {
-                // Try to reuse existing product to keep Stripe catalog clean
-                $stripeProduct = \Stripe\Product::retrieve($productId);
-            } catch (\Exception $e) {
-                // Create it if it doesn't exist
-                $stripeProduct = \Stripe\Product::create([
-                    'id' => $productId,
-                    'name' => $productName,
-                    'type' => 'service',
-                ]);
+            // Cache product lookup to avoid redundant API calls (saves ~1-2 seconds per call)
+            if (!\Illuminate\Support\Facades\Cache::has("stripe_prod_{$productId}")) {
+                try {
+                    \Stripe\Product::retrieve($productId);
+                    \Illuminate\Support\Facades\Cache::forever("stripe_prod_{$productId}", true);
+                } catch (\Exception $e) {
+                    try {
+                        \Stripe\Product::create([
+                            'id' => $productId,
+                            'name' => $productName,
+                            'type' => 'service',
+                        ]);
+                        \Illuminate\Support\Facades\Cache::forever("stripe_prod_{$productId}", true);
+                    } catch (\Exception $createEx) {
+                        \Illuminate\Support\Facades\Log::error('Stripe Product creation failed: ' . $createEx->getMessage());
+                    }
+                }
             }
 
             // Create base subscription plan with only the base cost
@@ -514,30 +521,41 @@ trait CreatesUser {
             // Step 2: Handle Additional Online User as a recurring subscription item
             if ($addons->count() > 0) {
                 $addonProductId = 'prod_additional_online_user';
-                try {
-                    \Stripe\Product::retrieve($addonProductId);
-                } catch (\Exception $e) {
-                    \Stripe\Product::create([
-                        'id' => $addonProductId,
-                        'name' => 'Additional Online User',
-                        'type' => 'service',
-                    ]);
-                }
-
                 $addonPlanId = 'plan_addon_user_' . $frequency . 'm';
-                $addonPlanAmount = ($frequency === 24) ? 20000 : 10000; // $200 for 2-yr, $100 for 1-yr
 
-                try {
-                    \Stripe\Plan::retrieve($addonPlanId);
-                } catch (\Exception $e) {
-                    \Stripe\Plan::create([
-                        'id' => $addonPlanId,
-                        'amount' => $addonPlanAmount,
-                        'currency' => 'usd',
-                        'interval' => $interval,
-                        'interval_count' => $interval_count,
-                        'product' => $addonProductId,
-                    ]);
+                // Cache addon product & plan lookup/creation to avoid redundant API calls
+                if (!\Illuminate\Support\Facades\Cache::has("stripe_plan_{$addonPlanId}")) {
+                    // Try to retrieve/create addon product
+                    try {
+                        \Stripe\Product::retrieve($addonProductId);
+                    } catch (\Exception $e) {
+                        try {
+                            \Stripe\Product::create([
+                                'id' => $addonProductId,
+                                'name' => 'Additional Online User',
+                                'type' => 'service',
+                            ]);
+                        } catch (\Exception $ex) {}
+                    }
+
+                    // Try to retrieve/create addon plan
+                    try {
+                        \Stripe\Plan::retrieve($addonPlanId);
+                        \Illuminate\Support\Facades\Cache::forever("stripe_plan_{$addonPlanId}", true);
+                    } catch (\Exception $e) {
+                        try {
+                            $addonPlanAmount = ($frequency === 24) ? 20000 : 10000; // $200 for 2-yr, $100 for 1-yr
+                            \Stripe\Plan::create([
+                                'id' => $addonPlanId,
+                                'amount' => $addonPlanAmount,
+                                'currency' => 'usd',
+                                'interval' => $interval,
+                                'interval_count' => $interval_count,
+                                'product' => $addonProductId,
+                            ]);
+                            \Illuminate\Support\Facades\Cache::forever("stripe_plan_{$addonPlanId}", true);
+                        } catch (\Exception $ex) {}
+                    }
                 }
 
                 $subscriptionItems[] = [
@@ -569,10 +587,11 @@ trait CreatesUser {
             
             // Pay the invoice immediately so the subscription becomes active
             try {
-                $invoice->pay();
-                // Refresh the invoice and subscription status
-                $invoice = \Stripe\Invoice::retrieve($latestInvoiceId);
-                $stripeSub = \Stripe\Subscription::retrieve($stripeSub->id);
+                $invoice = $invoice->pay();
+                // Update local status representation based on successful invoice payment
+                if ($invoice->paid) {
+                    $stripeSub->status = 'active';
+                }
             } catch (\Exception $payException) {
                 \Illuminate\Support\Facades\Log::warning('Stripe Subscription immediate payment failed: ' . $payException->getMessage());
             }
@@ -605,9 +624,11 @@ trait CreatesUser {
         }
     }
 
+    /*
     if (isset($invoice) && isset($data['send_invoice']) && $data['send_invoice']) {
         dispatch(new SendInvoice($baseUser, $invoice));
     }
+    */
 
     if (array_key_exists('is_paid_for',$data) && $data['is_paid_for']) {
       $cycle->activate();

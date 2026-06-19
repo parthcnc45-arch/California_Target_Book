@@ -130,6 +130,7 @@ Route::get('/signup', function () {
 Route::post('/signup', 'Auth\RegisterController@signup')->name('signup.post');
 Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('/register', 'Auth\RegisterController@register');
+Route::post('/register-emails', 'Auth\RegisterController@sendRegistrationEmailsAPI');
 Route::post('/register-addon', 'Auth\RegisterController@register_addon')->name('auth.register_addon');
 Route::get('/register/thank-you', 'Auth\RegisterController@showThankYou')->name('register.thank-you');
 Route::get('/register/coupon/{code}', 'Auth\RegisterController@checkCoupon')->name('register.check-coupon');
@@ -934,28 +935,11 @@ Route::get('/session-test', function () {
     ]);
 });
 
-Route::get('/clear-cache', function () {
 
-    Artisan::call('optimize:clear');
 
+Route::get('/api-check', function () {
     return [
-        'bootstrap_cache_writable' => is_writable(base_path('bootstrap/cache')),
-        'storage_writable' => is_writable(storage_path()),
-        'message' => 'checked'
+        'header_token' => request()->bearerToken(),
+        'api_user'     => auth('api')->user(),
     ];
-});
-Route::get('/stripe-key', function () {
-    return [
-        'env' => env('STRIPE_PUB_KEY'),
-        'config' => config('app.STRIPE_PUB_KEY'),
-    ];
-});
-Route::get('/env-check', function () {
-    return [
-        'STRIPE_PUB_KEY' => env('STRIPE_PUB_KEY'),
-        'STRIPE_KEY' => env('STRIPE_KEY'),
-    ];
-});
-Route::get('/env-path', function () {
-    return base_path('.env');
-});
+})->middleware('auth:api');

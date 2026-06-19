@@ -23,7 +23,7 @@ class AdminNotifySubscriber
 
         $this->getAdminForSetting('admin_notify_signup')
             ->each(function ($admin) use ($sub) {
-                dispatch(new SendAdminNotification([
+                dispatch_now(new SendAdminNotification([
                     'admin' => $admin,
                     'message' => 'Someone just subscribed to the Target Book.',
                     'link' => "/ctb-admin/subscriptions/$sub->id"

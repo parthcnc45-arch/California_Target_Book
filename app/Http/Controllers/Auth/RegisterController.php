@@ -8,6 +8,7 @@ use App\Jobs\SendAddonInvitation;
 use App\Jobs\SendPaymentInstructionsEmail;
 use App\Jobs\SendVerificationEmail;
 use App\Jobs\SendSetPassword;
+use App\Jobs\SendInvoice;
 use Illuminate\Support\Facades\Log;
 
 use App\User;
@@ -324,6 +325,7 @@ class RegisterController extends Controller
     }
     public function register(Request $request)
     {
+        @set_time_limit(180);
         // Get all data except admin options
         $data = $request->except(CreatesUser::$create_user_admin_options);
 
@@ -346,59 +348,10 @@ class RegisterController extends Controller
             }
         }
 
-        // 1. Get or Create GoHighLevel Contact first to avoid race conditions and match Stripe perfectly
-        $ghlContactId = null;
-        try {
-            $tempUser = (object) [
-                'first_name' => $data['first_name'] ?? '',
-                'last_name'  => $data['last_name'] ?? '',
-                'email'      => $data['email'] ?? '',
-                'phone'      => $data['phone_number'] ?? '',
-            ];
-            $ghlContactId = $this->getOrCreateGHLContact($tempUser);
-            if ($ghlContactId) {
-                $data['ghl_contact_id'] = $ghlContactId;
-            }
-        } catch (\Exception $e) {
-            Log::error('GoHighLevel Pre-Sync Contact Error in RegisterController:register: ' . $e->getMessage());
-        }
-
         // Default options
         $data['send_invoice'] = true;
 
         $user = $this->createUser($data);
-
-        if ($ghlContactId) {
-            Log::info('GHL Contact successfully synchronized in RegisterController:register', [
-                'user_id' => $user->id,
-                'ghl_contact_id' => $ghlContactId,
-            ]);
-        }
-
-        event(new Registered($user));
-        event(new NewSubscriber($user));
-
-        if (array_key_exists('is_paid_for', $data) && $data['is_paid_for']) {
-            if (!$userExists) {
-                // New user
-                if (empty($request->input('password'))) {
-                    // Checkout flow without password field -> send Set Password link
-                    $token = \Illuminate\Support\Facades\Password::broker()->createToken($user);
-                    dispatch(new SendSetPassword($user, $token));
-                } else {
-                    // Standard registration page -> send standard verification email
-                    dispatch(new SendVerificationEmail($user->id));
-                }
-            } else {
-                // Existing user
-                if (!$isVerified) {
-                    dispatch(new SendVerificationEmail($user->id));
-                }
-            }
-        } else {
-            // Unpaid (e.g. check/invoice payment) -> send instructions
-            dispatch(new SendPaymentInstructionsEmail($user->id));
-        }
 
         try {
             $invoice = \Stripe\Invoice::retrieve(
@@ -409,13 +362,79 @@ class RegisterController extends Controller
             $invoice = null;
         }
 
+        // Store registration info in session for the background emails API
         Session::put('new_subscription', [
             'user' => $user,
             'invoice' => $invoice,
+            'userExists' => $userExists,
+            'isVerified' => $isVerified,
+            'plainPassword' => $request->input('password'),
+            'data' => $data,
         ]);
+        Session::save();
+
         return $request->wantsJson()
         ? new JsonResponse(['success'=>true,'message'=>'Thank you for Subscription'], 200)
         : redirect()->route('register.thank-you');
+    }
+
+    /**
+     * Web API called asynchronously to send GHL and registration emails in the background.
+     */
+    public function sendRegistrationEmailsAPI(Request $request)
+    {
+        $sessionData = Session::get('new_subscription');
+        if (!$sessionData) {
+            return new JsonResponse(['success' => false, 'message' => 'No active registration session found.'], 400);
+        }
+
+        $user = $sessionData['user'];
+        $invoice = $sessionData['invoice'];
+        $userExists = $sessionData['userExists'] ?? false;
+        $isVerified = $sessionData['isVerified'] ?? false;
+        $plainPassword = $sessionData['plainPassword'] ?? null;
+        $data = $sessionData['data'] ?? [];
+
+        // 1. Sync GHL Contact
+        try {
+            dispatch_now(new \App\Jobs\SyncGHLContact($user));
+        } catch (\Exception $e) {
+            Log::error('SyncGHLContact failed in API: ' . $e->getMessage());
+        }
+
+        // 2. Dispatch emails
+        if (array_key_exists('is_paid_for', $data) && $data['is_paid_for']) {
+            if (!$userExists) {
+                // New user
+                if (empty($plainPassword)) {
+                    // Checkout flow without password field -> send Set Password link
+                    $token = \Illuminate\Support\Facades\Password::broker()->createToken($user);
+                    dispatch_now(new SendSetPassword($user, $token));
+                } else {
+                    // Standard registration page -> send standard verification email
+                    dispatch_now(new SendVerificationEmail($user->id));
+                }
+            } else {
+                // Existing user
+                if (!$isVerified) {
+                    dispatch_now(new SendVerificationEmail($user->id));
+                }
+            }
+        } else {
+            // Unpaid (e.g. check/invoice payment) -> send instructions
+            dispatch_now(new SendPaymentInstructionsEmail($user->id));
+        }
+
+        // 3. Dispatch Invoice email
+        if (isset($invoice) && isset($data['send_invoice']) && $data['send_invoice']) {
+            dispatch_now(new SendInvoice($user, $invoice));
+        }
+
+        // 4. Trigger events (e.g., admin notifications)
+        event(new Registered($user));
+        event(new NewSubscriber($user));
+
+        return new JsonResponse(['success' => true, 'message' => 'Emails processed successfully.']);
     }
 
     /**
@@ -554,71 +573,4 @@ class RegisterController extends Controller
         return response()->json(['success' => true, 'user' => $user]);
     }
 
-    private function getOrCreateGHLContact($user)
-    {
-        $ghlToken   = config('app.GHL_TOKEN') ?? 'pit-9edbcb56-3ea3-4e72-b633-a54a943ec8cf';
-        $locationId = config('app.GHL_LOCATION_ID') ?? 'Fvvh7SvvoDgMQg4PNPCB';
-
-        // Try creating contact with Active Subscriber tags
-        $payload = [
-            'locationId' => $locationId,
-            'firstName'  => $user->first_name ?? '',
-            'lastName'   => $user->last_name ?? '',
-            'email'      => $user->email,
-            'phone'      => $user->phone_number ?? $user->phone ?? '',
-            'tags'       => ['active_subscriber', 'CTB Active'],
-        ];
-
-        $response = \Illuminate\Support\Facades\Http::withHeaders([
-            'Authorization' => "Bearer $ghlToken",
-            'Version'       => '2021-07-28',
-            'Accept'        => 'application/json',
-        ])->post('https://services.leadconnectorhq.com/contacts/', $payload);
-
-        $resData = $response->json();
-
-        Log::info('GHL Contact getOrCreate response', [
-            'status' => $response->status(),
-            'response' => $resData
-        ]);
-
-        $contactId = $resData['contact']['id'] ?? $resData['id'] ?? $resData['meta']['contactId'] ?? null;
-
-        // If creation failed or didn't return contact ID (e.g. contact already exists)
-        if (!$contactId) {
-            // Try to lookup/search contact by email
-            $searchResponse = \Illuminate\Support\Facades\Http::withHeaders([
-                'Authorization' => "Bearer $ghlToken",
-                'Version'       => '2021-07-28',
-                'Accept'        => 'application/json',
-            ])->get('https://services.leadconnectorhq.com/contacts/', [
-                'locationId' => $locationId,
-                'query' => $user->email
-            ]);
-
-            $searchData = $searchResponse->json();
-            Log::info('GHL Contact search response', [
-                'status' => $searchResponse->status(),
-                'response' => $searchData
-            ]);
-
-            $contacts = $searchData['contacts'] ?? [];
-            if (!empty($contacts)) {
-                $contactId = $contacts[0]['id'] ?? null;
-            }
-        }
-
-        // If contact already existed, let's update it to add the active_subscriber tags
-        if ($contactId && ($response->status() === 400 || !empty($contacts))) {
-            \Illuminate\Support\Facades\Http::withHeaders([
-                'Authorization' => "Bearer $ghlToken",
-                'Version'       => '2021-07-28',
-                'Accept'        => 'application/json',
-            ])->put("https://services.leadconnectorhq.com/contacts/{$contactId}", [
-                'tags' => ['active_subscriber', 'CTB Active'],
-            ]);
-        }
-
-        return $contactId;
-    }
 }

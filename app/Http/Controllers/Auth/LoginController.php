@@ -102,7 +102,11 @@ class LoginController extends Controller
         }
 
         return $request->wantsJson()
-                    ? new JsonResponse(['success'=>true], 200)
+                    ? new JsonResponse([
+                        'success' => true,
+                        'api_token' => $this->guard()->user()->api_token,
+                        'redirect' => $this->redirectPath()
+                    ], 200)
                     : redirect()->intended($this->redirectPath());
     }
 

@@ -324,6 +324,15 @@ class AccountController extends Controller
 
     public function updateProfile(Request $request) {
         $user = Auth::user();
+        if (!$user) {
+            $token = $request->bearerToken() ?: $request->input('api_token');
+            if ($token) {
+                $user = User::where('api_token', $token)->first();
+            }
+        }
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
 
         $data = $request->all();
 
@@ -425,6 +434,18 @@ class AccountController extends Controller
     }
 
     public function changePassword(Request $request) {
+        $user = Auth::user();
+        if (!$user) {
+            $token = $request->bearerToken() ?: $request->input('api_token');
+            if ($token) {
+                $user = User::where('api_token', $token)->first();
+            }
+        }
+        if (!$user) {
+            $res = response()->json(['errors' => ['current_password' => ['Unauthenticated.']]], 401);
+            throw new HttpResponseException($res);
+        }
+
         $data = $request->all();
 
         $validator = Validator::make($data, [
@@ -434,8 +455,6 @@ class AccountController extends Controller
             'current_password.required' => 'Please enter your current password.',
             'password.required' => 'Please enter a new password.',
         ]);
-
-        $user = Auth::user();
 
         $validator->after(function($v) use ($data, $user) {
             if(! \Hash::check($data['current_password'], $user->password)) {
@@ -688,14 +707,22 @@ class AccountController extends Controller
 
 
     public function verifyBank(Request $request) {
-
+        $u = Auth::user();
+        if (!$u) {
+            $token = $request->bearerToken() ?: $request->input('api_token');
+            if ($token) {
+                $u = User::where('api_token', $token)->first();
+            }
+        }
+        if (!$u) {
+            $res = response()->json(['errors' => ['stripe_token' => ['Unauthenticated.']]], 401);
+            throw new HttpResponseException($res);
+        }
 
         $validation = [ 'deposits' => 'array' ];
         $data = $request->all();
         $val = Validator::make($data, $validation);
         $val->validate();
-
-        $u = Auth::user();
         $cust = \Stripe\Customer::retrieve($u->stripe_id);
         $ba = $cust->sources->data[0];
 

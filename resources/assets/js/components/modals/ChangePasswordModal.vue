@@ -96,7 +96,7 @@
 </template>
 
 <script>
-    import axios from 'axios';
+    import axios from '../../api';
 
     export default {
         props: ['invoice'],

@@ -923,23 +923,3 @@ Route::get('/optimize-clear', function () {
         ], 500);
     }
 });
-
-Route::get('/session-test', function () {
-    session(['test_key' => 'test_value_' . time()]);
-    return response()->json([
-        'session_id' => session()->getId(),
-        'test_value' => session('test_key'),
-        'csrf_token' => csrf_token(),
-        'storage_writable' => is_writable(storage_path('framework/sessions')),
-        'all_session_data' => session()->all(),
-    ]);
-});
-
-
-
-Route::get('/api-check', function () {
-    return [
-        'header_token' => request()->bearerToken(),
-        'api_user'     => auth('api')->user(),
-    ];
-})->middleware('auth:api');

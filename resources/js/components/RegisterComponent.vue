@@ -1,7 +1,7 @@
 <script>
 
   import VueGoogleAutocomplete from 'vue-google-autocomplete'
-  import axios from 'axios';
+  import axios from '../api';
 
   export default {
     components: {VueGoogleAutocomplete},

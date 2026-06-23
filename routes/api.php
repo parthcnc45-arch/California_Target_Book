@@ -32,7 +32,6 @@ Route::group([
 Route::group([
     'prefix' => '/users/me',
     'namespace' => 'Auth',
-    'middleware' => ['auth:api'],
 ], function() {
     Route::put('/', 'AccountController@updateProfile');
     Route::put('/password', 'AccountController@changePassword');

@@ -213,7 +213,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '../api';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },

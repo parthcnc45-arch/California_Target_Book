@@ -60,7 +60,7 @@
                                     </td>
                                     <td class="text-center">
                                         @if($t->invoice_url)
-                                            <a href="{{ $t->invoice_url }}" target="_blank" class="link-view-invoice">View</a>
+                                            <a href="{{ $t->invoice_url }}" class="link-view-invoice">View</a>
                                         @else
                                             <span class="text-disabled-gray">—</span>
                                         @endif
@@ -85,7 +85,7 @@
     <script>
     function exportTransactionsCSV() {
         var csv = [];
-        var rows = document.querySelectorAll("table.info-table tr");
+        var rows = document.querySelectorAll("table.portal-grid-table tr");
         
         for (var i = 0; i < rows.length; i++) {
             var row = [], cols = rows[i].querySelectorAll("td, th");

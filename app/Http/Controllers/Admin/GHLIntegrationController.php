@@ -31,6 +31,7 @@ class GHLIntegrationController extends Controller
 
                 $cycle = $sub->cycles()->first();
                 $paymentMethod = $cycle ? $cycle->payment_method : 'stripe';
+                $startDate = ($cycle && $cycle->starts_on) ? $cycle->starts_on : 'N/A';
 
                 $subscriptionsData[] = [
                     'id' => $sub->id,
@@ -39,6 +40,7 @@ class GHLIntegrationController extends Controller
                     'stripe_sub_id' => $sub->wordpress_subscription_id ?: 'N/A',
                     'frequency' => $frequencyText,
                     'payment_method' => $paymentMethod,
+                    'start_date' => $startDate,
                     'next_payment' => $sub->next_payment ?: 'N/A',
                     'end_date' => $sub->end_date ?: 'N/A',
                     'status' => $sub->status,
@@ -201,6 +203,77 @@ class GHLIntegrationController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to pause subscription: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Resume a paused subscription in the Laravel database and on Stripe.
+     */
+    public function resumeSubscription(Request $request, $stripeSubId)
+    {
+        try {
+            $subscription = Subscription::where('wordpress_subscription_id', $stripeSubId)
+                ->first();
+
+            if (!$subscription) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Subscription not found in database.'
+                ], 404);
+            }
+
+            $resumedOnStripe = false;
+
+            // If the subscription ID looks like a Stripe subscription ID (starts with 'sub_')
+            if (strpos($stripeSubId, 'sub_') === 0) {
+                try {
+                    $stripeKey = config('app.STRIPE_KEY') ?: env('STRIPE_KEY');
+                    if ($stripeKey) {
+                        \Stripe\Stripe::setApiKey($stripeKey);
+                        $stripeSub = \Stripe\Subscription::retrieve($stripeSubId);
+                        if ($stripeSub) {
+                            $stripeSub->pause_collection = null;
+                            $stripeSub->save();
+                            $resumedOnStripe = true;
+                            Log::info('Stripe subscription resumed successfully: ' . $stripeSubId);
+                        }
+                    } else {
+                        Log::warning('Stripe API Key not configured during resumeSubscription for ' . $stripeSubId);
+                    }
+                } catch (\Exception $stripeEx) {
+                    $errorMessage = $stripeEx->getMessage();
+                    Log::error('Stripe resume exception: ' . $errorMessage, [
+                        'stripe_sub_id' => $stripeSubId
+                    ]);
+
+                    $isNotFoundError = (strpos($errorMessage, 'No such subscription') !== false);
+
+                    if (!$isNotFoundError) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Failed to resume subscription on Stripe: ' . $errorMessage
+                        ], 500);
+                    }
+                }
+            }
+
+            // Update Cycles status
+            $subscription->status = 'active';
+            $subscription->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => $resumedOnStripe
+                    ? 'Subscription resumed successfully in database and on Stripe.'
+                    : 'Subscription resumed successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('GHL API Resume Subscription failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to resume subscription: ' . $e->getMessage()
             ], 500);
         }
     }

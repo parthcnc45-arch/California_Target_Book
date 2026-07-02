@@ -165,6 +165,39 @@
             </div>
         </div>
 
+        <!-- Stripe Purchase Modal -->
+        <div id="stripe-purchase-modal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card modal-card-sm">
+                <div class="modal-header modal-header-confirm">
+                    <div class="flex-column-gap-4">
+                        <h3 class="modal-title">Complete Payment</h3>
+                        <p class="modal-header-subtext">You are purchasing <strong id="modal-seats-count">1</strong> additional seat(s) for <strong id="modal-seats-price">$100</strong>/year.</p>
+                    </div>
+                </div>
+                <div class="modal-body modal-body-mt-16" style="padding-top: 0;">
+                    <div id="stripe-modal-error-message" class="alert alert-danger" style="display: none; padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b;"></div>
+
+                    <div class="form-group form-group-mb-16" style="margin-bottom: 16px;">
+                        <label class="form-label-custom-gray" style="display: block; margin-bottom: 6px; font-size: 12.5px; font-weight: 500;">Name on Card</label>
+                        <input type="text" id="stripe-modal-card-name" class="form-input form-input-custom" value="{{ $sub['base_account']->first_name }} {{ $sub['base_account']->last_name }}" placeholder="Cardholder Name" style="width: 100%; height: 38px; box-sizing: border-box;">
+                    </div>
+
+                    <div class="form-group form-group-mb-16" style="margin-bottom: 16px;">
+                        <label class="form-label-custom-gray" style="display: block; margin-bottom: 6px; font-size: 12.5px; font-weight: 500;">Card Details</label>
+                        <div id="stripe-modal-card-element" style="padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #ffffff; min-height: 40px; box-sizing: border-box;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer modal-footer-confirm-sm">
+                    <button type="button" class="btn-cancel btn-modal-cancel" id="btn-cancel-purchase">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-modal-primary" id="btn-purchase-submit-confirm">
+                        Pay $<span id="modal-seats-pay-btn-amount">100</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Toast Notification -->
         <div id="custom-toast" class="portal-toast" style="display: none;">
             <h4 class="portal-toast-title" id="toast-title"></h4>
@@ -177,10 +210,43 @@
 @section('portal_scripts')
 <script>
     $(document).ready(function() {
+        let maxSeats = {{ (int) ($sub['base_account']->additional_online_users ?? 0) }};
+        let stripe, cardElement;
+
         function showToast(title, body, isError = false) {
             $('#toast-title').text(title).css('color', isError ? '#ef4444' : '#10b981');
             $('#toast-body').text(body);
-            $('#custom-toast').stop(true, true).fadeIn(300).delay(4000).fadeOut(300);
+            $('#custom-toast').stop(true, true).fadeIn(300).delay(4000).fadeOut(300000);
+        }
+
+        function initStripe() {
+            if (cardElement) return;
+
+            try {
+                const stripeKey = '{{ config('app.STRIPE_PUB_KEY') ?: 'pk_test_TYooMQauvdEDq54NiTphI7jx' }}';
+                stripe = Stripe(stripeKey);
+                const elements = stripe.elements();
+                
+                cardElement = elements.create('card', {
+                    style: {
+                        base: {
+                            fontSize: '13.5px',
+                            color: '#0f172a',
+                            fontFamily: 'Inter, system-ui, sans-serif',
+                            '::placeholder': {
+                                color: '#94a3b8',
+                            },
+                        },
+                        invalid: {
+                            color: '#df1b41',
+                        },
+                    }
+                });
+                cardElement.mount('#stripe-modal-card-element');
+            } catch (e) {
+                console.error("Stripe initialization error:", e);
+                $('#stripe-modal-card-element').html('<div style="color:#df1b41; font-size: 13px; padding: 12px;">Could not initialize payment options. Please check your Stripe settings.</div>');
+            }
         }
 
         // Seat price dynamic calculator
@@ -191,17 +257,108 @@
             $('#purchase-total-price').text(total);
         });
 
-        // Form Submission Alert
+        // Form Submission - Open Stripe Modal
         $('#purchase-seats-form').on('submit', function(e) {
             e.preventDefault();
-            var count = $('#purchase-seats-input').val();
-            showToast('Success', 'Successfully requested to purchase ' + count + ' additional seat(s). We will process the request shortly.', false);
+            var count = parseInt($('#purchase-seats-input').val()) || 1;
+            if (count < 1) count = 1;
+            var total = count * 100;
+
+            $('#modal-seats-count').text(count);
+            $('#modal-seats-price').text('$' + total);
+            $('#modal-seats-pay-btn-amount').text(total);
+            $('#stripe-modal-error-message').hide().text('');
+
+            $('#stripe-purchase-modal').fadeIn(150).css('display', 'flex');
+            initStripe();
+        });
+
+        // Close/Cancel Modal
+        $('#btn-cancel-purchase, #btn-close-purchase-modal').on('click', function(e) {
+            e.preventDefault();
+            $('#stripe-purchase-modal').fadeOut(150);
+        });
+
+        $('#stripe-purchase-modal').on('click', function(e) {
+            if ($(e.target).is('#stripe-purchase-modal')) {
+                $('#stripe-purchase-modal').fadeOut(150);
+            }
+        });
+
+        // Confirm Payment and AJAX to backend
+        $('#btn-purchase-submit-confirm').on('click', async function(e) {
+            e.preventDefault();
+
+            const nameOnCard = $('#stripe-modal-card-name').val().trim();
+            if (!nameOnCard) {
+                $('#stripe-modal-error-message').text('Please enter the name on the card.').show();
+                return;
+            }
+
+            $('#stripe-modal-error-message').hide();
+            
+            const $btn = $(this);
+            const originalText = $btn.text();
+            $btn.prop('disabled', true).text('Processing Payment...');
+
+            try {
+                const { token, error } = await stripe.createToken(cardElement, {
+                    name: nameOnCard
+                });
+
+                if (error) {
+                    $('#stripe-modal-error-message').text(error.message).show();
+                    $btn.prop('disabled', false).text(originalText);
+                    return;
+                }
+
+                var count = parseInt($('#purchase-seats-input').val()) || 1;
+
+                $.ajax({
+                    url: "{{ route('auth.account.subscriptions.seats.purchase') }}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        seats: count,
+                        stripe_token: token.id
+                    }),
+                    success: function(res) {
+                        $btn.prop('disabled', false).text(originalText);
+                        if (res.success) {
+                            $('#stripe-purchase-modal').fadeOut(150);
+                            showToast('Success', res.message || 'Payment successful and seats added.', false);
+                            
+                            // Update total seats and refresh limit UI
+                            maxSeats = res.additional_online_users;
+                            $('.dynamic-seats-total').text(maxSeats);
+                            checkSeatLimit();
+                        } else {
+                            $('#stripe-modal-error-message').text(res.message || 'Payment failed. Please try again.').show();
+                        }
+                    },
+                    error: function(err) {
+                        $btn.prop('disabled', false).text(originalText);
+                        let msg = 'An error occurred. Please try again.';
+                        if (err.responseJSON && err.responseJSON.message) {
+                            msg = err.responseJSON.message;
+                        }
+                        $('#stripe-modal-error-message').text(msg).show();
+                    }
+                });
+
+            } catch (err) {
+                console.error(err);
+                $('#stripe-modal-error-message').text('An unexpected error occurred. Please try again.').show();
+                $btn.prop('disabled', false).text(originalText);
+            }
         });
 
         // Check seat limit function
         function checkSeatLimit() {
             var count = $('#team-members-table tbody tr[data-addon-id]').length;
-            var maxSeats = {{ (int) ($sub['base_account']->additional_online_users ?? 0) }};
             var available = maxSeats - count;
             if (available < 0) available = 0;
 

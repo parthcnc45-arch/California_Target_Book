@@ -162,85 +162,106 @@ class AccountController extends Controller
         $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
         \Stripe\Stripe::setApiKey($stripeKey);
 
-        foreach ($data['cycles'] as $c) {
-            if (!empty($c->invoice_id)) {
-                try {
-                    $inv = \Stripe\Invoice::retrieve($c->invoice_id);
+        if ($user && !empty($user->stripe_id)) {
+            try {
+                $allCharges = \Stripe\Charge::all([
+                    'customer' => $user->stripe_id,
+                    'limit' => 100
+                ]);
+                foreach ($allCharges->data as $charge) {
+                    $status = 'Pending';
+                    if ($charge->paid) {
+                        $status = 'Completed';
+                        if ($charge->refunded) {
+                            $status = 'Refunded';
+                        }
+                    }
                     
+                    $invoiceId = $charge->invoice;
+                    $description = $charge->description ?? 'Charge';
                     $plan = '—';
-                    $description = $inv->description ?? 'Subscription Charge';
-                    
-                    if ($inv->lines && isset($inv->lines->data[0])) {
-                        $line = $inv->lines->data[0];
-                        if (!empty($line->description)) {
-                            $description = $line->description; 
+                    $invoiceUrl = null;
+
+                    // Determine if this charge is for the main subscription activation/renewal
+                    $isSubscription = !empty($invoiceId) || 
+                                     $charge->description === 'Subscription creation' || 
+                                     in_array($charge->amount, [120000, 220000]);
+
+                    if ($isSubscription) {
+                        // If the charge object itself doesn't contain the invoice ID, fallback to the user's cycles
+                        if (empty($invoiceId)) {
+                            foreach ($data['cycles'] as $c) {
+                                if (!empty($c->invoice_id)) {
+                                    $invoiceId = $c->invoice_id;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // If we have resolved the invoice ID, fetch details from Stripe to get the actual product description
+                        if (!empty($invoiceId)) {
+                            try {
+                                $inv = \Stripe\Invoice::retrieve($invoiceId);
+                                $description = $inv->description ?? 'Subscription Charge';
+                                
+                                if ($inv->lines && isset($inv->lines->data[0])) {
+                                    $line = $inv->lines->data[0];
+                                    if (!empty($line->description)) {
+                                        $description = $line->description; 
+                                    }
+                                    
+                                    // Parse Plan
+                                    if (stripos($description, 'One-Year') !== false || stripos($description, '1 Year') !== false || (isset($line->plan) && $line->plan->interval === 'year' && $line->plan->interval_count === 1)) {
+                                        $plan = 'One-Year';
+                                    } elseif (stripos($description, 'Two-Year') !== false || stripos($description, '2 Year') !== false || (isset($line->plan) && $line->plan->interval === 'year' && $line->plan->interval_count === 2)) {
+                                        $plan = 'Two-Year';
+                                    } elseif (stripos($description, 'Addon') !== false) {
+                                        $plan = 'One-Year';
+                                    }
+                                }
+                                
+                                $invoiceUrl = route('auth.account.invoice', ['invoice_id' => $invoiceId]);
+                            } catch (\Exception $e) {
+                                \Log::error("Invoice retrieval failed for ID {$invoiceId}: " . $e->getMessage());
+                            }
+                        }
+
+                        // If we still don't have a descriptive product name or it defaults to "Subscription creation"
+                        if (empty($description) || $description === 'Subscription creation') {
+                            if ($charge->amount === 220000) {
+                                $description = '1 × CTB Online Two-Year Subscription (Online Access Only) (at $2,200.00 / 2 years)';
+                                $plan = 'Two-Year';
+                            } else {
+                                $description = '1 × CTB Online One-Year Subscription (Online Access Only) (at $1,200.00 / year)';
+                                $plan = 'One-Year';
+                            }
                         }
                         
-                        // Parse Plan
-                        if (stripos($description, 'One-Year') !== false || stripos($description, '1 Year') !== false || (isset($line->plan) && $line->plan->interval === 'year' && $line->plan->interval_count === 1)) {
-                            $plan = 'One-Year';
-                        } elseif (stripos($description, 'Two-Year') !== false || stripos($description, '2 Year') !== false || (isset($line->plan) && $line->plan->interval === 'year' && $line->plan->interval_count === 2)) {
-                            $plan = 'Two-Year';
-                        } elseif (stripos($description, 'Addon') !== false) {
-                            $plan = 'One-Year';
+                        // Ensure invoice URL is set for the subscription (fallback to local cycle's invoice ID or hardcoded link if we still have invoiceId)
+                        if (empty($invoiceUrl) && !empty($invoiceId)) {
+                            $invoiceUrl = route('auth.account.invoice', ['invoice_id' => $invoiceId]);
                         }
+                    } else {
+
                     }
-                    
-                    $status = 'Pending';
-                    if ($inv->paid) {
-                        $status = 'Completed';
-                        if ($inv->charge) {
-                            try {
-                                $charge = \Stripe\Charge::retrieve($inv->charge);
-                                if ($charge->refunded) {
-                                    $status = 'Refunded';
-                                }
-                            } catch (\Exception $e) {}
-                        }
-                    } else if ($inv->closed || $inv->status === 'void') {
-                        $status = 'Refunded';
-                    }
-                    
+
                     $transactions->push((object)[
-                        'date' => Carbon::createFromTimestamp($inv->created)->format('F j, Y'),
-                        'timestamp' => $inv->created,
+                        'date' => Carbon::createFromTimestamp($charge->created)->format('F j, Y'),
+                        'timestamp' => $charge->created,
                         'description' => $description,
                         'plan' => $plan,
-                        'amount' => '$' . number_format($inv->total / 100, 2),
+                        'amount' => '$' . number_format($charge->amount / 100, 2),
                         'status' => $status,
-                        'invoice_url' => route('auth.account.invoice', ['invoice_id' => $inv->id]),
+                        'invoice_url' => $invoiceUrl,
                     ]);
-                    continue;
-                } catch (\Exception $e) {
-                    \Log::error("Stripe Invoice Fetch Failed for ID {$c->invoice_id}: " . $e->getMessage());
                 }
+            } catch (\Exception $e) {
+                \Log::warning("Stripe Charge Fetch Failed for user {$user->id}: " . $e->getMessage());
             }
-            
-            // Fallback to local cycle if invoice_id is empty or Stripe retrieval fails
-            $plan = 'One-Year';
-            if ($c->subscription && $c->subscription->frequency === 24) {
-                $plan = 'Two-Year';
-            }
-            
-            $amount = '$1,200.00';
-            if ($c->subscription) {
-                if ($c->subscription->frequency === 24) {
-                    $amount = '$2,200.00';
-                }
-            }
-            
-            $transactions->push((object)[
-                'date' => Carbon::parse($c->starts_on)->format('F j, Y'),
-                'timestamp' => Carbon::parse($c->starts_on)->timestamp,
-                'description' => $plan . ' Subscription — ' . ($c->isPending() ? 'Renewal' : 'Annual Renewal'),
-                'plan' => $plan,
-                'amount' => $amount,
-                'status' => $c->isPending() ? 'Pending' : 'Completed',
-                'invoice_url' => $c->invoice_id ? route('auth.account.invoice', ['invoice_id' => $c->invoice_id]) : null,
-            ]);
         }
 
-        $data['transactions'] = $transactions;
+        // Sort all transactions chronologically (newest first)
+        $data['transactions'] = $transactions->sortByDesc('timestamp')->values();
 
         return view('auth.account.transaction_history', $data);
     }
@@ -277,11 +298,9 @@ class AccountController extends Controller
                 abort(403, 'Unauthorized.');
             }
             
-            return view('auth.account.invoice', [
-                'user' => $user,
-                'invoice' => $invoice,
-                'sub' => $data['sub'],
-            ]);
+            $data['invoice'] = $invoice;
+            $data['sub']['invoice'] = null; // Prevent layouts/portal from calling json_encode on Stripe object (PHP 8.2 crash)
+            return view('auth.account.invoice', $data);
             
         } catch (\Exception $e) {
             \Log::error("Invoice retrieval failed for {$invoice_id}: " . $e->getMessage());
@@ -769,6 +788,55 @@ class AccountController extends Controller
         return view('auth.account.manage_subscription', $data);
     }
 
+    public function updateBilling(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'stripe_token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $stripe_token = $request->input('stripe_token');
+
+        try {
+            $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
+            \Stripe\Stripe::setApiKey($stripeKey);
+
+            if (empty($user->stripe_id)) {
+                $customer = \Stripe\Customer::create([
+                    'email' => $user->email,
+                    'name' => $user->first_name . ' ' . $user->last_name,
+                ]);
+                $user->stripe_id = $customer->id;
+                $user->save();
+            }
+
+            $cust = \Stripe\Customer::retrieve($user->stripe_id);
+
+            $cust->source = $stripe_token;
+            $cust->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Billing details updated successfully.',
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error("Failed to update billing card details: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
     public function cancelSubscription()
     {
         $user = Auth::user();
@@ -971,6 +1039,93 @@ class AccountController extends Controller
             return redirect()->route('auth.account.renew');
         }
         return view('auth.account.purchase_seats', $data);
+    }
+
+    public function purchaseSeatsPost(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'seats' => 'required|integer|min:1|max:50',
+            'stripe_token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $seats = (int) $request->input('seats');
+        $stripe_token = $request->input('stripe_token');
+        $amount = $seats * 100 * 100; // $100 per seat in cents
+
+        try {
+            $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
+            \Stripe\Stripe::setApiKey($stripeKey);
+
+            
+            // 1. Ensure user has a Stripe customer ID
+            if (empty($user->stripe_id)) {
+                $customer = \Stripe\Customer::create([
+                    'email' => $user->email,
+                    'name' => $user->first_name . ' ' . $user->last_name,
+                ]);
+                $user->stripe_id = $customer->id;
+                $user->save();
+            }
+
+            $cust = \Stripe\Customer::retrieve($user->stripe_id);
+
+            // 2. Attach payment source
+            $cust->source = $stripe_token;
+            $cust->save();
+
+            // 3. Create Stripe Charge
+            $charge = \Stripe\Charge::create([
+                'amount' => $amount,
+                'currency' => 'usd',
+                'customer' => $cust->id,
+                'description' => "Purchase of {$seats} Additional User Seat(s) - California Target Book",
+            ]);
+
+            if ($charge->paid) {
+                // 4. Update owner's user record in db
+                $sub = $user->latestSubscription();
+                $owner = $sub ? User::find($sub->account_id) : null;
+                if (!$owner) {
+                    $owner = $user;
+                }
+
+                $owner->additional_online_users = ((int) $owner->additional_online_users) + $seats;
+                $owner->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => "Successfully purchased {$seats} additional seat(s).",
+                    'additional_online_users' => $owner->additional_online_users,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stripe charge was not paid successfully.',
+                ], 402);
+            }
+
+        } catch (\Stripe\Error\Base $e) {
+            $body = $e->getJsonBody();
+            return response()->json([
+                'success' => false,
+                'message' => $body['error']['message'] ?? 'Stripe error occurred.',
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error("Failed to purchase seats: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process purchase: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function addSubscriptionPage()

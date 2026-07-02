@@ -35,6 +35,10 @@
         </div>
 
         <nav class="sidebar-nav">
+            @if ($user->isAdmin())
+                <div class="nav-section-title admin-section-title">ADMINISTRATION</div>
+                <a href="/ctb-admin" class="nav-link admin-dashboard-link-nav"><i class="bi bi-lock-fill"></i> Admin Dashboard</a>
+            @endif
             <div class="nav-section-title">MY ACCOUNT</div>
             <a href="/" class="nav-link"><i class="bi bi-house-door"></i> Home</a>
             <a href="/account/account-info" class="nav-link {{ Request::is('account/account-info') ? 'active' : '' }}"><i class="bi bi-person"></i> Account info</a>
@@ -43,6 +47,9 @@
             <a href="/account/shipping-tracking" class="nav-link {{ Request::is('account/shipping-tracking') ? 'active' : '' }}"><i class="bi bi-truck"></i> Shipping & Tracking</a>
             <a href="/account/settings" class="nav-link {{ Request::is('account/settings') ? 'active' : '' }}"><i class="bi bi-gear"></i> Settings</a>
             <a href="/account/help-support" class="nav-link {{ Request::is('account/help-support') ? 'active' : '' }}"><i class="bi bi-question-circle"></i> Help & Support</a>
+            
+
+
             <a href="/book" class="btn-open-app">
                 <i class="bi bi-box-arrow-up-right"></i>
                 <span>Open Book App</span>

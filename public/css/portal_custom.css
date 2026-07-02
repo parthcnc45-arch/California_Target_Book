@@ -218,6 +218,19 @@ main {
     color: var(--primary-color);
 }
 
+.admin-section-title {
+    margin-top: 16px;
+}
+
+.nav-link.admin-dashboard-link-nav {
+    color: #ef4444 !important;
+    font-weight: 600;
+}
+
+.nav-link.admin-dashboard-link-nav i {
+    color: #ef4444 !important;
+}
+
 .sidebar-actions {
     display: flex;
     flex-direction: column;
@@ -4524,4 +4537,45 @@ body.receipt-page .receipt-col-subtotal {
 
 .form-col {
     flex: 1;
+}
+
+/* Admin Navigation Bar for Landing Page */
+.admin-nav-bar {
+    background-color: #0b0f19;
+    border-bottom: 1px solid #1e293b;
+    padding: 20px 0px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.admin-nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.admin-title svg {
+    color: #e2e8f0;
+}
+
+.admin-dashboard-link {
+    color: #e2e8f0 !important;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.admin-dashboard-link:hover {
+    color: #c14747 !important;
 }

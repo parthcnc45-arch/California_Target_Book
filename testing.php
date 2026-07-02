@@ -338,6 +338,11 @@
             font-size: 13px;
             border-radius: 6px;
         }
+        .dropdown-item.active, .dropdown-item:active{
+            text-decoration: none;
+            background-color: transparent;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -396,7 +401,7 @@
                         <th>User Name</th>
                         <th>Email</th>
                         <th>Plan</th>
-                        <th>Next Payment</th>
+                        <th>Start Date</th>
                         <th>End Date</th>
                         <th>Status</th>
                         <th>Created At</th>
@@ -451,13 +456,66 @@ $(document).ready(function() {
                 let amount = getAmount(sub);
                 let provider = getProvider(sub.payment_method);
                 
+                let actionItems = '';
+                let statusLower = (sub.status || '').toLowerCase();
+                
+                if (statusLower === 'active') {
+                    actionItems = `
+                        <li>
+                            <a class="dropdown-item text-warning"
+                            href="javascript:void(0)"
+                            onclick="cancelSubscription('${sub.stripe_sub_id}')">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Cancel Subscription
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger"
+                            href="javascript:void(0)"
+                            onclick="pausedSubscription('${sub.stripe_sub_id}')">
+                                <i class="bi bi-pause-circle me-2"></i>
+                                Pause Subscription
+                            </a>
+                        </li>
+                    `;
+                } else if (statusLower === 'paused') {
+                    actionItems = `
+                        <li>
+                            <a class="dropdown-item text-warning"
+                            href="javascript:void(0)"
+                            onclick="cancelSubscription('${sub.stripe_sub_id}')">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Cancel Subscription
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-success"
+                            href="javascript:void(0)"
+                            onclick="resumeSubscription('${sub.stripe_sub_id}')">
+                                <i class="bi bi-play-circle me-2"></i>
+                                Resume Subscription
+                            </a>
+                        </li>
+                    `;
+                } else {
+                    actionItems = `
+                        <li>
+                            <span class="dropdown-item text-muted disabled">
+                                <i class="bi bi-info-circle me-2"></i>No actions available
+                            </span>
+                        </li>
+                    `;
+                }
+                
                 rows += `
                 <tr>
                     <td>${sub.user_name}</td>
                     <td>${sub.user_email}</td>
                     <td>${sub.frequency}</td>
-                    <td>${sub.next_payment}</td>
-                    <td>${sub.end_date}</td>
+                    <td>${formatDateOnly(sub.start_date)}</td>
+                    <td>${formatDateOnly(sub.end_date)}</td>
                     <td>${statusBadge}</td>
                     <td>${sub.created_at}</td>
 
@@ -475,31 +533,7 @@ $(document).ready(function() {
                             </button>
 
                             <ul class="dropdown-menu dropdown-menu-end">
-
-                                <li>
-                                    <a class="dropdown-item text-warning"
-                                    href="javascript:void(0)"
-                                    onclick="cancelSubscription('${sub.stripe_sub_id}')">
-
-                                        <i class="bi bi-x-circle me-2"></i>
-                                        Cancel Subscription
-
-                                    </a>
-                                </li>
-
-                                <li><hr class="dropdown-divider"></li>
-
-                                <li>
-                                    <a class="dropdown-item text-danger"
-                                    href="javascript:void(0)"
-                                    onclick="pausedSubscription('${sub.stripe_sub_id}')">
-
-                                        <i class="bi bi-pause-circle me-2"></i>
-                                        Pause Subscription
-
-                                    </a>
-                                </li>
-
+                                ${actionItems}
                             </ul>
 
                         </div>
@@ -574,6 +608,10 @@ $(document).ready(function() {
 });
 
 // Helper functions for UI mapping and styling
+function formatDateOnly(dateStr) {
+    if (!dateStr || dateStr === 'N/A') return 'N/A';
+    return dateStr.trim().split(/\s+/)[0];
+}
 function getProvider(paymentMethod) {
     if (!paymentMethod) return 'Stripe';
     let pm = paymentMethod.toLowerCase();
@@ -750,6 +788,28 @@ window.pausedSubscription = function(stripeSubId) {
     .catch(error => {
         console.error(error);
         alert('Failed to pause subscription.');
+    });
+};
+
+window.resumeSubscription = function(stripeSubId) {
+    if (!confirm('Are you sure you want to resume this subscription?')) {
+        return;
+    }
+
+    fetch(`https://app.californiatargetbook.com/api/ghl/subscriptions/${stripeSubId}/resume`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || 'Subscription resumed successfully.');
+        location.reload();
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Failed to resume subscription.');
     });
 };
 </script>

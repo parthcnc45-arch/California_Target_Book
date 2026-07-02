@@ -1,0 +1,55 @@
+/* Toast Notifications Stylesheet */
+.toast-notice {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    background-color: #1e293b;
+    color: #ffffff;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 300px;
+    max-width: 400px;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: white !important;
+}
+
+.toast-icon {
+    font-size: 18px;
+    color: #60a5fa;
+}
+
+.toast-close {
+    font-size: 16px;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: color 0.2s;
+    margin-left: 16px;
+}
+
+.toast-close:hover {
+    color: #ffffff;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOutToast {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; visibility: hidden; transform: translateY(-10px); }
+}

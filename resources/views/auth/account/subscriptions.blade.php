@@ -45,7 +45,18 @@
                         <tr>
                             <td class="subscription-info-label">Add-ons</td>
                             <td class="subscription-info-value text-normal-lh-14">
-                                Additional Book Edition + 2 New Election Edition + Personalization
+                                @php
+                                    $addonsList = [];
+                                    if (!empty($sub['books']) && count($sub['books']) > 0) {
+                                        $addonsList[] = "Print Edition (" . count($sub['books']) . " " . (count($sub['books']) === 1 ? 'copy' : 'copies') . ")";
+                                    }
+                                    $totalSeats = (int) ($sub['base_account']->additional_online_users ?? 0);
+                                    if ($totalSeats > 0) {
+                                        $addonsList[] = "Additional Seats (" . $totalSeats . ")";
+                                    }
+                                    $addonsText = !empty($addonsList) ? implode(' + ', $addonsList) : '';
+                                @endphp
+                                {{ $addonsText }}
                             </td>
                         </tr>
                     </tbody>

@@ -21,6 +21,7 @@ Route::post('/mail', 'ContactController@send');
 Route::get('/ghl/public-subscriptions', 'Admin\GHLIntegrationController@getPublicSubscriptions');
 Route::post('/ghl/subscriptions/{stripeSubId}/cancel', 'Admin\GHLIntegrationController@cancelSubscription');
 Route::post('/ghl/subscriptions/{stripeSubId}/pause', 'Admin\GHLIntegrationController@pausedSubscription');
+Route::post('/ghl/subscriptions/{stripeSubId}/resume', 'Admin\GHLIntegrationController@resumeSubscription');
 
 Route::group([
     'prefix' => '/feedback',

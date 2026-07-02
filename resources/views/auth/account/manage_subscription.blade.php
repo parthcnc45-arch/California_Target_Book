@@ -8,7 +8,7 @@
             </a>
         </header>
 
-        <form id="manage-billing-form" onsubmit="event.preventDefault(); alert('Billing details updated successfully (Mock Action).'); window.location.href='/account/subscriptions';">
+        <form id="manage-billing-form">
             <!-- Card 1: Billing Cycle -->
             <div class="manage-card">
                 <div class="manage-card-header">
@@ -20,8 +20,16 @@
                             <i class="bi bi-check-circle-fill"></i>
                         </div>
                         <div class="billing-cycle-info">
-                            <h3 class="billing-cycle-title">Annual $1,200 / year</h3>
-                            <span class="billing-cycle-subtext">Your subscription will renew on January 15.</span>
+                            <h3 class="billing-cycle-title">
+                                {{ !empty($sub['stripe_product_name']) ? $sub['stripe_product_name'] : 'Online Subscription' }}
+                            </h3>
+                            <span class="billing-cycle-subtext">
+                                @if(!empty($sub['end']))
+                                    Your subscription will renew on {{ $sub['end'] }}.
+                                @else
+                                    Renewal date is not available.
+                                @endif
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -29,26 +37,60 @@
 
             <!-- Card 2: Update Payment Method -->
             <div class="manage-card">
-                <div class="manage-card-header">
-                    <h2 class="manage-card-title">Update Payment Method</h2>
+                <div class="manage-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <h2 class="manage-card-title">Payment Method</h2>
+                    @if(isset($card) && !empty($card['last4']))
+                        <button type="button" id="btn-toggle-update" class="btn-save-changes" style="background-color: #f1f5f9; color: #334155 !important; border: 1px solid #cbd5e1; padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="bi bi-pencil-square"></i> Change Card
+                        </button>
+                    @endif
                 </div>
                 <div class="manage-card-body">
-                    <div class="form-group">
-                        <label class="form-label" for="card-number">Card Number</label>
-                        <div class="input-wrapper">
-                            <i class="bi bi-credit-card input-icon"></i>
-                            <input type="text" id="card-number" class="form-input form-input-with-icon" value="•••• •••• •••• 4242" placeholder="Card Number">
+                    <div id="stripe-error-message" class="alert alert-danger" style="display: none; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 13.5px; background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b;"></div>
+                    <div id="stripe-success-message" class="alert alert-success" style="display: none; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 13.5px; background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;"></div>
+
+                    @if(isset($card) && !empty($card['last4']))
+                        <!-- Existing Card representation -->
+                        <div id="existing-card-container" class="existing-card-box" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 12px; padding: 24px; color: #ffffff; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 400px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+                                <div>
+                                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; font-weight: 600; margin-bottom: 4px;">Active Card</div>
+                                    <div style="font-size: 18px; font-weight: 700; letter-spacing: 0.5px;">{{ $card['brand'] ?? 'Credit Card' }}</div>
+                                </div>
+                                <div style="font-size: 28px; color: #cbd5e1; line-height: 1;">
+                                    @if(strtolower($card['brand'] ?? '') === 'visa')
+                                        <i class="bi bi-credit-card-2-front"></i>
+                                    @else
+                                        <i class="bi bi-credit-card"></i>
+                                    @endif
+                                </div>
+                            </div>
+                            <div style="font-size: 18px; font-family: monospace; letter-spacing: 2px; margin-bottom: 24px; color: #f8fafc;">
+                                •••• •••• •••• {{ $card['last4'] }}
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                <div>
+                                    <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; margin-bottom: 2px;">Cardholder</div>
+                                    <div style="font-size: 13px; font-weight: 500; color: #f1f5f9;">{{ $card['name'] ?? ($user->first_name . ' ' . $user->last_name) }}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; margin-bottom: 2px;">Expires</div>
+                                    <div style="font-size: 13px; font-weight: 500; color: #f1f5f9;">{{ str_pad($card['exp_month'], 2, '0', STR_PAD_LEFT) }}/{{ substr($card['exp_year'], -2) }}</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-col form-group">
-                            <label class="form-label" for="card-expiry">Expiry</label>
-                            <input type="text" id="card-expiry" class="form-input" value="12/24" placeholder="MM/YY">
+                    @endif
+
+                    <!-- Card Form for updating (hidden if card exists until toggle clicked) -->
+                    <div id="card-update-form" style="{{ isset($card) && !empty($card['last4']) ? 'display: none;' : '' }}">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label class="form-label" for="card-name-input">Name on Card</label>
+                            <input type="text" id="card-name-input" class="form-input" value="{{ isset($card) && !empty($card['name']) ? $card['name'] : ($user->first_name . ' ' . $user->last_name) }}" placeholder="Cardholder Name">
                         </div>
-                        <div class="form-col form-group">
-                            <label class="form-label" for="card-name">Name on Card</label>
-                            <input type="text" id="card-name" class="form-input" value="John Smith" placeholder="Name on Card">
+
+                        <div class="form-group">
+                            <label class="form-label">Card Details</label>
+                            <div id="stripe-card-element" style="padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #ffffff; box-sizing: border-box; min-height: 40px;"></div>
                         </div>
                     </div>
                 </div>
@@ -67,147 +109,138 @@
     </section>
 @endsection
 
-@section('portal_styles')
-<style>
-    .btn-save-changes {
-        background-color: var(--primary-color);
-        color: #ffffff !important;
-        border: none;
-        border-radius: 6px;
-        padding: 8px 16px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.15s ease-in-out;
-    }
-    .btn-save-changes:hover {
-        background-color: #b91c1c;
-    }
-    .btn-cancel-action {
-        background-color: #ffffff;
-        border: 1px solid #cbd5e1;
-        color: #475569 !important;
-        border-radius: 6px;
-        padding: 8px 16px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        transition: all 0.15s ease-in-out;
-    }
-    .btn-cancel-action:hover {
-        background-color: #f8fafc;
-        color: #0f172a !important;
-        border-color: #94a3b8;
-    }
+@section('portal_scripts')
+<script>
+    $(document).ready(function() {
+        let stripe, cardElement;
+        const hasCard = {{ (isset($card) && !empty($card['last4'])) ? 'true' : 'false' }};
+        
+        // Toggle Card Update Form
+        $('#btn-toggle-update').on('click', function(e) {
+            e.preventDefault();
+            const $btn = $(this);
+            const isEditing = $('#card-update-form').is(':visible');
+            
+            if (isEditing) {
+                $('#card-update-form').slideUp();
+                $('#existing-card-container').slideDown();
+                $btn.html('<i class="bi bi-pencil-square"></i> Change Card');
+                $('#stripe-error-message').hide();
+            } else {
+                $('#existing-card-container').slideUp();
+                $('#card-update-form').slideDown(function() {
+                    initStripe();
+                });
+                $btn.html('<i class="bi bi-x-circle"></i> Cancel');
+            }
+        });
 
-    .manage-card {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        margin-bottom: 24px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    .manage-card-header {
-        padding: 20px 24px;
-        border-bottom: 1px solid #f1f5f9;
-    }
-    .manage-card-title {
-        font-size: 14px;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 0;
-    }
-    .manage-card-body {
-        padding: 24px;
-    }
+        function initStripe() {
+            if (cardElement) return; // already initialized
 
-    .billing-cycle-option {
-        border: 1px solid #fca5a5;
-        background-color: #fef2f2;
-        border-radius: 6px;
-        padding: 16px 20px;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-    }
-    .billing-cycle-radio {
-        color: var(--primary-color);
-        font-size: 18px;
-        line-height: 1;
-        margin-top: 2px;
-    }
-    .billing-cycle-info {
-        display: flex;
-        flex-direction: column;
-    }
-    .billing-cycle-title {
-        font-size: 13.5px;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 0;
-    }
-    .billing-cycle-subtext {
-        font-size: 12px;
-        color: #7f1d1d;
-        margin-top: 4px;
-        font-weight: 500;
-    }
+            try {
+                const stripeKey = '{{ config('app.STRIPE_PUB_KEY') ?: 'pk_test_TYooMQauvdEDq54NiTphI7jx' }}';
+                stripe = Stripe(stripeKey);
+                const elements = stripe.elements();
+                
+                cardElement = elements.create('card', {
+                    style: {
+                        base: {
+                            fontSize: '13.5px',
+                            color: '#0f172a',
+                            fontFamily: 'Inter, system-ui, sans-serif',
+                            '::placeholder': {
+                                color: '#94a3b8',
+                            },
+                        },
+                        invalid: {
+                            color: '#df1b41',
+                        },
+                    }
+                });
+                cardElement.mount('#stripe-card-element');
+            } catch (e) {
+                console.error("Stripe initialization error:", e);
+                $('#stripe-card-element').html('<div style="color:#df1b41; font-size: 13px; padding: 12px;">Could not initialize payment options. Please check your Stripe settings.</div>');
+            }
+        }
 
-    /* Form Fields */
-    .form-group {
-        margin-bottom: 20px;
-    }
-    .form-group:last-child {
-        margin-bottom: 0;
-    }
-    .form-label {
-        display: block;
-        font-size: 12.5px;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 6px;
-    }
-    .input-wrapper {
-        position: relative;
-    }
-    .input-icon {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 16px;
-    }
-    .form-input {
-        width: 100%;
-        padding: 10px 12px;
-        font-size: 13.5px;
-        border-radius: 6px;
-        border: 1px solid #cbd5e1;
-        box-sizing: border-box;
-        color: #0f172a;
-        background-color: #ffffff;
-        transition: border-color 0.15s ease;
-    }
-    .form-input:focus {
-        outline: none;
-        border-color: var(--primary-color);
-    }
-    .form-input-with-icon {
-        padding-left: 38px;
-    }
+        if (!hasCard) {
+            initStripe();
+        }
 
-    .form-row {
-        display: flex;
-        gap: 16px;
-    }
-    .form-col {
-        flex: 1;
-    }
-</style>
+        // Submit Billing details
+        $('#manage-billing-form').on('submit', async function(e) {
+            e.preventDefault();
+            
+            // If has card and form is not visible, it means they didn't change card
+            if (hasCard && !$('#card-update-form').is(':visible')) {
+                window.location.href = '/account/subscriptions';
+                return;
+            }
+
+            const nameOnCard = $('#card-name-input').val().trim();
+            if (!nameOnCard) {
+                $('#stripe-error-message').text('Please enter the name on the card.').show();
+                return;
+            }
+
+            $('#stripe-error-message').hide();
+            $('#stripe-success-message').hide();
+
+            const $btn = $('.btn-save-changes');
+            const originalText = $btn.text();
+            $btn.prop('disabled', true).text('Updating Card...');
+
+            try {
+                const { token, error } = await stripe.createToken(cardElement, {
+                    name: nameOnCard
+                });
+
+                if (error) {
+                    $('#stripe-error-message').text(error.message).show();
+                    $btn.prop('disabled', false).text(originalText);
+                    return;
+                }
+
+                // Send via AJAX to the backend
+                $.ajax({
+                    url: "{{ route('auth.account.update_billing') }}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        stripe_token: token.id
+                    }),
+                    success: function(res) {
+                        if (res.success) {
+                            $('#stripe-success-message').text(res.message || 'Billing details updated successfully.').show();
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            $('#stripe-error-message').text(res.message || 'Failed to update billing details.').show();
+                            $btn.prop('disabled', false).text(originalText);
+                        }
+                    },
+                    error: function(err) {
+                        let msg = 'An error occurred. Please try again.';
+                        if (err.responseJSON && err.responseJSON.message) {
+                            msg = err.responseJSON.message;
+                        }
+                        $('#stripe-error-message').text(msg).show();
+                        $btn.prop('disabled', false).text(originalText);
+                    }
+                });
+
+            } catch (err) {
+                console.error(err);
+                $('#stripe-error-message').text('An unexpected error occurred. Please try again.').show();
+                $btn.prop('disabled', false).text(originalText);
+            }
+        });
+    });
+</script>
 @endsection

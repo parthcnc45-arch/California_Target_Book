@@ -1,22 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receipt {{ $invoice->number ?? $invoice->id }} | California Target Book</title>
-    
-    <!-- Google Fonts - Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    <link href="/css/portal_custom.css" rel="stylesheet">
-</head>
-<body class="receipt-page">
+@extends('layouts.portal')
 
+@section('portal_content')
     <!-- Actions Bar -->
     <div class="actions-bar no-print">
         <a href="{{ route('auth.account.transaction_history') }}" class="btn-action">
@@ -137,5 +121,7 @@
 
     </div>
 
-</body>
-</html>
+    <script>
+        document.body.classList.add('receipt-page');
+    </script>
+@endsection

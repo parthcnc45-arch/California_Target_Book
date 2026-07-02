@@ -171,6 +171,11 @@ Route::group([
         'as' => 'auth.account.subscriptions.seats',
     ]);
 
+    Route::post('/subscriptions/seats/purchase', [
+        'uses' => 'Auth\AccountController@purchaseSeatsPost',
+        'as' => 'auth.account.subscriptions.seats.purchase',
+    ]);
+
     Route::get('/subscriptions/add', [
         'uses' => 'Auth\AccountController@addSubscriptionPage',
         'as' => 'auth.account.subscriptions.add',
@@ -179,6 +184,11 @@ Route::group([
     Route::get('/subscriptions/manage-billing', [
         'uses' => 'Auth\AccountController@manageBilling',
         'as' => 'auth.account.manage_billing',
+    ]);
+
+    Route::post('/subscriptions/manage-billing', [
+        'uses' => 'Auth\AccountController@updateBilling',
+        'as' => 'auth.account.update_billing',
     ]);
 
     Route::post('/subscriptions/cancel', [

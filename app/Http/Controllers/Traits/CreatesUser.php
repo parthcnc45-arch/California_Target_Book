@@ -325,12 +325,16 @@ trait CreatesUser {
         $subTitle = "7 Day Trial";
         $data['is_paid_for'] = true;
         $data['send_invoice'] = false;
-    } else if ($subscription->frequency === 12) {
-        $base_cost = Globals::SUBSCRIPTION_COST_1YR;
-        $subTitle = "12 Month";
     } else {
-        $base_cost = Globals::SUBSCRIPTION_COST_2YR;
-        $subTitle = "24 Month";
+        $hasPrint = count($data['book_addresses'] ?? []) > 0;
+        
+        if ($subscription->frequency === 12) {
+            $base_cost = $hasPrint ? (1500 * Globals::STRIPE_MULTIPLIER) : Globals::SUBSCRIPTION_COST_1YR;
+            $subTitle = "12 Month";
+        } else {
+            $base_cost = $hasPrint ? (2800 * Globals::STRIPE_MULTIPLIER) : Globals::SUBSCRIPTION_COST_2YR;
+            $subTitle = "24 Month";
+        }
     }
     if (array_key_exists('subscription_cost',$data) && is_numeric($data['subscription_cost'])) {
         $base_cost = $data['subscription_cost'];
@@ -504,15 +508,21 @@ trait CreatesUser {
                 }
             }
 
-            // Create base subscription plan with only the base cost
-            $stripePlan = \Stripe\Plan::create([
-                'amount' => $base_cost, // Only the base subscription cost in cents
-                'currency' => 'usd',
-                'interval' => $interval,
-                'interval_count' => $interval_count,
-                'product' => $productId,
-                'id' => 'plan_' . uniqid() . '_' . $frequency . 'm',
-            ]);
+            // Use a deterministic Plan ID so we don't create thousands of duplicate prices
+            $planId = 'plan_' . md5($productId . '_' . $base_cost);
+            
+            try {
+                $stripePlan = \Stripe\Plan::retrieve($planId);
+            } catch (\Exception $e) {
+                $stripePlan = \Stripe\Plan::create([
+                    'amount' => $base_cost, // Only the base subscription cost in cents
+                    'currency' => 'usd',
+                    'interval' => $interval,
+                    'interval_count' => $interval_count,
+                    'product' => $productId,
+                    'id' => $planId,
+                ]);
+            }
 
             $subscriptionItems = [
                 ['plan' => $stripePlan->id],

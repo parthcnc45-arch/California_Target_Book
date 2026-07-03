@@ -1,16 +1,34 @@
 $(document).ready(function() {
     let stripe, elements, paymentElement;
-    
+
     // Retrieve configuration or fallback to defaults
     const config = window.checkoutConfig || {};
-    const basePriceOnline = config.basePriceOnline || config.basePrice || 1200;
-    const basePricePrint = config.basePricePrint || config.basePrice || 1200;
     const subscriptionLength = config.subscriptionLength || 12;
     const formatTextOnline = config.formatTextOnline || 'Online Access Only — 1 Year';
     const formatTextPrint = config.formatTextPrint || 'Online Access & Print — 1 Year';
     const stripeKey = config.stripeKey || 'pk_test_TYooMQauvdEDq54NiTphI7jx';
     const registerUrl = config.registerUrl || '/register';
     const registerEmailsUrl = config.registerEmailsUrl || '/register-emails';
+
+    let basePrice = window.checkoutConfig.basePriceOnline;
+
+    $('#format-online').on('click', function () {
+        $('#format-online').addClass('selected');
+        $('#format-print').removeClass('selected');
+        basePrice = window.checkoutConfig.basePriceOnline;
+        isPrint = false;
+        updateSummary();
+        renderShippingAddresses();
+    });
+
+    $('#format-print').on('click', function () {
+        $('#format-print').addClass('selected');
+        $('#format-online').removeClass('selected');
+        basePrice = window.checkoutConfig.basePricePrint;
+        isPrint = true;
+        updateSummary();
+        renderShippingAddresses();
+    });
 
     let isPrint = false;
     let hasUserAddon = false;
@@ -20,10 +38,12 @@ $(document).ready(function() {
     let deckPrice = 300;
     let deckQty = 1;
     let deckTitle = "Post-Election Deck Only (Subscriber)";
-    let currentTotal = basePriceOnline;
+    let currentTotal = basePrice;
+
+    console.log(currentTotal);
 
     function updateSummary() {
-        let currentBasePrice = isPrint ? basePricePrint : basePriceOnline;
+        let currentBasePrice = basePrice;
         let total = currentBasePrice;
         
         // Base Plan
@@ -73,6 +93,11 @@ $(document).ready(function() {
         // Total
         $('#summary-total-price').text('$' + total.toLocaleString());
         currentTotal = total;
+
+        // Update Stripe elements amount if initialized
+        if (typeof elements !== 'undefined' && elements) {
+            elements.update({ amount: currentTotal * 100 });
+        }
     }
 
     function renderAddonEmails() {
@@ -110,7 +135,7 @@ $(document).ready(function() {
         }
 
         let qty = 0;
-        let title = "Shipping Address";
+        let title = "";
         if (hasDeckAddon) {
             qty = deckQty;
         } else if (isPrint) {
@@ -491,6 +516,7 @@ $(document).ready(function() {
                     deck_type: hasDeckAddon ? parseInt($('input[name="deck_type"]:checked').val()) : 0,
                     deck_title: hasDeckAddon ? deckTitle : '',
                     deck_addresses: deck_addresses,
+                    subscription_cost: basePrice * 100,
                     custom_total_amount: currentTotal * 100
                 };
 
@@ -571,10 +597,10 @@ $(document).ready(function() {
     // Initialize Stripe UI
     try {
         stripe = Stripe(stripeKey);
-        
+        console.log(currentTotal);
         const options = {
             mode: 'payment',
-            amount: currentTotal, // Amount in cents
+            amount: currentTotal * 100, // Amount in cents
             currency: 'usd',
             paymentMethodCreation: 'manual',
             paymentMethodTypes: ['card'],

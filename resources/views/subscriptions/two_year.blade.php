@@ -243,13 +243,6 @@
             <div id="shipping-address-block" class="shipping-address-block">
                 <h3 class="section-title">Shipping Information</h3>
                 <div id="shipping-addresses-container"></div>
-                
-                <div class="form-group checkout-mt16">
-                    <label class="form-label">Country <span class="required">*</span></label>
-                    <select class="form-control" name="shipping_country">
-                        <option value="US">United States</option>
-                    </select>
-                </div>
             </div>
 
             <h3 class="section-title checkout-mt32">Payment Method</h3>
@@ -317,7 +310,7 @@
 
             <div class="summary-total">
                 <div class="summary-total-label">Total</div>
-                <div class="summary-total-price" id="summary-total-price">$2,200</div>
+                <div class="summary-total-price" id="summary-total-price"></div>
             </div>
 
             <div class="summary-notes">

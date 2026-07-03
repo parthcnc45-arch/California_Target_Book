@@ -103,8 +103,5 @@
         <script src="/js/ctb.js"></script>
 
         @yield('scripts')
-
-
-
     </body>
 </html>

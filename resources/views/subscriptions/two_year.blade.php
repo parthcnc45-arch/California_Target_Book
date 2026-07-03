@@ -82,7 +82,7 @@
                 <div class="format-header">
                     <div class="format-title-group">
                         <i class="bi bi-laptop format-icon"></i>
-                        <div class="format-title">Two-Year Online Only</div>
+                        <div class="format-title">Two-Year Online Only </div>
                     </div>
                     <div class="format-radio"></div>
                 </div>
@@ -98,7 +98,7 @@
                 <div class="format-header">
                     <div class="format-title-group">
                         <i class="bi bi-book format-icon"></i>
-                        <div class="format-title">Two-Year Online & Print</div>
+                        <div class="format-title">Two-Year Online & Print </div>
                     </div>
                     <div class="format-radio"></div>
                 </div>
@@ -366,7 +366,8 @@
         stripeKey: '{{ config('app.STRIPE_PUB_KEY') ?: 'pk_test_TYooMQauvdEDq54NiTphI7jx' }}',
         registerUrl: '{{ route('register') }}',
         registerEmailsUrl: '/register-emails',
-        basePrice: 2200,
+        basePriceOnline: 2200,
+        basePricePrint: 2800,
         subscriptionLength: 24,
         formatTextOnline: 'Two-Year Online Only — 2 Years',
         formatTextPrint: 'Two-Year Online & Print — 2 Years'

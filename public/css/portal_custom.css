@@ -2888,12 +2888,15 @@ body:has(.login-container-wrapper) {
 }
 
 body.auth-card-body .nav-container,
-body.auth-card-body footer,
 body.auth-card-body .navbar,
 body:has(.login-container-wrapper) .nav-container,
-body:has(.login-container-wrapper) footer,
-body:has(.login-container-wrapper) .navbar,
-main:has(.login-container-wrapper) footer {
+body:has(.login-container-wrapper) .navbar {
+    display: none !important;
+}
+
+body.auth-card-body footer:not(:has(.footer-container)),
+body:has(.login-container-wrapper) footer:not(:has(.footer-container)),
+main:has(.login-container-wrapper) footer:not(:has(.footer-container)) {
     display: none !important;
 }
 

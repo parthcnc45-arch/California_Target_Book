@@ -484,9 +484,12 @@
                 <div id="admin-settings-menu" style="display: none;">
                     <a href="javascript:void(0)" onclick="toggleAdminSettings(false)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
                     <div class="nav-section-title admin-section-title">ADMIN SETTINGS</div>
-                    <a href="/ctb-admin/subscriptions/new" class="nav-link"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
-                    <a href="/ctb-admin/hard-copy-subscriptions/new" class="nav-link"><i class="bi bi-book"></i> Hard Copies</a>
-                    <a href="/ctb-admin/contacts/new" class="nav-link"><i class="bi bi-people"></i> Contacts</a>
+                    <a href="/ctb-admin/subscriptions" class="nav-link"><i class="bi bi-receipt"></i> Subscriptions</a>
+                    <a href="/ctb-admin/hard-copy-subscriptions" class="nav-link"><i class="bi bi-book"></i> Hard Copies</a>
+                    <a href="/ctb-admin/contacts" class="nav-link"><i class="bi bi-people"></i> Contacts</a>
+                    <a href="/ctb-admin/events" class="nav-link"><i class="bi bi-calendar-event"></i> Events</a>
+                    <a href="/ctb-admin/polls" class="nav-link"><i class="bi bi-bar-chart-line"></i> Polls</a>
+                    <a href="/ctb-admin/feedback" class="nav-link"><i class="bi bi-chat-right-text"></i> Feedback</a>
                 </div>
             @endif
         </nav>
@@ -1103,7 +1106,6 @@
                 userMenu.style.display = 'none';
                 adminMenu.style.display = 'block';
                 localStorage.setItem('adminSettingsOpen', 'true');
-                // window.location.href = '/ctb-admin/subscriptions/new';
             } else {
                 userMenu.style.display = 'block';
                 adminMenu.style.display = 'none';

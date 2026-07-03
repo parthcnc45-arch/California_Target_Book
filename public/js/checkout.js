@@ -3,7 +3,8 @@ $(document).ready(function() {
     
     // Retrieve configuration or fallback to defaults
     const config = window.checkoutConfig || {};
-    const basePrice = config.basePrice || 1200;
+    const basePriceOnline = config.basePriceOnline || config.basePrice || 1200;
+    const basePricePrint = config.basePricePrint || config.basePrice || 1200;
     const subscriptionLength = config.subscriptionLength || 12;
     const formatTextOnline = config.formatTextOnline || 'Online Access Only — 1 Year';
     const formatTextPrint = config.formatTextPrint || 'Online Access & Print — 1 Year';
@@ -19,10 +20,11 @@ $(document).ready(function() {
     let deckPrice = 300;
     let deckQty = 1;
     let deckTitle = "Post-Election Deck Only (Subscriber)";
-    let currentTotal = basePrice;
+    let currentTotal = basePriceOnline;
 
     function updateSummary() {
-        let total = basePrice;
+        let currentBasePrice = isPrint ? basePricePrint : basePriceOnline;
+        let total = currentBasePrice;
         
         // Base Plan
         if(isPrint) {
@@ -32,7 +34,10 @@ $(document).ready(function() {
             $('#summary-format-text').text(formatTextOnline);
             $('#note-print').hide();
         }
-        $('#summary-base-price').text('$' + basePrice.toLocaleString());
+        $('#summary-base-price').text('$' + currentBasePrice.toLocaleString());
+        
+        // Update header price if it exists
+        $('.price-amount').text('$' + currentBasePrice.toLocaleString());
 
         // User Addon
         if(hasUserAddon) {

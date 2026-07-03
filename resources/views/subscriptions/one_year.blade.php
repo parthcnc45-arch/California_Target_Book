@@ -98,7 +98,7 @@
                 <div class="format-header">
                     <div class="format-title-group">
                         <i class="bi bi-book format-icon"></i>
-                        <div class="format-title">Online Access & Print</div>
+                        <div class="format-title">Online Access & Print </div>
                     </div>
                     <div class="format-radio"></div>
                 </div>
@@ -358,7 +358,8 @@
         stripeKey: '{{ config('app.STRIPE_PUB_KEY') ?: 'pk_test_TYooMQauvdEDq54NiTphI7jx' }}',
         registerUrl: '{{ route('register') }}',
         registerEmailsUrl: '/register-emails',
-        basePrice: 1200,
+        basePriceOnline: 1200,
+        basePricePrint: 1500,
         subscriptionLength: 12,
         formatTextOnline: 'Online Access Only — 1 Year',
         formatTextPrint: 'Online Access & Print — 1 Year'

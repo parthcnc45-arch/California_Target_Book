@@ -1,20 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | California Target Book</title>
-    <link rel="shortcut icon" href="/ctb_logo.ico" />
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bellefair&display=swap" rel="stylesheet">
+@extends('layouts.master_headless')
 
-    <link href="/css/portal_custom.css" rel="stylesheet">
-</head>
-<body class="landing-body">
+@section('title', 'Login | California Target Book')
 
+@section('body_class', 'auth-card-body')
+
+@section('styles')
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bellefair&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="/css/portal_custom.css" rel="stylesheet">
+@endsection
+
+@section('content')
     @if (Auth::check() && Auth::user()->isAdmin())
         <div class="admin-nav-bar">
             <div class="admin-nav-container">
@@ -54,13 +52,13 @@
         </div>
     </header>
 
+
     <div class="login-container-wrapper">
         <div class="login-card">
             <div class="login-header">
                 <h2>Sign In</h2>
                 <p>Access your California Target Book account</p>
             </div>
-
             <form method="POST" action="{{ route('login') }}" id="loginForm">
                 {{ csrf_field() }}
 
@@ -90,78 +88,15 @@
                     Sign In
                 </button>
             </form>
-
-            <!-- Don't have an account? Create one -->
             <div class="login-footer-links">
                 Don't have an account? <a href="{{ route('signup') }}">Create one</a>
             </div>
         </div>
     </div>
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-copyright">
-                &copy; {{ date('Y') }} California Target Book. All rights reserved.
-            </div>
-            <div class="footer-links">
-                <a href="/book">Book Application</a>
-                @guest
-                    <a href="/login">Sign In</a>
-                    <a href="/signup">Create Account</a>
-                @else
-                    <a href="/account">My Account</a>
-                @endguest
-            </div>
-        </div>
-    </footer>
+@endsection
 
-
-    <!-- Dark Mode Toggle Script -->
-    <script>
-        const moonIcon = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-        `;
-
-        const sunIcon = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-        `;
-
-        const toggleBtn = document.querySelector('.dark-mode-toggle');
-
-        function updateIcon(isDark) {
-            toggleBtn.innerHTML = isDark ? sunIcon : moonIcon;
-        }
-
-        // Initialize theme from localStorage
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme === 'dark') {
-            document.body.classList.add('dark-mode');
-            updateIcon(true);
-        } else {
-            updateIcon(false);
-        }
-
-        // Add toggle action
-        toggleBtn.addEventListener('click', () => {
-            const isDark = document.body.classList.toggle('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateIcon(isDark);
-        });
-    </script>
-
-    <script>
+@section('scripts')
+<script>
     $(document).on('submit', '#loginForm', function(e) {
         e.preventDefault();
         
@@ -210,6 +145,7 @@
             }
         });
     });
-    </script>
-    </body>
-</html>
+</script>
+
+@endsection
+

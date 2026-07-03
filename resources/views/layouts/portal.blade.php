@@ -35,22 +35,37 @@
         </div>
 
         <nav class="sidebar-nav">
+            <!-- User Nav Menu -->
+            <div id="user-nav-menu">
+                @if ($user->isAdmin())
+                    <div class="nav-section-title admin-section-title">ADMINISTRATION</div>
+                    <a href="/ctb-admin" class="nav-link admin-dashboard-link-nav"><i class="bi bi-lock-fill"></i> Admin Dashboard</a>
+                @endif
+                <div class="nav-section-title">MY ACCOUNT</div>
+                <a href="/" class="nav-link"><i class="bi bi-house-door"></i> Home</a>
+                <a href="/account/account-info" class="nav-link {{ Request::is('account/account-info') ? 'active' : '' }}"><i class="bi bi-person"></i> Account info</a>
+                <a href="/account/subscriptions" class="nav-link {{ Request::is('account/subscriptions') ? 'active' : '' }}"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
+                <a href="/account/transaction-history" class="nav-link {{ Request::is('account/transaction-history') ? 'active' : '' }}"><i class="bi bi-coin"></i> Transaction History</a>
+                <a href="/account/shipping-tracking" class="nav-link {{ Request::is('account/shipping-tracking') ? 'active' : '' }}"><i class="bi bi-truck"></i> Shipping & Tracking</a>
+                <a href="/account/settings" class="nav-link {{ Request::is('account/settings') ? 'active' : '' }}"><i class="bi bi-gear"></i> Settings</a>
+                <a href="/account/help-support" class="nav-link {{ Request::is('account/help-support') ? 'active' : '' }}"><i class="bi bi-question-circle"></i> Help & Support</a>
+                @if ($user->isAdmin())
+                    <a href="javascript:void(0)" onclick="toggleAdminSettings(true)" class="nav-link"><i class="bi bi-sliders"></i> Admin Settings</a>
+                @endif
+            </div>
+
+            <!-- Admin Settings Submenu -->
             @if ($user->isAdmin())
-                <div class="nav-section-title admin-section-title">ADMINISTRATION</div>
-                <a href="/ctb-admin" class="nav-link admin-dashboard-link-nav"><i class="bi bi-lock-fill"></i> Admin Dashboard</a>
+                <div id="admin-settings-menu" style="display: none;">
+                    <a href="javascript:void(0)" onclick="toggleAdminSettings(false)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
+                    <div class="nav-section-title admin-section-title">ADMIN SETTINGS</div>
+                    <a href="/ctb-admin/subscriptions/new" class="nav-link"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
+                    <a href="/ctb-admin/hard-copy-subscriptions/new" class="nav-link"><i class="bi bi-book"></i> Hard Copies</a>
+                    <a href="/ctb-admin/contacts/new" class="nav-link"><i class="bi bi-people"></i> Contacts</a>
+                </div>
             @endif
-            <div class="nav-section-title">MY ACCOUNT</div>
-            <a href="/" class="nav-link"><i class="bi bi-house-door"></i> Home</a>
-            <a href="/account/account-info" class="nav-link {{ Request::is('account/account-info') ? 'active' : '' }}"><i class="bi bi-person"></i> Account info</a>
-            <a href="/account/subscriptions" class="nav-link {{ Request::is('account/subscriptions') ? 'active' : '' }}"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
-            <a href="/account/transaction-history" class="nav-link {{ Request::is('account/transaction-history') ? 'active' : '' }}"><i class="bi bi-coin"></i> Transaction History</a>
-            <a href="/account/shipping-tracking" class="nav-link {{ Request::is('account/shipping-tracking') ? 'active' : '' }}"><i class="bi bi-truck"></i> Shipping & Tracking</a>
-            <a href="/account/settings" class="nav-link {{ Request::is('account/settings') ? 'active' : '' }}"><i class="bi bi-gear"></i> Settings</a>
-            <a href="/account/help-support" class="nav-link {{ Request::is('account/help-support') ? 'active' : '' }}"><i class="bi bi-question-circle"></i> Help & Support</a>
             
-
-
-            <a href="/book" class="btn-open-app">
+            <a href="/book" class="btn-open-app" style="margin-top: 16px;">
                 <i class="bi bi-box-arrow-up-right"></i>
                 <span>Open Book App</span>
             </a>
@@ -87,4 +102,28 @@
 
 @section('scripts')
 @yield('portal_scripts')
+<script>
+    function toggleAdminSettings(show) {
+        const userMenu = document.getElementById('user-nav-menu');
+        const adminMenu = document.getElementById('admin-settings-menu');
+        if (userMenu && adminMenu) {
+            if (show) {
+                userMenu.style.display = 'none';
+                adminMenu.style.display = 'block';
+                localStorage.setItem('adminSettingsOpen', 'true');
+                // window.location.href = '/ctb-admin/subscriptions/new';
+            } else {
+                userMenu.style.display = 'block';
+                adminMenu.style.display = 'none';
+                localStorage.setItem('adminSettingsOpen', 'false');
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('adminSettingsOpen') === 'true') {
+            toggleAdminSettings(true);
+        }
+    });
+</script>
 @endsection

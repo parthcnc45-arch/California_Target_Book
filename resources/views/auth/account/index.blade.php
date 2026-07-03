@@ -464,14 +464,31 @@
         </div>
 
         <nav class="sidebar-nav">
-            <div class="nav-section-title">MY ACCOUNT</div>
-            <a href="/" class="nav-link"><i class="bi bi-house-door"></i> Home</a>
-            <a href="#account-info" class="nav-link active" id="tab-account-info"><i class="bi bi-person"></i> Account info</a>
-            <a href="#subscriptions" class="nav-link" id="tab-subscriptions"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
-            <a href="#transaction-history" class="nav-link" id="tab-transaction-history"><i class="bi bi-coin"></i> Transaction History</a>
-            <a href="#shipping-tracking" class="nav-link" id="tab-shipping-tracking"><i class="bi bi-truck"></i> Shipping & Tracking</a>
-            <a href="#settings" class="nav-link" id="tab-settings"><i class="bi bi-gear"></i> Settings</a>
-            <a href="#help-support" class="nav-link" id="tab-help-support"><i class="bi bi-question-circle"></i> Help & Support</a>
+            <!-- User Nav Menu -->
+            <div id="user-nav-menu">
+                <div class="nav-section-title">MY ACCOUNT</div>
+                <a href="/" class="nav-link"><i class="bi bi-house-door"></i> Home</a>
+                <a href="#account-info" class="nav-link active" id="tab-account-info"><i class="bi bi-person"></i> Account info</a>
+                <a href="#subscriptions" class="nav-link" id="tab-subscriptions"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
+                <a href="#transaction-history" class="nav-link" id="tab-transaction-history"><i class="bi bi-coin"></i> Transaction History</a>
+                <a href="#shipping-tracking" class="nav-link" id="tab-shipping-tracking"><i class="bi bi-truck"></i> Shipping & Tracking</a>
+                <a href="#settings" class="nav-link" id="tab-settings"><i class="bi bi-gear"></i> Settings</a>
+                <a href="#help-support" class="nav-link" id="tab-help-support"><i class="bi bi-question-circle"></i> Help & Support</a>
+                @if ($user->isAdmin())
+                    <a href="javascript:void(0)" onclick="toggleAdminSettings(true)" class="nav-link"><i class="bi bi-sliders"></i> Admin Settings</a>
+                @endif
+            </div>
+
+            <!-- Admin Settings Submenu -->
+            @if ($user->isAdmin())
+                <div id="admin-settings-menu" style="display: none;">
+                    <a href="javascript:void(0)" onclick="toggleAdminSettings(false)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
+                    <div class="nav-section-title admin-section-title">ADMIN SETTINGS</div>
+                    <a href="/ctb-admin/subscriptions/new" class="nav-link"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
+                    <a href="/ctb-admin/hard-copy-subscriptions/new" class="nav-link"><i class="bi bi-book"></i> Hard Copies</a>
+                    <a href="/ctb-admin/contacts/new" class="nav-link"><i class="bi bi-people"></i> Contacts</a>
+                </div>
+            @endif
         </nav>
 
         <div class="sidebar-actions">
@@ -1071,6 +1088,28 @@
         } else if (hash === '#help-support') {
             $('#tab-help-support').trigger('click');
         }
+
+        // Handle Admin Settings sub-menu state on load
+        if (localStorage.getItem('adminSettingsOpen') === 'true') {
+            toggleAdminSettings(true);
+        }
     });
+
+    function toggleAdminSettings(show) {
+        const userMenu = document.getElementById('user-nav-menu');
+        const adminMenu = document.getElementById('admin-settings-menu');
+        if (userMenu && adminMenu) {
+            if (show) {
+                userMenu.style.display = 'none';
+                adminMenu.style.display = 'block';
+                localStorage.setItem('adminSettingsOpen', 'true');
+                // window.location.href = '/ctb-admin/subscriptions/new';
+            } else {
+                userMenu.style.display = 'block';
+                adminMenu.style.display = 'none';
+                localStorage.setItem('adminSettingsOpen', 'false');
+            }
+        }
+    }
 </script>
 @endsection

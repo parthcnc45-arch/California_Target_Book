@@ -1,4 +1,4 @@
-{{-- <ctb-head-nav inline-template>
+<ctb-head-nav inline-template>
     <div class="nav-container">
         @if (Auth::check() && Auth::user()->isAdmin())
             <div class="admin-nav hidden-xs">
@@ -182,7 +182,7 @@
 
 
 
-</ctb-head-nav> --}}
+</ctb-head-nav>
 
 <section class="dashboard-banner">
     <div class="container-fluid">

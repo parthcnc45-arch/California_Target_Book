@@ -4579,3 +4579,100 @@ body.receipt-page .receipt-col-subtotal {
 .admin-dashboard-link:hover {
     color: #c14747 !important;
 }
+
+/* Global Dark Mode Overrides */
+body.dark-mode .form-label {
+    color: #f8fafc !important;
+}
+
+/* Dark Mode variables and overrides for checkout pages */
+body.checkout-body.dark-mode {
+    --bg-light: #090d16;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #1e293b;
+    --card-bg: #0f172a;
+}
+
+body.checkout-body.dark-mode .format-card.selected,
+body.checkout-body.dark-mode .addon-card.selected,
+body.checkout-body.dark-mode .deck-radio-label.selected {
+    background-color: rgba(197, 32, 38, 0.1) !important;
+}
+
+body.checkout-body.dark-mode .qty-selector {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+}
+
+body.checkout-body.dark-mode .qty-btn {
+    color: #f8fafc !important;
+}
+
+body.checkout-body.dark-mode .qty-input {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: #1e293b !important;
+}
+
+body.checkout-body.dark-mode .summary-item {
+    border-bottom: 1px solid #1e293b !important;
+}
+
+body.checkout-body.dark-mode .deck-radio-label {
+    background: #0f172a !important;
+}
+
+body.checkout-body.dark-mode .deck-radio-label:hover {
+    border-color: #334155 !important;
+}
+
+body.checkout-body.dark-mode .coupon-input {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: #1e293b !important;
+}
+
+/* Force input text & background styling in Dark Mode (overrides Bootstrap 3) */
+body.checkout-body.dark-mode .form-control,
+body.checkout-body.dark-mode input.form-control,
+body.checkout-body.dark-mode select.form-control,
+body.checkout-body.dark-mode textarea.form-control {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border: 1px solid #1e293b !important;
+}
+
+body.checkout-body.dark-mode select.form-control option {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+}
+
+/* Handle browser autofill styling in Dark Mode */
+body.checkout-body.dark-mode input:-webkit-autofill,
+body.checkout-body.dark-mode input:-webkit-autofill:hover,
+body.checkout-body.dark-mode input:-webkit-autofill:focus,
+body.checkout-body.dark-mode input:-webkit-autofill:active {
+    -webkit-text-fill-color: #f8fafc !important;
+    -webkit-box-shadow: 0 0 0 1000px #0f172a inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+body.checkout-body.dark-mode input:autofill,
+body.checkout-body.dark-mode input:autofill:hover,
+body.checkout-body.dark-mode input:autofill:focus {
+    filter: none;
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+}
+
+/* Fix footer copyright background box in light and dark mode */
+body.landing-body footer,
+body.landing-body .footer-copyright {
+    background-color: transparent !important;
+    border-top: none !important;
+}
+
+body.landing-body footer {
+    border-top: 1px solid var(--border-color) !important;
+}

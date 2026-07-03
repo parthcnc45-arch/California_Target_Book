@@ -57,7 +57,7 @@
                 </div>
             </div>
 
-            <div class="portal-card portal-mt-0">
+            <!-- <div class="portal-card portal-mt-0" id="danger-zone" style="display: none;">
                 <div class="card-header-custom card-header-no-border">
                     <h2 class="card-title-custom text-red-danger">Danger Zone</h2>
                 </div>
@@ -67,7 +67,7 @@
                     </p>
                     <button type="button" class="btn-delete-account" id="open-delete-modal">Delete account</button>
                 </div>
-            </div>
+            </div> -->
         </div>
         <!-- Delete Account Modal -->
         <div id="delete-account-modal" class="modal-backdrop" style="display: none;">

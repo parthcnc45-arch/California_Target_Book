@@ -21,7 +21,23 @@
                 <div class="subscription-card-title-container">
                     <h2 class="subscription-card-title">{{ $sub['stripe_product_name'] ?? '' }}</h2>
                 </div>
-                <span class="badge-active">Active</span>
+                @php
+                    $status = 'Active';
+                    $statusClass = 'badge-active';
+                    
+                    if (isset($sub['stripe_data']) && $sub['stripe_data']) {
+                        $status = ucfirst($sub['stripe_data']->status);
+                        if (strtolower($status) !== 'active' && strtolower($status) !== 'trialing') {
+                            $statusClass = 'badge-inactive';
+                        }
+                    } else {
+                        $status = ucfirst($sub['status'] ?? 'Active');
+                        if (strtolower($status) !== 'active' && strtolower($status) !== 'trialing') {
+                            $statusClass = 'badge-inactive';
+                        }
+                    }
+                @endphp
+                <span class="{{ $statusClass }}">{{ $status }}</span>
             </div>
             <div class="subscription-card-body">
                 <table class="subscription-info-table">

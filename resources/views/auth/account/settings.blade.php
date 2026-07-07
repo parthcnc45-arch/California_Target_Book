@@ -53,6 +53,18 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="settings-row">
+                            <div>
+                                <h4 class="settings-row-title">Shipping Emails</h4>
+                                <p class="settings-row-description">Shipping updates notifications</p>
+                            </div>
+                            <div>
+                                <label class="switch">
+                                    <input type="checkbox" id="settings-shipping-emails" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

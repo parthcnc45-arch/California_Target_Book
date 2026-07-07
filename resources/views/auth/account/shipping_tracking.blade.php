@@ -20,7 +20,7 @@
                         <tr>
                             <th class="portal-col-w-80">Order</th>
                             <th class="portal-col-w-110">Order Date</th>
-                            <th class="portal-col-w-240">Item</th>
+                            <th class="portal-col-w-240">Company</th>
                             <th class="portal-col-w-80">Carrier</th>
                             <th class="portal-col-w-150">Tracking</th>
                             <th class="portal-col-w-120">Est. Delivery</th>

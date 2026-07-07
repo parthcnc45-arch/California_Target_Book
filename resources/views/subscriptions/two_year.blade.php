@@ -37,7 +37,10 @@
                 </div>
             </div>
             <div class="nav-links">
-                <a href="/book" class="nav-item">Book App</a>
+                <a href="/" class="nav-item">Home</a>
+                @if (Auth::check() && Auth::user()->hasActiveSubscription())
+                    <a href="/book" class="nav-item">Book App</a>
+                @endif
                 @guest
                     <a href="/login" class="nav-item">Sign In</a>
                     <a href="/signup" class="btn-get-started">Get Started</a>
@@ -156,20 +159,45 @@
                 </div>
             </div>
             <div class="deck-options" style="display: none;">
-                <label class="deck-radio-label selected">
-                    <input type="radio" name="deck_type" value="300" checked>
+                <div class="deck-verification-row" style="display: {{ Auth::check() && Auth::user()->hasActiveSubscription() ? 'none' : 'flex' }}; gap: 10px; align-items: center; margin-bottom: 15px; width: 100%;">
+                    <input type="email" id="deck-verify-email" class="form-control" placeholder="Enter email to verify subscriber status" style="flex: 1;">
+                    <button type="button" id="deck-verify-btn" style="padding: 8px 16px; border-radius: 4px; background: #64748b; color: #fff; border: none; cursor: pointer; white-space: nowrap;">Verify</button>
+                </div>
+                
+                @php
+                    $isSubscriber = Auth::check() && Auth::user()->hasActiveSubscription();
+                @endphp
+
+                <label class="deck-radio-label {{ $isSubscriber ? 'selected' : '' }}" style="{{ $isSubscriber ? '' : 'display: none;' }}">
+                    <input type="radio" name="deck_type" value="300" {{ $isSubscriber ? 'checked' : '' }}>
                     <div class="deck-radio-content">
                         <div class="deck-radio-title">Post-Election Deck Only (Subscriber) <span>$300</span></div>
                         <div class="deck-radio-desc">Post-election deck presentation file, subscriber rate</div>
                     </div>
                 </label>
-                <label class="deck-radio-label">
+                <label class="deck-radio-label" style="{{ $isSubscriber ? '' : 'display: none;' }}">
                     <input type="radio" name="deck_type" value="200">
                     <div class="deck-radio-content">
                         <div class="deck-radio-title">Post-Election Deck + Presentation (Subscriber) <span>$200</span></div>
                         <div class="deck-radio-desc">Post-election deck with live or recorded presentation add-on for subscribers</div>
                     </div>
                 </label>
+                <label class="deck-radio-label {{ !$isSubscriber ? 'selected' : '' }}" style="{{ !$isSubscriber ? '' : 'display: none;' }}">
+                    <input type="radio" name="deck_type" value="1000" {{ !$isSubscriber ? 'checked' : '' }}>
+                    <div class="deck-radio-content">
+                        <div class="deck-radio-title">Post-Election Deck Only (Non-Subscriber) <span>$1000</span></div>
+                        <div class="deck-radio-desc">Post-election deck presentation file, non-subscriber rate</div>
+                    </div>
+                </label>
+                <label class="deck-radio-label" style="{{ !$isSubscriber ? '' : 'display: none;' }}">
+                    <input type="radio" name="deck_type" value="1500">
+                    <div class="deck-radio-content">
+                        <div class="deck-radio-title">Post-Election Deck + Presentation (Non-Subscriber) <span>$1500</span></div>
+                        <div class="deck-radio-desc">Post-election deck with live or recorded presentation, non-subscriber rate</div>
+                    </div>
+                </label>
+
+                <div id="deck-shipping-addresses-container" style="width: 100%; margin-top: 15px;"></div>
             </div>
         </div>
 
@@ -183,7 +211,7 @@
                 <button type="button" class="btn-coupon-apply">Apply</button>
             </div>
 
-            <h3 class="section-title checkout-mt40">Your details</h3>
+            <h3 class="section-title checkout-mt40">Account Information</h3>
 
             <div class="form-row">
                 <div class="form-group">
@@ -225,20 +253,25 @@
                     <input type="text" class="form-control" name="phone_number" placeholder="(555) 123-4567" value="{{ old('phone_number') ?? (auth()->user()->phone_number ?? '') }}" required>
                     <div class="invalid-feedback">Required</div>
                 </div>
+            </div>
+
+            <h3 class="section-title checkout-mt32">Organization</h3>
+            
+            <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Company Name <span class="required">*</span></label>
-                    <input type="text" class="form-control" name="company_name" placeholder="Acme Corp" value="{{ old('company_name') ?? (auth()->user()->company->name ?? '') }}" required>
+                    <input id="company" type="text" class="form-control" name="company[name]" placeholder="Acme Corp" value="{{ old('company.name') ?? (auth()->user()->company->name ?? '') }}" required>
                     <div class="invalid-feedback">Required</div>
                 </div>
             </div>
 
-            <h3 class="section-title checkout-mt32">Billing Address</h3>
             <ctb-address-block :input="{{ json_encode(old('billing') ?? (auth()->user()->company->address ?? (object)[])) }}" name="billing" layout="checkout"></ctb-address-block>
 
-            <div class="checkbox-group checkout-mt16">
+
+            <!-- <div class="checkbox-group checkout-mt16">
                 <input type="checkbox" id="same-shipping" checked>
                 <label for="same-shipping">Shipping address is the same as billing</label>
-            </div>
+            </div> -->
 
             <div id="shipping-address-block" class="shipping-address-block">
                 <h3 class="section-title">Shipping Information</h3>
@@ -340,7 +373,10 @@
                 &copy; {{ date('Y') }} California Target Book. All rights reserved.
             </div>
             <div class="footer-links">
-                <a href="/book">Book Application</a>
+                <a href="/">Home</a>
+                @if (Auth::check() && Auth::user()->hasActiveSubscription())
+                    <a href="/book">Book Application</a>
+                @endif
                 @guest
                     <a href="/login">Sign In</a>
                     <a href="/signup">Create Account</a>

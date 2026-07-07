@@ -292,7 +292,33 @@ trait CreatesUser {
         $baseUser->update($userBody);
     }
     // Initialize user settings
-    $baseUser->settings()->create([]);
+    if ($isNewUser) {
+        $baseUser->settings()->create([]);
+    } else {
+        // Cancel old active subscription if they are buying a new one
+        $oldSubscription = $baseUser->latestSubscription();
+        if ($oldSubscription && $oldSubscription->isActive()) {
+            // 1. Cancel in Stripe
+            if (!empty($oldSubscription->wordpress_subscription_id)) {
+                try {
+                    $stripeSub = \Stripe\Subscription::retrieve($oldSubscription->wordpress_subscription_id);
+                    $stripeSub->cancel();
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning("Failed to cancel old Stripe Subscription for user {$baseUser->id}: " . $e->getMessage());
+                }
+            }
+            
+            // 2. Cancel in DB
+            $oldSubscription->status = 'expired';
+            $oldSubscription->save();
+            
+            $oldCycle = $oldSubscription->getLatestCycle();
+            if ($oldCycle) {
+                $oldCycle->ends_on = now()->subDay()->toDateString();
+                $oldCycle->save();
+            }
+        }
+    }
 
     /**
      * Create Subscription record

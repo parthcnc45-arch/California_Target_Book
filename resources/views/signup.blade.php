@@ -40,7 +40,10 @@
                 </div>
             </div>
             <div class="nav-links">
-                <a href="/book" class="nav-item">Book App</a>
+                <a href="/" class="nav-item">Home</a>
+                @if (Auth::check() && Auth::user()->hasActiveSubscription())
+                    <a href="/book" class="nav-item">Book App</a>
+                @endif
                 @guest
                     <a href="/login" class="nav-item">Sign In</a>
                     <a href="/signup" class="btn-get-started">Get Started</a>
@@ -126,7 +129,10 @@
                 &copy; {{ date('Y') }} California Target Book. All rights reserved.
             </div>
             <div class="footer-links">
-                <a href="/book">Book Application</a>
+                <a href="/">Home</a>
+                @if (Auth::check() && Auth::user()->hasActiveSubscription())
+                    <a href="/book">Book Application</a>
+                @endif
                 @guest
                     <a href="/login">Sign In</a>
                     <a href="/signup">Create Account</a>

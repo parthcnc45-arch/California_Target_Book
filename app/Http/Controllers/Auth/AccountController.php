@@ -1101,6 +1101,44 @@ class AccountController extends Controller
                 $owner->additional_online_users = ((int) $owner->additional_online_users) + $seats;
                 $owner->save();
 
+                // 5. Update Stripe Subscription if it exists so it's added to Upcoming Invoice
+                if ($sub && !empty($sub->wordpress_subscription_id) && strpos($sub->wordpress_subscription_id, 'sub_') === 0) {
+                    try {
+                        $stripeSub = \Stripe\Subscription::retrieve($sub->wordpress_subscription_id);
+                        $addonPriceId = env('STRIPE_ADDON_PRICE_ID');
+                        $foundItem = null;
+
+                        foreach ($stripeSub->items->data as $item) {
+                            $productId = $item->price->product ?? ($item->plan->product ?? '');
+                            if (
+                                $item->price->id === $addonPriceId || 
+                                $productId === 'prod_additional_online_user' ||
+                                stripos($item->plan->nickname ?? '', 'Additional') !== false || 
+                                stripos($item->price->nickname ?? '', 'Additional') !== false
+                            ) {
+                                $foundItem = $item;
+                                break;
+                            }
+                        }
+
+                        if ($foundItem) {
+                            \Stripe\SubscriptionItem::update($foundItem->id, [
+                                'quantity' => $foundItem->quantity + $seats,
+                                'proration_behavior' => 'none',
+                            ]);
+                        } else {
+                            \Stripe\SubscriptionItem::create([
+                                'subscription' => $stripeSub->id,
+                                'price' => $addonPriceId,
+                                'quantity' => $seats,
+                                'proration_behavior' => 'none',
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error("Failed to update Stripe Subscription {$sub->wordpress_subscription_id} for Additional Seats: " . $e->getMessage());
+                    }
+                }
+
                 return response()->json([
                     'success' => true,
                     'message' => "Successfully purchased {$seats} additional seat(s).",
@@ -1140,4 +1178,31 @@ class AccountController extends Controller
         return view('auth.account.add_subscription', $data);
     }
 
+    public function checkSubscriberStatus(Request $request)
+    {
+        $email = $request->input('email');
+        
+        if (!$email) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email is required.'
+            ], 400);
+        }
+
+        $user = \App\User::where('email', $email)->first();
+
+        if ($user && $user->hasActiveSubscription()) {
+            return response()->json([
+                'success' => true,
+                'has_subscription' => true,
+                'message' => 'User has an active subscription.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'has_subscription' => false,
+            'message' => 'User does not have an active subscription.'
+        ]);
+    }
 }

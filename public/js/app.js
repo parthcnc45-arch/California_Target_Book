@@ -6068,6 +6068,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 var states = {
   "AL": "Alabama",
@@ -69009,66 +69013,68 @@ var render = function () {
   return _c("div", [
     _vm.layout === "checkout"
       ? _c("div", [
-          _c(
-            "div",
-            { staticClass: "form-group" },
-            [
-              _vm._m(0),
-              _vm._v(" "),
-              _c("vue-google-autocomplete", {
-                ref: "address",
-                attrs: {
-                  required: "",
-                  name: _vm.name + "[line1]",
-                  id: _vm.name,
-                  placeholder: "",
-                  autocomplete: "nope",
-                  classname: "form-control",
-                  country: "us",
-                },
-                on: { placechanged: _vm.getAddressData },
-                model: {
-                  value: _vm.address.line1,
-                  callback: function ($$v) {
-                    _vm.$set(_vm.address, "line1", $$v)
+          _c("div", { staticClass: "form-row" }, [
+            _c(
+              "div",
+              { staticClass: "form-group" },
+              [
+                _vm._m(0),
+                _vm._v(" "),
+                _c("vue-google-autocomplete", {
+                  ref: "address",
+                  attrs: {
+                    required: "",
+                    name: _vm.name + "[line1]",
+                    id: _vm.name,
+                    placeholder: "",
+                    autocomplete: "nope",
+                    classname: "form-control",
+                    country: "us",
                   },
-                  expression: "address.line1",
+                  on: { placechanged: _vm.getAddressData },
+                  model: {
+                    value: _vm.address.line1,
+                    callback: function ($$v) {
+                      _vm.$set(_vm.address, "line1", $$v)
+                    },
+                    expression: "address.line1",
+                  },
+                }),
+                _vm._v(" "),
+                _c("div", { staticClass: "invalid-feedback" }, [
+                  _vm._v("Required"),
+                ]),
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group" }, [
+              _c("label", { staticClass: "form-label" }, [
+                _vm._v("Address Line 2"),
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.address.line2,
+                    expression: "address.line2",
+                  },
+                ],
+                staticClass: "form-control",
+                attrs: { placeholder: "", name: _vm.name + "[line2]" },
+                domProps: { value: _vm.address.line2 },
+                on: {
+                  input: function ($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.address, "line2", $event.target.value)
+                  },
                 },
               }),
-              _vm._v(" "),
-              _c("div", { staticClass: "invalid-feedback" }, [
-                _vm._v("Required"),
-              ]),
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-group" }, [
-            _c("label", { staticClass: "form-label" }, [
-              _vm._v("Address Line 2"),
             ]),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.address.line2,
-                  expression: "address.line2",
-                },
-              ],
-              staticClass: "form-control",
-              attrs: { placeholder: "", name: _vm.name + "[line2]" },
-              domProps: { value: _vm.address.line2 },
-              on: {
-                input: function ($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(_vm.address, "line2", $event.target.value)
-                },
-              },
-            }),
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "form-row" }, [

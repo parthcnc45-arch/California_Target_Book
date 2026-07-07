@@ -35,6 +35,7 @@ $(document).ready(function() {
     let userQty = 1;
     let userPrice = 100;
     let hasDeckAddon = false;
+    let isDeckVerified = $('.deck-verification-row').is(':visible') ? false : true;
     let deckPrice = 300;
     let deckQty = 1;
     let deckTitle = "Post-Election Deck Only (Subscriber)";
@@ -125,33 +126,22 @@ $(document).ready(function() {
     }
 
     function renderShippingAddresses() {
-        let container = $('#shipping-addresses-container');
+        let bookContainer = $('#shipping-addresses-container');
+        let deckContainer = $('#deck-shipping-addresses-container');
+        
         let isSame = $('#same-shipping').is(':checked');
         
         if (isSame) {
             $('#shipping-address-block').hide();
-            container.empty();
-            return;
-        }
-
-        let qty = 0;
-        let title = "";
-        if (hasDeckAddon) {
-            qty = deckQty;
-        } else if (isPrint) {
-            qty = 1;
-        }
-
-        if (qty === 0) {
-            $('#shipping-address-block').hide();
-            container.empty();
+            bookContainer.empty();
+            deckContainer.empty();
             return;
         }
 
         // Save existing values to avoid overwriting typed input
-        let existing = [];
-        $('.shipping-address-item').each(function(index) {
-            existing.push({
+        let existingBook = [];
+        bookContainer.find('.shipping-address-item').each(function(index) {
+            existingBook.push({
                 line1: $(this).find('input[name*="[line1]"]').val() || '',
                 line2: $(this).find('input[name*="[line2]"]').val() || '',
                 city: $(this).find('input[name*="[city]"]').val() || '',
@@ -160,41 +150,66 @@ $(document).ready(function() {
             });
         });
 
-        container.empty();
-        $('#shipping-address-block').show();
+        let existingDeck = [];
+        deckContainer.find('.shipping-address-item').each(function(index) {
+            existingDeck.push({
+                line1: $(this).find('input[name*="[line1]"]').val() || '',
+                line2: $(this).find('input[name*="[line2]"]').val() || '',
+                city: $(this).find('input[name*="[city]"]').val() || '',
+                state: $(this).find('select[name*="[state]"]').val() || '',
+                zip_code: $(this).find('input[name*="[zip_code]"]').val() || ''
+            });
+        });
+
+        bookContainer.empty();
+        deckContainer.empty();
 
         let AddressBlockClass = Vue.extend(Vue.component('ctb-address-block'));
 
-        for (let i = 0; i < qty; i++) {
-            let data = existing[i] || { line1: '', line2: '', city: '', state: 'CA', zip_code: '' };
-            let itemTitle = qty > 1 ? `${title} ${i + 1}` : title;
-            
+        if (isPrint) {
+            $('#shipping-address-block').show();
+            let data = existingBook[0] || { line1: '', line2: '', city: '', state: 'CA', zip_code: '' };
             let itemDiv = $(`
-                <div class="shipping-address-item${i > 0 ? ' shipping-address-item-divider' : ''}">
-                    <h4 class="shipping-address-item-title">${itemTitle}</h4>
+                <div class="shipping-address-item">
+                    <!-- <h4 class="shipping-address-item-title">Book Shipping Address</h4> -->
                 </div>
             `);
-
-            // Instantiate and mount AddressBlock Vue component
             let instance = new AddressBlockClass({
                 propsData: {
-                    name: `shipping_${i}`,
-                    input: {
-                        line1: data.line1,
-                        line2: data.line2,
-                        city: data.city,
-                        state: data.state,
-                        zip_code: data.zip_code
-                    },
+                    name: 'book_shipping_0',
+                    input: { line1: data.line1, line2: data.line2, city: data.city, state: data.state, zip_code: data.zip_code },
                     layout: 'checkout'
                 }
             });
-            
             let targetDiv = $('<div class="shipping-address-instance"></div>');
             itemDiv.append(targetDiv);
-            container.append(itemDiv);
-            
+            bookContainer.append(itemDiv);
             instance.$mount(targetDiv[0]);
+        } else {
+            $('#shipping-address-block').hide();
+        }
+
+        if (hasDeckAddon) {
+            for (let i = 0; i < deckQty; i++) {
+                let data = existingDeck[i] || { line1: '', line2: '', city: '', state: 'CA', zip_code: '' };
+                let itemTitle = deckQty > 1 ? `Shipping Address ${i + 1}` : 'Shipping Address';
+                let itemDiv = $(`
+                    <div class="shipping-address-item${i > 0 ? ' shipping-address-item-divider' : ''}">
+                        <h4 class="shipping-address-item-title" style="margin-bottom: 10px; font-size: 14px; font-weight: 600;">${itemTitle}</h4>
+                    </div>
+                `);
+                let instance = new AddressBlockClass({
+                    propsData: {
+                        name: `deck_shipping_${i}`,
+                        input: { line1: data.line1, line2: data.line2, city: data.city, state: data.state, zip_code: data.zip_code },
+                        layout: 'checkout'
+                    }
+                });
+                let targetDiv = $('<div class="shipping-address-instance"></div>');
+                itemDiv.append(targetDiv);
+                deckContainer.append(itemDiv);
+                instance.$mount(targetDiv[0]);
+            }
         }
     }
 
@@ -259,11 +274,7 @@ $(document).ready(function() {
             // set selected deck option
             let selectedOption = $('input[name="deck_type"]:checked');
             deckPrice = parseInt(selectedOption.val());
-            if (deckPrice === 300) {
-                deckTitle = "Post-Election Deck Only (Subscriber)";
-            } else {
-                deckTitle = "Post-Election Deck + Presentation (Subscriber)";
-            }
+            deckTitle = selectedOption.siblings('.deck-radio-content').find('.deck-radio-title').text().replace(/\s*\$\d+$/, '').trim();
         } else {
             $('#addon-deck-card').removeClass('selected');
             $('.deck-options').hide();
@@ -300,12 +311,73 @@ $(document).ready(function() {
         $(this).closest('.deck-radio-label').addClass('selected');
         
         deckPrice = parseInt($(this).val());
-        if (deckPrice === 300) {
-            deckTitle = "Post-Election Deck Only (Subscriber)";
-        } else {
-            deckTitle = "Post-Election Deck + Presentation (Subscriber)";
-        }
+        deckTitle = $(this).siblings('.deck-radio-content').find('.deck-radio-title').text().replace(/\s*\$\d+$/, '').trim();
         updateSummary();
+    });
+
+    // Reset verification status if they type a new email
+    $('#deck-verify-email').on('input', function() {
+        isDeckVerified = false;
+    });
+
+    // Verify Subscriber Email for Deck
+    $('#deck-verify-btn').on('click', function(e) {
+        e.preventDefault();
+        let email = $('#deck-verify-email').val();
+        if (!email) {
+            alert('Please enter an email address to verify.');
+            return;
+        }
+
+        let $btn = $(this);
+        let originalText = $btn.text();
+        $btn.text('Checking...').prop('disabled', true);
+
+        $.ajax({
+            url: '/api/check-subscriber',
+            type: 'POST',
+            data: JSON.stringify({ email: email }),
+            contentType: 'application/json',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(res) {
+                $btn.text(originalText).prop('disabled', false);
+                isDeckVerified = true;
+                if (res.has_subscription) {
+                    // Hide non-subscriber rates, show subscriber rates
+                    $('.deck-radio-label').each(function() {
+                        let title = $(this).find('.deck-radio-title').text();
+                        if (title.includes('(Non-Subscriber)')) {
+                            $(this).hide();
+                        } else if (title.includes('(Subscriber)')) {
+                            $(this).show();
+                        }
+                    });
+                    
+                    // Auto-select the first visible option
+                    let firstVisible = $('.deck-radio-label').filter(function() { return $(this).css('display') !== 'none'; }).first();
+                    if(firstVisible.length) firstVisible.find('input').prop('checked', true).trigger('change');
+                } else {
+                    // Hide subscriber rates, show non-subscriber rates
+                    $('.deck-radio-label').each(function() {
+                        let title = $(this).find('.deck-radio-title').text();
+                        if (title.includes('(Subscriber)')) {
+                            $(this).hide();
+                        } else if (title.includes('(Non-Subscriber)')) {
+                            $(this).show();
+                        }
+                    });
+                    
+                    // Auto-select the first visible option
+                    let firstVisible = $('.deck-radio-label').filter(function() { return $(this).css('display') !== 'none'; }).first();
+                    if(firstVisible.length) firstVisible.find('input').prop('checked', true).trigger('change');
+                }
+            },
+            error: function() {
+                $btn.text(originalText).prop('disabled', false);
+            }
+        });
     });
 
     // Shipping Address Toggle
@@ -352,10 +424,18 @@ $(document).ready(function() {
         }
     });
 
-    // Form Validation on Submit
+        // Form Validation on Submit
     $('#payment-form').on('submit', async function(e) {
         e.preventDefault();
         let isValid = true;
+        
+        if (hasDeckAddon && !isDeckVerified && $('.deck-verification-row').is(':visible')) {
+            alert('Please verify your email for the Post-Election Deck before submitting.');
+            $('html, body').animate({
+                scrollTop: $("#deck-verify-email").offset().top - 150
+            }, 500);
+            return;
+        }
 
         // Input fields
         $('.form-group .form-control[required]').each(function() {
@@ -442,12 +522,12 @@ $(document).ready(function() {
                         });
                     } else {
                         book_addresses.push({
-                            line1: $('input[name="shipping_0[line1]"]').val(),
-                            line2: $('input[name="shipping_0[line2]"]').val() || null,
-                            city: $('input[name="shipping_0[city]"]').val(),
-                            state: $('select[name="shipping_0[state]"]').val(),
-                            zip_code: $('input[name="shipping_0[zip_code]"]').val(),
-                            special_instructions: $('input[name="shipping_0[special_instructions]"]').val() || null
+                            line1: $('input[name="book_shipping_0[line1]"]').val(),
+                            line2: $('input[name="book_shipping_0[line2]"]').val() || null,
+                            city: $('input[name="book_shipping_0[city]"]').val(),
+                            state: $('select[name="book_shipping_0[state]"]').val(),
+                            zip_code: $('input[name="book_shipping_0[zip_code]"]').val(),
+                            special_instructions: $('input[name="book_shipping_0[special_instructions]"]').val() || null
                         });
                     }
                 }
@@ -468,12 +548,12 @@ $(document).ready(function() {
                     } else {
                         for (let i = 0; i < deckQty; i++) {
                             deck_addresses.push({
-                                line1: $(`input[name="shipping_${i}[line1]"]`).val(),
-                                line2: $(`input[name="shipping_${i}[line2]"]`).val() || null,
-                                city: $(`input[name="shipping_${i}[city]"]`).val(),
-                                state: $(`select[name="shipping_${i}[state]"]`).val(),
-                                zip_code: $(`input[name="shipping_${i}[zip_code]"]`).val(),
-                                special_instructions: $(`input[name="shipping_${i}[special_instructions]"]`).val() || null
+                                line1: $(`input[name="deck_shipping_${i}[line1]"]`).val(),
+                                line2: $(`input[name="deck_shipping_${i}[line2]"]`).val() || null,
+                                city: $(`input[name="deck_shipping_${i}[city]"]`).val(),
+                                state: $(`select[name="deck_shipping_${i}[state]"]`).val(),
+                                zip_code: $(`input[name="deck_shipping_${i}[zip_code]"]`).val(),
+                                special_instructions: $(`input[name="deck_shipping_${i}[special_instructions]"]`).val() || null
                             });
                         }
                     }
@@ -495,7 +575,7 @@ $(document).ready(function() {
                     password: $('input[name="password"]').val() || null,
                     password_confirmation: $('input[name="password_confirmation"]').val() || null,
                     company: {
-                        name: $('input[name="company_name"]').val(),
+                        name: $('input[name="company\\[name\\]"]').val(),
                         address: {
                             line1: $('input[name="billing[line1]"]').val(),
                             line2: $('input[name="billing[line2]"]').val() || null,

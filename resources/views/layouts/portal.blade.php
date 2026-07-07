@@ -68,10 +68,25 @@
                 </div>
             @endif
             
+            @php
+                $isActive = false;
+                if (isset($sub['stripe_data']) && $sub['stripe_data']) {
+                    if (strtolower($sub['stripe_data']->status) === 'active' || strtolower($sub['stripe_data']->status) === 'trialing') {
+                        $isActive = true;
+                    }
+                } else {
+                    if (strtolower($sub['status'] ?? '') === 'active' || strtolower($sub['status'] ?? '') === 'trialing') {
+                        $isActive = true;
+                    }
+                }
+            @endphp
+            
+            @if($isActive)
             <a href="/book" class="btn-open-app" style="margin-top: 16px;">
                 <i class="bi bi-box-arrow-up-right"></i>
                 <span>Open Book App</span>
             </a>
+            @endif
         </nav>
 
         <div class="sidebar-actions">

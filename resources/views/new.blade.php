@@ -38,7 +38,10 @@
                 </div>
             </div>
             <div class="nav-links">
-                <a href="/book" class="nav-item">Book App</a>
+                <a href="/" class="nav-item">Home</a>
+                @if (Auth::check() && Auth::user()->hasActiveSubscription())
+                    <a href="/book" class="nav-item">Book App</a>
+                @endif
                 @guest
                     <a href="/login" class="nav-item">Sign In</a>
                     <a href="/signup" class="btn-get-started">Get Started</a>
@@ -76,15 +79,17 @@
         </div>
         
         <div class="hero-sublinks">
-            <a href="/book">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-                <span>Open Book Application</span>
-                <!-- External Link SVG -->
-            </a>
+            @if (Auth::check() && Auth::user()->hasActiveSubscription())
+                <a href="/book">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    <span>Open Book Application</span>
+                    <!-- External Link SVG -->
+                </a>
+            @endif
             @guest
                 <a href="/login">Sign In</a>
             @endguest
@@ -161,7 +166,10 @@
                 &copy; {{ date('Y') }} California Target Book. All rights reserved.
             </div>
             <div class="footer-links">
-                <a href="/book">Book Application</a>
+                <a href="/">Home</a>
+                @if (Auth::check() && Auth::user()->hasActiveSubscription())
+                    <a href="/book">Book Application</a>
+                @endif
                 @guest
                     <a href="/login">Sign In</a>
                     <a href="/signup">Create Account</a>

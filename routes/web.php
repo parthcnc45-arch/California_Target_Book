@@ -933,3 +933,5 @@ Route::get('/optimize-clear', function () {
         ], 500);
     }
 });
+
+Route::post('/api/check-subscriber', 'Auth\AccountController@checkSubscriberStatus');

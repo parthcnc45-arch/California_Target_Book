@@ -274,7 +274,6 @@
             </div> -->
 
             <div id="shipping-address-block" class="shipping-address-block">
-                <h3 class="section-title">Shipping Information</h3>
                 <div id="shipping-addresses-container"></div>
             </div>
 

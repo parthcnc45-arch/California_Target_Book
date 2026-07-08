@@ -858,6 +858,39 @@ Route::group(['prefix' => 'ctb-legacy'], function() {
 });
 
 
+Route::get('/ctb-admin/new/subscriptions', function() { 
+    $user = auth()->user();
+    if (!$user) return redirect('/login');
+    $sub = ['status' => '', 'role' => ''];
+    $pending_bank = null;
+    $invoice = null;
+    return view('admin.subscriptions', compact('user', 'sub', 'pending_bank', 'invoice')); 
+});
+Route::get('/ctb-admin/new/subscriptions/add', function() { 
+    $user = auth()->user();
+    if (!$user) return redirect('/login');
+    $sub = ['status' => '', 'role' => ''];
+    $pending_bank = null;
+    $invoice = null;
+    return view('admin.add_subscription', compact('user', 'sub', 'pending_bank', 'invoice')); 
+});
+Route::get('/ctb-admin/new/hard-copy-subscriptions', function() { 
+    $user = auth()->user();
+    if (!$user) return redirect('/login');
+    $sub = ['status' => '', 'role' => ''];
+    $pending_bank = null;
+    $invoice = null;
+    return view('admin.hard_copies', compact('user', 'sub', 'pending_bank', 'invoice')); 
+});
+Route::get('/ctb-admin/new/contacts', function() { 
+    $user = auth()->user();
+    if (!$user) return redirect('/login');
+    $sub = ['status' => '', 'role' => ''];
+    $pending_bank = null;
+    $invoice = null;
+    return view('admin.contacts', compact('user', 'sub', 'pending_bank', 'invoice')); 
+});
+
 Route::group([
         'prefix' => 'ctb-admin',
         'middleware' => ['auth', 'admin'],

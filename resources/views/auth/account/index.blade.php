@@ -482,20 +482,20 @@
             <!-- Admin Settings Submenu -->
             @if ($user->isAdmin())
                 <div id="admin-settings-menu" style="display: none;">
-                    <a href="javascript:void(0)" onclick="toggleAdminSettings(false)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
+                    <a href="/account/account-info" onclick="toggleAdminSettings(false)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
                     <div class="nav-section-title admin-section-title">ADMIN SETTINGS</div>
-                    <a href="/ctb-admin/subscriptions" class="nav-link"><i class="bi bi-receipt"></i> Subscriptions</a>
-                    <a href="/ctb-admin/hard-copy-subscriptions" class="nav-link"><i class="bi bi-book"></i> Hard Copies</a>
-                    <a href="/ctb-admin/contacts" class="nav-link"><i class="bi bi-people"></i> Contacts</a>
-                    <a href="/ctb-admin/events" class="nav-link"><i class="bi bi-calendar-event"></i> Events</a>
-                    <a href="/ctb-admin/polls" class="nav-link"><i class="bi bi-bar-chart-line"></i> Polls</a>
-                    <a href="/ctb-admin/feedback" class="nav-link"><i class="bi bi-chat-right-text"></i> Feedback</a>
+                    <a href="/ctb-admin/new/subscriptions" class="nav-link {{ Request::is('ctb-admin/new/subscriptions*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Subscriptions</a>
+                    <a href="/ctb-admin/new/hard-copy-subscriptions" class="nav-link {{ Request::is('ctb-admin/new/hard-copy-subscriptions') ? 'active' : '' }}"><i class="bi bi-book"></i> Hard Copies</a>
+                    <a href="/ctb-admin/new/contacts" class="nav-link {{ Request::is('ctb-admin/new/contacts') ? 'active' : '' }}"><i class="bi bi-people"></i> Contacts</a>
+
                 </div>
             @endif
         </nav>
 
-        <div class="sidebar-actions">
-            <a href="/logout" class="nav-link signout-link"><i class="bi bi-box-arrow-left"></i> Sign Out</a>
+        <div id="bottom-actions-menu">
+            <div class="sidebar-actions">
+                <a href="/logout" class="nav-link signout-link"><i class="bi bi-box-arrow-left"></i> Sign Out</a>
+            </div>
         </div>
     </aside>
 
@@ -1101,14 +1101,17 @@
     function toggleAdminSettings(show) {
         const userMenu = document.getElementById('user-nav-menu');
         const adminMenu = document.getElementById('admin-settings-menu');
+        const bottomActions = document.getElementById('bottom-actions-menu');
         if (userMenu && adminMenu) {
             if (show) {
                 userMenu.style.display = 'none';
                 adminMenu.style.display = 'block';
+                if(bottomActions) bottomActions.style.display = 'none';
                 localStorage.setItem('adminSettingsOpen', 'true');
             } else {
                 userMenu.style.display = 'block';
                 adminMenu.style.display = 'none';
+                if(bottomActions) bottomActions.style.display = 'block';
                 localStorage.setItem('adminSettingsOpen', 'false');
             }
         }

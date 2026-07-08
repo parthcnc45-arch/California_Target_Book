@@ -163,6 +163,7 @@
                     <input type="email" id="deck-verify-email" class="form-control" placeholder="Enter email to verify subscriber status" style="flex: 1;">
                     <button type="button" id="deck-verify-btn" style="padding: 8px 16px; border-radius: 4px; background: #64748b; color: #fff; border: none; cursor: pointer; white-space: nowrap;">Verify</button>
                 </div>
+                <div id="deck-verify-message" style="display: none; padding: 7px; border-radius: 4px; font-size: 14px;"></div>
                 
                 @php
                     $isSubscriber = Auth::check() && Auth::user()->hasActiveSubscription();

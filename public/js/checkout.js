@@ -318,12 +318,32 @@ $(document).ready(function() {
     // Reset verification status if they type a new email
     $('#deck-verify-email').on('input', function() {
         isDeckVerified = false;
+        if ($(this).val().trim() === '') {
+            $('#deck-verify-message').hide().text('');
+            
+            // Hide subscriber rates, show non-subscriber rates
+            $('.deck-radio-label').each(function() {
+                let title = $(this).find('.deck-radio-title').text();
+                if (title.includes('(Subscriber)')) {
+                    $(this).hide();
+                } else if (title.includes('(Non-Subscriber)')) {
+                    $(this).show();
+                }
+            });
+            
+            // Auto-select the first visible option
+            let firstVisible = $('.deck-radio-label').filter(function() { return $(this).css('display') !== 'none'; }).first();
+            if(firstVisible.length) firstVisible.find('input').prop('checked', true).trigger('change');
+        }
     });
 
     // Verify Subscriber Email for Deck
     $('#deck-verify-btn').on('click', function(e) {
         e.preventDefault();
         let email = $('#deck-verify-email').val();
+        let msgDiv = $('#deck-verify-message');
+        msgDiv.hide().text('');
+
         if (!email) {
             alert('Please enter an email address to verify.');
             return;
@@ -344,6 +364,15 @@ $(document).ready(function() {
             success: function(res) {
                 $btn.text(originalText).prop('disabled', false);
                 isDeckVerified = true;
+                
+                // Show API message
+                msgDiv.show().text(res.message);
+                if (res.has_subscription) {
+                    msgDiv.css({'background-color': '#d1e7dd', 'color': '#0f5132', 'border': '1px solid #badbcc'});
+                } else {
+                    msgDiv.css({'background-color': '#f8d7da', 'color': '#842029', 'border': '1px solid #f5c2c7'});
+                }
+
                 if (res.has_subscription) {
                     // Hide non-subscriber rates, show subscriber rates
                     $('.deck-radio-label').each(function() {
@@ -376,6 +405,7 @@ $(document).ready(function() {
             },
             error: function() {
                 $btn.text(originalText).prop('disabled', false);
+                msgDiv.show().text('Error verifying subscriber status. Please try again.').css({'background-color': '#f8d7da', 'color': '#842029', 'border': '1px solid #f5c2c7'});
             }
         });
     });

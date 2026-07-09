@@ -9,9 +9,14 @@
                 </div>
                 <p class="header-subtitle">Manage your subscriptions, book recipients, and add-ons.</p>
             </div>
-            <a href="{{ route('auth.account.subscriptions.add') }}" class="btn-add-subscription">
-                <i class="bi bi-plus-lg"></i> Add Subscription
-            </a>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <a href="{{ route('auth.account.subscriptions.add') }}" class="btn-add-subscription">
+                    <i class="bi bi-plus-lg"></i> Add Subscription
+                </a>
+                <a href="{{ route('auth.account.subscriptions.add') }}" class="btn-add-subscription">
+                    <i class="bi bi-plus-lg"></i> Add add-ons
+                </a>
+            </div>
         </header>
 
         @if($sub['status'] !== 'None')

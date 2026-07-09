@@ -159,41 +159,20 @@
                 </div>
             </div>
             <div class="deck-options" style="display: none;">
-                <div class="deck-verification-row" style="display: {{ Auth::check() && Auth::user()->hasActiveSubscription() ? 'none' : 'flex' }}; gap: 10px; align-items: center; margin-bottom: 15px; width: 100%;">
-                    <input type="email" id="deck-verify-email" class="form-control" placeholder="Enter email to verify subscriber status" style="flex: 1;">
-                    <button type="button" id="deck-verify-btn" style="padding: 8px 16px; border-radius: 4px; background: #64748b; color: #fff; border: none; cursor: pointer; white-space: nowrap;">Verify</button>
-                </div>
-                
-                @php
-                    $isSubscriber = Auth::check() && Auth::user()->hasActiveSubscription();
-                @endphp
 
-                <label class="deck-radio-label {{ $isSubscriber ? 'selected' : '' }}" style="{{ $isSubscriber ? '' : 'display: none;' }}">
-                    <input type="radio" name="deck_type" value="300" {{ $isSubscriber ? 'checked' : '' }}>
+                
+                <label class="deck-radio-label selected">
+                    <input type="radio" name="deck_type" value="300" checked>
                     <div class="deck-radio-content">
-                        <div class="deck-radio-title">Post-Election Deck Only (Subscriber) <span>$300</span></div>
-                        <div class="deck-radio-desc">Post-election deck presentation file, subscriber rate</div>
+                        <div class="deck-radio-title">Post-Election Deck Only <span>$300</span></div>
+                        <div class="deck-radio-desc">Post-election deck presentation file</div>
                     </div>
                 </label>
-                <label class="deck-radio-label" style="{{ $isSubscriber ? '' : 'display: none;' }}">
+                <label class="deck-radio-label">
                     <input type="radio" name="deck_type" value="200">
                     <div class="deck-radio-content">
-                        <div class="deck-radio-title">Post-Election Deck + Presentation (Subscriber) <span>$200</span></div>
-                        <div class="deck-radio-desc">Post-election deck with live or recorded presentation add-on for subscribers</div>
-                    </div>
-                </label>
-                <label class="deck-radio-label {{ !$isSubscriber ? 'selected' : '' }}" style="{{ !$isSubscriber ? '' : 'display: none;' }}">
-                    <input type="radio" name="deck_type" value="1000" {{ !$isSubscriber ? 'checked' : '' }}>
-                    <div class="deck-radio-content">
-                        <div class="deck-radio-title">Post-Election Deck Only (Non-Subscriber) <span>$1000</span></div>
-                        <div class="deck-radio-desc">Post-election deck presentation file, non-subscriber rate</div>
-                    </div>
-                </label>
-                <label class="deck-radio-label" style="{{ !$isSubscriber ? '' : 'display: none;' }}">
-                    <input type="radio" name="deck_type" value="1500">
-                    <div class="deck-radio-content">
-                        <div class="deck-radio-title">Post-Election Deck + Presentation (Non-Subscriber) <span>$1500</span></div>
-                        <div class="deck-radio-desc">Post-election deck with live or recorded presentation, non-subscriber rate</div>
+                        <div class="deck-radio-title">Post-Election Deck + Presentation <span>$200</span></div>
+                        <div class="deck-radio-desc">Post-election deck with live or recorded presentation add-on</div>
                     </div>
                 </label>
 

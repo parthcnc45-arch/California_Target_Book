@@ -35,9 +35,8 @@ Route::get('/new', function () {
 Route::get('/test-bio', function () {
     Util::require_ctb_api();
     $districtsService = app(App\Services\CTB\Districts::class);
-    
-    $senateDistricts = $districtsService->find('.SN');
-    
+
+    $senateDistricts = $districtsService->getDistricts();
     $html = '<ul>';
     foreach ($senateDistricts as $dist) {
         $partyClass = $districtsService->getParty($dist->PARTY);
@@ -52,7 +51,7 @@ Route::get('/test-bio', function () {
     }
     $html .= '</ul>';
     
-    return $senateDistricts;
+    return $html;
 });
 
 // Route::get('/about', function () {
@@ -903,7 +902,6 @@ Route::group([
 
 });
 
-
 /**
  * Redirects for legacy
  *  Separated for organization
@@ -928,6 +926,8 @@ foreach ($redirects as $start => $end) {
         return redirect($end);
     });
 }
+
+Route::post('/api/check-subscriber', 'Auth\AccountController@checkSubscriberStatus');
 
 Route::post('/account/delete', function(\Illuminate\Http\Request $request) {
     $user = auth()->user();
@@ -967,4 +967,17 @@ Route::get('/optimize-clear', function () {
     }
 });
 
-Route::post('/api/check-subscriber', 'Auth\AccountController@checkSubscriberStatus');
+
+
+Route::get('/test-email', function () {
+    try {
+        \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP settings in Laravel.', function ($message) {
+            // Send the test email to your own address
+            $message->to('parthcnc45@gmail.com')
+                    ->subject('Test Email from California Target Book');
+        });
+        return 'Test email sent successfully! Please check your inbox.';
+    } catch (\Exception $e) {
+        return 'Error sending email: ' . $e->getMessage();
+    }
+});

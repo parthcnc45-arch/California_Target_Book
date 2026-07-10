@@ -1,5 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Bellefair|Nunito+Sans:300,400,700);
 @
+
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 html {
     -ms-text-size-adjust: 100%;
@@ -17705,8 +17706,9 @@ table.table.table-lg th {
 nav.navbar {
     background: none;
     border: 0;
-   /*  height: 72;
-    max-height: 72 */;
+    /*  height: 72;
+    max-height: 72 */
+    ;
     /* min-height: 0; */
     padding: 0 !important;
     position: relative;
@@ -18354,96 +18356,97 @@ aside.side-nav h6 {
 }
 
 /* @media (max-width:768px) { */
-    main {
-        clear: both
-    }
+main {
+    clear: both
+}
 
-    aside.side-nav {
-        float: none;
-        height: auto;
-        /* min-width: 100vw; */
-        position: relative;
-        top: 0;
-        z-index: 998;
-        /* padding: 1rem!important; */
-    }
+aside.side-nav {
+    float: none;
+    height: auto;
+    /* min-width: 100vw; */
+    position: relative;
+    top: 0;
+    z-index: 998;
+    /* padding: 1rem!important; */
+}
 
-    aside.side-nav #book-chapters {
-        max-width: 100vw;
-        min-width: 100%;
-        overflow: auto;
-        width: auto
-    }
+aside.side-nav #book-chapters {
+    max-width: 100vw;
+    min-width: 100%;
+    overflow: auto;
+    width: auto
+}
 
-    aside.side-nav #book-chapters ul {
-        display: grid;
-        grid-auto-flow: column;
-        width: auto
-    }
+aside.side-nav #book-chapters ul {
+    display: grid;
+    grid-auto-flow: column;
+    width: auto
+}
 
-    aside.side-nav #book-chapters ul li {
-        border-right: 1px solid hsla(0, 0%, 100%, .2);
-        width: 82px
-    }
+aside.side-nav #book-chapters ul li {
+    border-right: 1px solid hsla(0, 0%, 100%, .2);
+    width: 82px
+}
 
-    aside.side-nav #book-chapters ul li a {
-        padding: 6px 3px
-    }
+aside.side-nav #book-chapters ul li a {
+    padding: 6px 3px
+}
 
-    aside.side-nav #book-chapters ul li a span {
-        margin: 4px auto -4px;
-        color: white;
-    }
+aside.side-nav #book-chapters ul li a span {
+    margin: 4px auto -4px;
+    color: white;
+}
 
-    aside.side-nav #section-nav {
-        padding: 0;
-        position: relative
-    }
+aside.side-nav #section-nav {
+    padding: 0;
+    position: relative
+}
 
-    aside.side-nav #section-nav section {
-        
-        width: 100vw
-    }
+aside.side-nav #section-nav section {
 
-    aside.side-nav #section-nav section>ul {
-        padding-bottom: 72px
-    }
+    width: 100vw
+}
 
-    aside.side-nav #section-nav section>ul>li>a {
-        font-size: 16px !important;
-        padding: 8px 16px !important
-    }
+aside.side-nav #section-nav section>ul {
+    padding-bottom: 72px
+}
 
-    aside.side-nav #section-nav section ul.numbered-nav>li>a {
-        font-size: 14px !important
-    }
+aside.side-nav #section-nav section>ul>li>a {
+    font-size: 16px !important;
+    padding: 8px 16px !important
+}
 
-    aside.side-nav ul.mobile-options {
-        margin: 0 !important;
-        position: absolute;
-        right: 16px;
-        top: 16px
-    }
+aside.side-nav #section-nav section ul.numbered-nav>li>a {
+    font-size: 14px !important
+}
 
-    aside.side-nav ul.mobile-options>li {
-        clear: none;
-        float: right;
-        padding: 8px
-    }
+aside.side-nav ul.mobile-options {
+    margin: 0 !important;
+    position: absolute;
+    right: 16px;
+    top: 16px
+}
 
-    aside.side-nav ul.mobile-options #mobile-close-nav {
-        color: #c14747
-    }
+aside.side-nav ul.mobile-options>li {
+    clear: none;
+    float: right;
+    padding: 8px
+}
 
-    aside.side-nav ul.mobile-options .settings-popup-menu {
-        bottom: unset !important;
-        left: unset !important;
-        right: 0 !important
-    }
+aside.side-nav ul.mobile-options #mobile-close-nav {
+    color: #c14747
+}
 
-    aside.side-nav ul.mobile-options .settings-popup-menu li {
-        float: none
-    }
+aside.side-nav ul.mobile-options .settings-popup-menu {
+    bottom: unset !important;
+    left: unset !important;
+    right: 0 !important
+}
+
+aside.side-nav ul.mobile-options .settings-popup-menu li {
+    float: none
+}
+
 /* } */
 
 aside.side-nav #section-nav.verbose-mode ul.numbered-nav>li {
@@ -19799,10 +19802,10 @@ textarea {
 }
 
 @media (max-width: 800px) {
-	.card {
-	    min-width: 400px;	
-	    max-width: 600px;
-	}
+    .card {
+        min-width: 400px;
+        max-width: 600px;
+    }
 }
 
 .card:hover {
@@ -20595,8 +20598,9 @@ body.hotsheet.book-page .ternary-content .article-teaser .overview h4 {
     padding: 12px;
     border-radius: 6px;
 }
+
 .headingDiv h5 {
- margin-top: 0 !important;
+    margin-top: 0 !important;
 }
 
 ul.hot-breadcumb {
@@ -20624,6 +20628,7 @@ ul.hot-breadcumb li.active {
 .general-pill-tab li.nav-item {
     text-align: center;
 }
+
 .general-pill-tab li.nav-item a {
     color: #31343C;
     font-family: 'Lato';
@@ -20631,14 +20636,17 @@ ul.hot-breadcumb li.active {
     font-weight: 700;
     letter-spacing: 0.14px;
 }
+
 .general-pill-tab li.nav-item.active a {
     background-color: transparent !important;
     color: #1A71EE;
 }
+
 .general-pill-tab li.nav-item.active {
     background: transparent;
     box-shadow: 0px 2px 0px 0px #008ACA;
 }
+
 .general-pill-tab li.nav-item a span {
     font-weight: 400;
     font-size: 14px;
@@ -20660,68 +20668,93 @@ ul.hot-breadcumb li.active {
     border-radius: 50%;
     width: 130px;
 }
+
 .mainDiv {
     padding: 12px 30px;
     list-style-type: none;
 }
+
 #pills-tabContent ul {
     padding: 0;
 }
-div#pills-state ul, div#pills-federal ul {
+
+div#pills-state ul,
+div#pills-federal ul {
     list-style-type: none !important;
 }
+
 /* Mobile responsive */
-@media (max-width:600px){
+@media (max-width:600px) {
     form#filter-form {
         flex-wrap: wrap;
         padding: 0;
     }
+
     .general-pill-tab li.nav-item a {
         font-size: 16px;
     }
+
     .nav>li>a {
         padding: 10px 12px
     }
 
-    .ctb-filters-btns {flex-wrap: wrap;}
+    .ctb-filters-btns {
+        flex-wrap: wrap;
+    }
 
-    .ctb-filters-btns>select, .ctb-filters-btns>input, .ctb-filters-btns>div, .ctb-filters-btns>button {
+    .ctb-filters-btns>select,
+    .ctb-filters-btns>input,
+    .ctb-filters-btns>div,
+    .ctb-filters-btns>button {
         width: 48%;
     }
+
     div#articaleList {
         padding: 20px;
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
+
     div#articaleList a.panel.article-card>.ctb-blog-content .p-4 {
         padding: 10px !important;
     }
+
     .ctb-blog-content h3 {
         font-size: 12px !important;
         line-height: 16px;
     }
-    .ctb-blog-content h3 + div p, .ctb-blog-content h3 + div span {
+
+    .ctb-blog-content h3+div p,
+    .ctb-blog-content h3+div span {
         font-size: 10px;
         margin: 0;
     }
+
     .ctb-fav {
         width: 100%;
     }
+
     .ctb-fav-box {
         padding: 20px;
     }
+
     .ctb-fav-box h2 {
         font-size: 15px;
         line-height: 24px;
         margin-top: 0;
     }
+
     body.book-page .book-page-head {
         height: auto;
     }
-    div#pills-tabContent, .responsive_tablee  {
+
+    div#pills-tabContent,
+    .responsive_tablee {
         overflow: hidden;
     }
-    .ca_candidates div#txtHint, .responsive_tablee div#txtHint {
+
+    .ca_candidates div#txtHint,
+    .responsive_tablee div#txtHint {
         overflow-x: scroll;
     }
 
@@ -20731,66 +20764,68 @@ div#pills-state ul, div#pills-federal ul {
 }
 
 .topnav-container {
-	width: 100vw;
-	float: none;
-	clear: both;
+    width: 100vw;
+    float: none;
+    clear: both;
 }
 
 .topnav-container nav ul {
-	display: inline-block;
-	text-align: center !important;;
-	margin-left: auto !important;
-	margin-right: auto !important;
+    display: inline-block;
+    text-align: center !important;
+    ;
+    margin-left: auto !important;
+    margin-right: auto !important;
 
 }
 
 .district-card {
-	margin-left: 5px;
-	text-align: left;
-	width: 400px;
+    margin-left: 5px;
+    text-align: left;
+    width: 400px;
 }
 
 .district-card ul {
-	padding-top: 30px;
-	padding-bottom: 30px;
-	display: inline-block;
-	overflow: none;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    display: inline-block;
+    overflow: none;
 }
 
 district-card-wide {
-	width: 640px;
+    width: 640px;
 }
 
 .district-nav-card-container {
-	display: flex;
-	flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .district-nav-card-item {
-	flex: 1 1 21%;
-	display: flex;
-	flex-direction: column;
-	margin: 10px;
-	
+    flex: 1 1 21%;
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+
 }
 
 .district-nav-card {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between
 }
 
 .district-nav-card-body {
-	flex: 1;
+    flex: 1;
 }
 
 .bullet-square {
-	list-style: square !important;
+    list-style: square !important;
 }
 
 .ctb-content-box img {
-	height: 40px;
+    height: 40px;
 }
+
 .navbar-static-top ul.nav.navbar-nav {
     flex-direction: row;
     margin-left: auto;
@@ -20798,4 +20833,8 @@ district-card-wide {
 
 .navbar-static-top div#navbar {
     flex: none;
+}
+
+.nav-container .dropdown-toggle::after {
+    display: none;
 }

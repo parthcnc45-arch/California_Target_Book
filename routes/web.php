@@ -972,12 +972,35 @@ Route::get('/optimize-clear', function () {
 Route::get('/test-email', function () {
     try {
         \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP settings in Laravel.', function ($message) {
-            // Send the test email to your own address
-            $message->to('parthcnc45@gmail.com')
-                    ->subject('Test Email from California Target Book');
-        });
-        return 'Test email sent successfully! Please check your inbox.';
-    } catch (\Exception $e) {
-        return 'Error sending email: ' . $e->getMessage();
+        // Send the test email to your own address
+        $message->to('parthcnc45@gmail.com')
+                ->subject('Test Email from California Target Book');
+    });
+    return 'Test email sent successfully! Please check your inbox.';
+} catch (\Exception $e) {
+    return 'Error sending email: ' . $e->getMessage();
+}
+});
+
+Route::post('/load-content/{tabName}', function (\Illuminate\Http\Request $request, $tabName) {
+    $old_fourcode = $request->input('old_fourcode');
+    $fourcode = $request->input('fourcode');
+    $role = $request->input('role');
+    $id = $fourcode;
+    $cand_id = $fourcode; // In case they use cand_id
+
+    ob_start();
+    if ($tabName === 'incumbent') {
+        include(app_path('../resources/views/old/incumbent_page_20.php'));
+    } elseif ($tabName === 'campaigns') {
+        include(app_path('../resources/views/old/cal_campaigns_20.php'));
     }
+    return ob_get_clean();
+});
+
+Route::get('/test-campaigns-cd28', function () {
+    $fourcode = 'CD28';
+    ob_start();
+    include(resource_path('views/old/cal_campaigns_20.php'));
+    return ob_get_clean();
 });

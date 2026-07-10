@@ -45,8 +45,12 @@
 		$zip_div = get_redist_zips($fourcode);
 
 
-		$url = "/ctb-legacy/draw_viz.php?city=VIZ8_" . $type . "&cd=" . $dist;
-		$iframe_html = "<iframe src='$url' width='680' height='330' align='center' scrolling='no'></iframe>";
+		if (substr($fourcode, 0, 1) === '.') {
+			$iframe_html = "<div style='display:flex; justify-content:center; align-items:center; height:330px; background-color:#f8f9fa; color:#6c757d; font-size:18px; font-weight:bold;'>Statewide (California)</div>";
+		} else {
+			$url = "/ctb-legacy/draw_viz.php?city=VIZ8_" . $type . "&cd=" . $dist;
+			$iframe_html = "<iframe src='$url' width='680' height='330' align='center' scrolling='no'></iframe>";
+		}
         $pres_old_fourcode=$pres[$old_fourcode]??[];
         $reg_old_fourcode=$reg[$old_fourcode]??[];
 
@@ -629,9 +633,8 @@
                                     <!-- Incument -->
                                     <div class="tab-pane fade districts_tabs" id="pills-incumbent" style="padding: 0 !important" >
                                         <div id="incumbentLoader" class="text-center mt-5 hidden">
-                                            <ctb-loader></ctb-loader>
                                         </div>
-                                        <?php //include(Util::$view_root.'incumbent_page_20.php') ?>
+                                        <div id="incumbent-page"></div>
                                     </div>
                                     <!-- Camaigns -->
                                     <div class="tab-pane fade districts_tabs pills-campaigns_tabs" id="pills-campaigns" style="padding: 0 !important">
@@ -1438,7 +1441,7 @@
                     return $row['text'];
                 }
             }
-            return "No data found";
+            return "";
         }
 
         function get_fourcode_index() {

@@ -1,84 +1,26 @@
-
-
 <?php
-    global $cached;
-    $x = lookup_election_years($fourcode);
+set_time_limit(0);
 ?>
+<div class='container-fluid no-border'>
+    <div id='years' class="">
+        <ul class="text-center">
 
-<?php
-    // foreach ($x['years'] as $year) {
+            <?php
+                global $cached;
+                $x = lookup_election_years($fourcode);
+                echo($x['li']);
+            ?>
 
-        // $year='2022'; //show only for 2022
-        $year='2024'; //show only for 2024
-        include(Util::$view_root.'draw_ca_election_b20.php');
+        </ul>
 
-        echo'
-            <ul class="nav nav-pills mb-3" id="pills-tab">
-                <li class="nav-item active">
-                    <a class="nav-link" data-toggle="pill" href="#pills-analysis"><span>Analysis</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#pills-financials"><span>Financials</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#pills-candidates"><span>Candidates</span></a>
-                </li>
-            </ul>
-
-            <div class="tab-content" id="pills-tabContent">
-                <div class="tab-pane fade active in" id="pills-analysis" >
-                    <div class="ctb-district-overlaps bg-white pt-3 ctb-border-radius">
-                        <div class="analysis-simple bg-white p-4 ctb-border-radius">
-                            <p class="mb-0">'.$analysis .$this_endorsement.'</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="pills-financials" >
-                    <div class="ctb-district-overlaps bg-white pt-3 ctb-border-radius">
-                        <div class="analysis-simple bg-white p-4 ctb-border-radius">
-                            <p class="mb-0">'.$financials.'</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="pills-candidates" >
-                    <div class="ctb-district-overlaps bg-white pt-3 ctb-border-radius">
-                        <div class="analysis-simple bg-white p-4 ctb-border-radius">
-                            <p class="mb-0">'.$intention_table.'</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        ';
-
-        echo'<div class="row condidates_row">';
-        foreach ($cdivs as $c) {
-            if (isset($c['is_inc'])) {
-                echo($c['div_start']);
-                if (isset($c['cmte_id'])) {
-                    $lookup_cmte = $c['cmte_id'];
-                    Util::include('get_cmte_cont.php', ['lookup_cmte' => $lookup_cmte]);
-                }
-                echo($end_div);
+        <?php
+            foreach ($x['years'] as $year) {
+                include(Util::$view_root.'draw_ca_election_b20.php');
             }
-        }
+        ?>
 
-        // foreach ($cdivs as $c) {
-        //     if (!isset($c['is_inc'])) {
-        //         echo($c['div_start']);
-        //         if (isset($c['cmte_id'])) {
-        //             $lookup_cmte = $c['cmte_id'];
-        //             Util::include('get_cmte_cont.php', ['lookup_cmte' => $lookup_cmte]);
-        //         }
-        //         echo($end_div);
-        //     }
-        // }
-        echo'</div>';
-    // }
-?>
-
+    </div>
+</div>
 
 
 
@@ -125,14 +67,14 @@ function lookup_si($fourcode, $year) {
             default:
                 $use_fec = TRUE;
                 $use_fppc = FALSE;
-                break;
-        }
+                break;                
+        }   
     } elseif(mb_substr($fourcode, 0, 2) == "CD") {
         $use_fec = TRUE;
         $use_fppc = FALSE;
     }
 
-
+    
 
     if($use_fppc === TRUE) {
         $fppc_table_head = "<p align='center'>FPPC STATEMENTS OF INTENTION</p>
@@ -150,7 +92,7 @@ function lookup_si($fourcode, $year) {
         $sql = "SELECT cand_nm, cand_id, office, party, year, logged FROM ctb_fppc_si WHERE office = '$converted' && year = '$year' ORDER BY party, cand_nm ";
 
         $result = $conn->query($sql);
-	$fppc_table_body = '';
+        $fppc_table_body = '';
         if($result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
                 $cand_id = $row['cand_id'];
@@ -195,7 +137,7 @@ function lookup_si($fourcode, $year) {
                                 </thead>
                                 <tbody>";
         $result = $conn->query($sql);
-	$fec_table_body = '';
+        $fec_table_body = '';
         if($result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
                 $cand_id = $row['cand_id'];
@@ -241,6 +183,27 @@ function populate_blacklist() {
 
 function lookup_election_years($id) {
 
+	/*OLD
+
+    if(mb_substr($id, 0, 1) == "." || mb_substr($id, 0, 3) == "BOE") {
+        $statewide_race = TRUE;
+    } elseif (mb_substr($id, 0, 2) == "SD") {
+        if(mb_substr($id, 2, 2) % 2 == 0) {
+            $years = Array("2018", "2014");
+        } else {
+            $years = Array("2016", "2012");
+        }
+
+        //INCLUDE CARVE-OUT FOR 2018 SD29 RECALL ELECTION
+        if($id == "SD29") {
+            $years = Array("2020", "2018", "2016", "2012");
+        }
+    } else {
+        $years = Array("2018", "2016", "2014", "2012");
+    }
+
+    */
+
     $years = Array();
     $statewide_race = FALSE;
     if(mb_substr($id, 0, 2) == "CD") {
@@ -282,9 +245,11 @@ function lookup_election_years($id) {
     $tmp['li'] = '';
     $tmp['years'] = $years;
 
+    $is_first = true;
     foreach($years as $year) {
-        $tmp['li'] .= "<li><a href='#Campaigns' for='#e$year' class='fa fa-lg fa-book'>Election $year</a></li>
-                      ";
+        $li_class = $is_first ? "tab-current" : "";
+        $tmp['li'] .= "<li class='$li_class'><a href='#Campaigns' for='#e$year' class='fa fa-lg fa-book'>Election $year</a></li>\n";
+        $is_first = false;
     }
 
     return $tmp;
@@ -402,147 +367,107 @@ function lookup_cand_name_new($cand_id, $year)
 
 
 
-function getsummaryBackup($filing)
+function getsummary($filing)
 {
 
+    /*$stmt = Util::get_ctb_pdo()->prepare("
+      SELECT AMOUNT_A, AMOUNT_B
+      FROM calaccess_raw_SMRY_CD
+      WHERE FILING_ID = :id
+       && REC_TYPE = 'SMRY'
+       && (LINE_ITEM = '5' | LINE_ITEM = '11' | LINE_ITEM = '16' | LINE_ITEM = '2' | LINE_ITEM = '19')
+      LIMIT 5
+    ");
+    $stmt->execute(['id' => $filing]);
+
+    $retval = Array();
+
+    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        switch ($row['LINE_ITEM']) {
+            case 5:
+                //CONTRIBUTIONS THIS PERIOD
+                $retval['RCPT'] = $row['AMOUNT_A'];
+                //CONTRIBUTIONS THIS CALENDAR YEAR
+                $retval['YTD_RCPT'] = $row['AMOUNT_B'];
+                break;
+
+            case 11:
+                //EXPENDITURES
+                $retval['EXPN'] = $row['AMOUNT_A'];
+                //YTD EXPENDITURES
+                $retval['YTD_EXPN'] = $row['AMOUNT_B'];
+                break;
+
+            case 16:
+                $retval['COH'] = $row['AMOUNT_A'];
+                break;
+            case 2:
+                // LOANS
+                $retval['LOANS'] = $row['AMOUNT_B'];
+                break;
+            case 19:
+                $retval['DEBTS'] = $row['AMOUNT_A'];
+                break;
+        }
+    }*/
 
     $conn = Util::get_ctb_conn();
     $retval = Array();
 
-    if(!isset($filing)) {
-	return FALSE;
-    }
-
     //CONTRIBUTIONS THIS PERIOD
-    // $sql = "SELECT AMOUNT_A FROM calaccess_raw_SMRY_CD WHERE FILING_ID = " . $filing . " && REC_TYPE = 'SMRY' && LINE_ITEM = '5' ORDER BY AMEND_ID DESC LIMIT 1";
-    // $result = $conn->query($sql);
-
-    $sql = "SELECT AMOUNT_A FROM calaccess_raw_SMRY_CD WHERE FILING_ID = ? AND REC_TYPE = ? AND LINE_ITEM = ? ORDER BY AMEND_ID DESC LIMIT 1";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iss", $filing, $recType, $lineItem);
-
-    // Assign values to parameters
-    $filing = $filing;
-    $recType = 'SMRY';
-    $lineItem = '5';
-
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if(!is_bool($result)) {
-	    if ($result->num_rows > 0) {
-        	while ($row = $result->fetch_assoc()) {
-	            $retval['RCPT'] = $row['AMOUNT_A'];
-        	}
-	    }
+    $sql = "SELECT AMOUNT_A FROM calaccess_raw_SMRY_CD WHERE FILING_ID = " . $filing . " && REC_TYPE = 'SMRY' && LINE_ITEM = '5' ORDER BY AMEND_ID DESC LIMIT 1";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $retval['RCPT'] = $row['AMOUNT_A'];
+        }
     }
     //CONTRIBUTIONS THIS CALENDAR YEAR
-    // $sql = "SELECT AMOUNT_B FROM calaccess_raw_SMRY_CD WHERE FILING_ID = " . $filing . " && REC_TYPE = 'SMRY' && LINE_ITEM = '5' ORDER BY AMEND_ID DESC LIMIT 1";
-    // $result = $conn->query($sql);
-    $sql = "SELECT AMOUNT_B FROM calaccess_raw_SMRY_CD WHERE FILING_ID = ? AND REC_TYPE = ? AND LINE_ITEM = ? ORDER BY AMEND_ID DESC LIMIT 1";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iss", $filing, $recType, $lineItem);
-
-    // Assign values to parameters
-    $filing = $filing;
-    $recType = 'SMRY';
-    $lineItem = '5';
-
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if(!is_bool($result)) {
-	    if ($result->num_rows > 0) {
-	        while ($row = $result->fetch_assoc()) {
-	            $retval['YTD_RCPT'] = $row['AMOUNT_B'];
-	        }
-	    }
-	}
+    $sql = "SELECT AMOUNT_B FROM calaccess_raw_SMRY_CD WHERE FILING_ID = " . $filing . " && REC_TYPE = 'SMRY' && LINE_ITEM = '5' ORDER BY AMEND_ID DESC LIMIT 1";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $retval['YTD_RCPT'] = $row['AMOUNT_B'];
+        }
+    }
     //EXPENDITURES
     $sql = "SELECT AMOUNT_A from calaccess_raw_SMRY_CD WHERE FILING_ID = " . $filing . " && REC_TYPE = 'SMRY' && LINE_ITEM = '11' ORDER BY AMEND_ID DESC LIMIT 1";
     $result = $conn->query($sql);
-    if(!is_bool($result)) {
-	    if ($result->num_rows > 0) {
-	        while ($row = $result->fetch_assoc()) {
-	            $retval['EXPN'] = $row['AMOUNT_A'];
-	        }
-	    }
-	}
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $retval['EXPN'] = $row['AMOUNT_A'];
+        }
+    }
     //YTD EXPENDITURES
     $sql = "SELECT AMOUNT_B from calaccess_raw_SMRY_CD WHERE FILING_ID = " . $filing . " && REC_TYPE = 'SMRY' && LINE_ITEM = '11' ORDER BY AMEND_ID DESC LIMIT 1";
     $result = $conn->query($sql);
-    if(!is_bool($result)) {
-	    if ($result->num_rows > 0) {
-	        while ($row = $result->fetch_assoc()) {
-	            $retval['YTD_EXPN'] = $row['AMOUNT_B'];
-	        }
-	    }
-	}
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $retval['YTD_EXPN'] = $row['AMOUNT_B'];
+        }
+    }
     //CASH ON HAND
     $sql = "SELECT AMOUNT_A FROM calaccess_raw_SMRY_CD WHERE FILING_ID = " . $filing . " && REC_TYPE = 'SMRY' && LINE_ITEM = '16' ORDER BY AMEND_ID DESC LIMIT 1";
     $result = $conn->query($sql);
-    if(!is_bool($result)) {
-	    if ($result->num_rows > 0) {
-	        while ($row = $result->fetch_assoc()) {
-	            $retval['COH'] = $row['AMOUNT_A'];
-	        }
-	    }
-	}
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $retval['COH'] = $row['AMOUNT_A'];
+        }
+    }
     //LOANS
     $sql = "SELECT AMOUNT_B FROM calaccess_raw_SMRY_CD WHERE FILING_ID = " . $filing . " && REC_TYPE = 'SMRY' && LINE_ITEM = '2' ORDER BY AMEND_ID DESC LIMIT 1";
     $result = $conn->query($sql);
-    if(!is_bool($result)) {
-	    if ($result->num_rows > 0) {
-	        while ($row = $result->fetch_assoc()) {
-	            $retval['LOANS'] = $row['AMOUNT_B'];
-	        }
-	    }
-	}
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $retval['LOANS'] = $row['AMOUNT_B'];
+        }
+    }
     //DEBTS
     $sql = "SELECT AMOUNT_A from calaccess_raw_SMRY_CD WHERE FILING_ID = " . $filing . " && REC_TYPE = 'SMRY' && LINE_ITEM = '19' ORDER BY AMEND_ID DESC LIMIT 1";
     $result = $conn->query($sql);
-    if(!is_bool($result)) {
-	    if ($result->num_rows > 0) {
-	        while ($row = $result->fetch_assoc()) {
-	            $retval['DEBTS'] = $row['AMOUNT_A'];
-	        }
-	    }
-	}
-
-    return $retval;
-}
-
-function getSummary($filing)
-{
-    $conn = Util::get_ctb_conn();
-    $retval = Array();
-
-    if (!isset($filing)) {
-        return FALSE;
-    }
-
-    $sql = "SELECT AMOUNT_A, AMOUNT_B, LINE_ITEM FROM calaccess_raw_SMRY_CD WHERE FILING_ID = ? AND REC_TYPE = 'SMRY' AND LINE_ITEM IN ('5', '11', '16', '2', '19') ORDER BY LINE_ITEM, AMEND_ID DESC";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $filing);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if (!is_bool($result)) {
+    if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $lineItem = $row['LINE_ITEM'];
-            if ($lineItem === '5') {
-                $retval['RCPT'] = $row['AMOUNT_A'];
-                $retval['YTD_RCPT'] = $row['AMOUNT_B'];
-            } elseif ($lineItem === '11') {
-                $retval['EXPN'] = $row['AMOUNT_A'];
-                $retval['YTD_EXPN'] = $row['AMOUNT_B'];
-            } elseif ($lineItem === '16') {
-                $retval['COH'] = $row['AMOUNT_A'];
-            } elseif ($lineItem === '2') {
-                $retval['LOANS'] = $row['AMOUNT_B'];
-            } elseif ($lineItem === '19') {
-                $retval['DEBTS'] = $row['AMOUNT_A'];
-            }
+            $retval['DEBTS'] = $row['AMOUNT_A'];
         }
     }
 
@@ -550,7 +475,8 @@ function getSummary($filing)
 }
 
 
-
+// Initial function only returned the id,
+// so just leaving this blank for now.
 function get_final_filing($cmte_id, $year)
 {
     $stmt = Util::get_ctb_pdo()->prepare("
@@ -568,18 +494,18 @@ function get_final_filing($cmte_id, $year)
     ]);
 
     $x = $stmt->fetch(PDO::FETCH_ASSOC);
-    if(isset($x['FILING_ID'])) {
-    	return $x['FILING_ID'];
-    } else {
-	return FALSE;
-    }
+    $retval = $x['FILING_ID'];
+    return $retval;
+    //return $cmte_id;
+
+
 }
 
 function get_filing_years($cmte_id)
 {
 
     $stmt = Util::get_ctb_pdo()->prepare("
-      SELECT RPT_START, RPT_END FROM calaccess_raw_FILER_FILINGS_CD
+      SELECT RPT_START, RPT_END FROM calaccess_raw_FILER_FILINGS_CD 
       WHERE FILER_ID = :id && FORM_ID = 'F460'
     ");
 
@@ -604,9 +530,9 @@ function getf497filingssince($committee, $date)
 	$date = "2000-01-01";
     }
     $stmt = Util::get_ctb_pdo()->prepare("
-      SELECT * FROM calaccess_raw_FILER_FILINGS_CD
-      WHERE FILER_ID = :id
-        && RPT_END > :date
+      SELECT * FROM calaccess_raw_FILER_FILINGS_CD 
+      WHERE FILER_ID = :id 
+        && RPT_END > :date 
         && FILING_TYPE <> '0'
       ORDER BY FILING_ID DESC, FILING_SEQUENCE DESC
     ");
@@ -711,20 +637,16 @@ function fetch_name($cand_id, $year)
     $first = mb_substr($cand_id, 0, 1);
     if ($first != "H" && $first != "S") {
         $stmt = Util::get_ctb_pdo()->prepare("
-          SELECT NAMF, NAML FROM calaccess_raw_FILERNAME_CD
-          WHERE FILER_ID = :id
+          SELECT NAMF, NAML FROM calaccess_raw_FILERNAME_CD 
+          WHERE FILER_ID = :id 
           LIMIT 1
         ");
 
         $stmt->execute(['id' => $cand_id]);
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (is_array($row)) {
-            return $row['NAMF'] . " " . $row['NAML'];
-        }else{
-            return $row;
-        }
 
+        return $row['NAMF'] . " " . $row['NAML'];
 
     } elseif($year > 2020) {
             $stmt = Util::get_ctb_pdo()->prepare("
@@ -735,11 +657,8 @@ function fetch_name($cand_id, $year)
             $stmt->execute(['id' => $cand_id]);
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (is_array($row)) {
-                return $row['namf'] . " " . $row['naml'];
-            }else{
-                return $row;
-            }
+            return $row['namf'] . " " . $row['naml'];
+
 	} else {
 
         if ($year > "2017") {
@@ -756,28 +675,18 @@ function fetch_name($cand_id, $year)
             $stmt->execute(['id' => $cand_id]);
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (is_array($row)) {
-                return $row['namf'] . " " . $row['naml'];
-            }else{
-                return $row;
-            }
-
+            return $row['namf'] . " " . $row['naml'];
 
         } else {
             $stmt = Util::get_ctb_pdo()->prepare("
-              SELECT name FROM ctb_ca_candidates
+              SELECT name FROM ctb_ca_candidates 
               WHERE cand_id = :id LIMIT 1
             ");
 
             $stmt->execute(['id' => $cand_id]);
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $row['name'];
-            if (is_array($row)) {
-                return $row['name'];
-            }else{
-                return $row;
-            }
+            return $row['name'] ?? '';
         }
     }
 
@@ -785,7 +694,6 @@ function fetch_name($cand_id, $year)
 
 function fetch_bio($cand_id)
 {
-    $row=[];
     $stmt = Util::get_ctb_pdo()->prepare("
               SELECT text FROM ctb_cand_bios WHERE cand_id = :id
 	      ORDER BY date DESC
@@ -795,8 +703,7 @@ function fetch_bio($cand_id)
     $stmt->execute(['id' => $cand_id]);
 
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $retval= is_array($row)?$row['text']:$row;
-    return $retval;
+    return $row['text'] ?? '';
 }
 
 function fetch_party($cand_id, $year)
@@ -805,7 +712,7 @@ function fetch_party($cand_id, $year)
     $short_year = mb_substr($year, 2, 2);
 
     $stmt = Util::get_ctb_pdo()->prepare("
-      SELECT party, is_incumbent FROM ctb_ca_candidates
+      SELECT party, is_incumbent FROM ctb_ca_candidates 
       WHERE cand_id = :id && (election = :p || election = :g) LIMIT 1
     ");
 
@@ -817,8 +724,13 @@ function fetch_party($cand_id, $year)
 
     $x = $stmt->fetchAll();
 
-    $retval['party'] = $x[0]['party'];
-    $retval['is_incumbent'] = $x[0]['is_incumbent'];
+    if (!empty($x) && isset($x[0])) {
+        $retval['party'] = $x[0]['party'];
+        $retval['is_incumbent'] = $x[0]['is_incumbent'];
+    } else {
+        $retval['party'] = '';
+        $retval['is_incumbent'] = '';
+    }
 
     return $retval;
 
@@ -858,8 +770,8 @@ function get_votes($cand_id, $year)
 
     if ($racekey_p) {
         $stmt = Util::get_ctb_pdo()->prepare("
-              SELECT SUM(votes) AS votes
-              FROM ctb_county_results
+              SELECT SUM(votes) AS votes 
+              FROM ctb_county_results 
               WHERE election = :elec && racekey = :key
         ");
 
@@ -868,13 +780,14 @@ function get_votes($cand_id, $year)
             'key' => $racekey_p,
         ]);
 
-        $p_votes = $stmt->fetch(PDO::FETCH_ASSOC)['votes'];
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        $p_votes = $res['votes'] ?? 0;
     }
 
     if ($racekey_g) {
         $stmt = Util::get_ctb_pdo()->prepare("
-              SELECT SUM(votes) AS votes
-              FROM ctb_county_results
+              SELECT SUM(votes) AS votes 
+              FROM ctb_county_results 
               WHERE election = :elec && racekey = :key
         ");
 
@@ -883,7 +796,8 @@ function get_votes($cand_id, $year)
             'key' => $racekey_g,
         ]);
 
-        $g_votes = $stmt->fetch(PDO::FETCH_ASSOC)['votes'];
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        $g_votes = $res['votes'] ?? 0;
     }
 
 
@@ -897,7 +811,7 @@ function get_votes($cand_id, $year)
 function get_race_key($cand_id, $election)
 {
     $stmt = Util::get_ctb_pdo()->prepare("
-        SELECT race from ctb_ca_candidates
+        SELECT race from ctb_ca_candidates 
         WHERE cand_id = :id && election = :elec
     ");
 
@@ -906,7 +820,8 @@ function get_race_key($cand_id, $election)
         'elec' => strtolower($election)
     ]);
 
-    return $stmt->fetch(PDO::FETCH_ASSOC)['race'] ?? '';
+    $res = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $res['race'] ?? '';
 }
 
 function lookup_cand_name($cand_id, $year)
@@ -944,7 +859,7 @@ function get_committees($election)
     //echo("<br>LOOKING UP COMMITTEES<br>");
     if ($year > 2011) {
         $stmt = Util::get_ctb_pdo()->prepare("
-            SELECT * FROM calaccess_raw_hcand_comm
+            SELECT * FROM calaccess_raw_hcand_comm 
             WHERE FOURCODE = :code && ELECTION = :elec
         ");
 
@@ -969,7 +884,7 @@ function get_committees($election)
         //echo("<br>LOOKING UP PRE-2012 CANDIDATES");
         foreach ($candidates as $cand_id) {
             $stmt = Util::get_ctb_pdo()->prepare("
-                SELECT cmte_id, cmte_nm FROM ctb_ca_ccl
+                SELECT cmte_id, cmte_nm FROM ctb_ca_ccl 
                 WHERE cand_id = :id && cmte_nm LIKE :yr
             ");
 
@@ -983,8 +898,8 @@ function get_committees($election)
                 array_push($retval, $row);
             } else {
                 $stmt = Util::get_ctb_pdo()->prepare("
-                    SELECT cmte_id, cmte_nm FROM ctb_ca_ccl
-                    WHERE cand_id = '$cand_id'
+                    SELECT cmte_id, cmte_nm FROM ctb_ca_ccl 
+                    WHERE cand_id = '$cand_id' 
                       && (status LIKE :s1 || status LIKE :s2)
                 ");
 
@@ -1017,8 +932,8 @@ function get_cand_bio($cand_id)
 
 
     $stmt = Util::get_ctb_pdo()->prepare("
-        SELECT text FROM ctb_cand_bios
-        WHERE cand_id = :id && juris = :juris
+        SELECT text FROM ctb_cand_bios 
+        WHERE cand_id = :id && juris = :juris 
 	ORDER BY date DESC
 	LIMIT 1
     ");
@@ -1048,9 +963,9 @@ function get_candidates($year)
     if(mb_substr($fourcode, 0, 3) == "BOE") {
         $dist = "0" . mb_substr($fourcode, 3, 1);
         $stmt = Util::get_ctb_pdo()->prepare("
-            SELECT cand_id FROM ctb_ca_candidates
-            WHERE race LIKE 'BOE" . $dist . "%'
-              && (election = :g || election = :p)
+            SELECT cand_id FROM ctb_ca_candidates 
+            WHERE race LIKE 'BOE" . $dist . "%' 
+              && (election = :g || election = :p) 
             GROUP BY cand_id
         ");
         $stmt->execute([
@@ -1061,11 +976,11 @@ function get_candidates($year)
     } elseif ($first_two == "CD" || $first_two == "AD" || $first_two == "SD") {
 
         $stmt = Util::get_ctb_pdo()->prepare("
-            SELECT cand_id FROM ctb_dist_cands
-            WHERE dist = :dist
-              && juris = :juris
-              && code != ''
-              && (election = :g || election = :p)
+            SELECT cand_id FROM ctb_dist_cands 
+            WHERE dist = :dist 
+              && juris = :juris 
+              && code != '' 
+              && (election = :g || election = :p) 
             GROUP BY cand_id
         ");
 
@@ -1091,9 +1006,9 @@ function get_candidates($year)
         }
 
         $stmt = Util::get_ctb_pdo()->prepare("
-            SELECT cand_id FROM ctb_ca_candidates
-            WHERE race LIKE '" . $off_type . "%'
-              && (election = :g || election = :p)
+            SELECT cand_id FROM ctb_ca_candidates 
+            WHERE race LIKE '" . $off_type . "%' 
+              && (election = :g || election = :p) 
             GROUP BY cand_id
         ");
         $stmt->execute([
@@ -1132,7 +1047,7 @@ function get_analysis($year)
     }
 
     $stmt = Util::get_ctb_pdo()->prepare("
-        SELECT * FROM ctb_analysis
+        SELECT * FROM ctb_analysis 
         WHERE dist = :dist && juris = :juris && year = :year && id > 4715
 	ORDER BY date DESC
 	LIMIT 1
@@ -1145,20 +1060,16 @@ function get_analysis($year)
     ]);
 
     $res = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (is_array($res )) {
-        return$res['text'];
-    }else{
-        return$res;
-    }
+    return $res['text'] ?? '';
 }
 
 function getlastf460($committee)
 {
 
     $stmt = Util::get_ctb_pdo()->prepare("
-      SELECT FILING_ID, RPT_END FROM calaccess_raw_FILER_FILINGS_CD
-      WHERE FILER_ID = :committee
-        && FORM_ID = 'F460'
+      SELECT FILING_ID, RPT_END FROM calaccess_raw_FILER_FILINGS_CD 
+      WHERE FILER_ID = :committee 
+        && FORM_ID = 'F460' 
         && FILING_TYPE <> '0'
       ORDER BY RPT_END DESC, FILING_SEQUENCE DESC LIMIT 1
     ");
@@ -1177,12 +1088,9 @@ function get_full_committee_name($cmte_id)
     ");
 
     $stmt->execute(['committee' => $cmte_id]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (is_array($row)) {
-        return $row['NAMF'] . " " . $row['NAML'];
-    }else{
-        return $row;
-    }
+    $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $rec['NAMF'] . ' ' . $rec['NAML'];
 }
 
 function get_candidate_image_sm($cand_id)
@@ -1211,8 +1119,8 @@ function get_candidate_image_sm($cand_id)
 function get_financials($year)
 {
     global $fourcode;
+
     $modifier = '';
-    $lastdate = '';
 
     switch ($year) {
         case "2006":
@@ -1283,7 +1191,7 @@ function get_financials($year)
 					<th>LIFETIME SPENT</th>
 					<th>CASH ON HAND</th>
                     <th>PERIOD ENDING</th>
-
+					
 				</tr>
 			</thead>
 			<tbody>
@@ -1305,7 +1213,7 @@ function get_financials($year)
 
     } elseif ($year > 2005) {
         $stmt = Util::get_ctb_pdo()->prepare("
-          SELECT $key AS cmte_id FROM calaccess_raw_$table
+          SELECT $key AS cmte_id FROM calaccess_raw_$table 
           WHERE FOURCODE = :code $modifier
         ");
         $stmt->execute(['code' => $fourcode]);
@@ -1336,9 +1244,9 @@ function get_financials($year)
         //echo("<br>LOOKING UP PRE-2012 CANDIDATES");
         foreach ($candidates as $cand_id) {
             $stmt = Util::get_ctb_pdo()->prepare("
-              SELECT cmte_id, cmte_nm FROM ctb_ca_ccl
-              WHERE cand_id = :id
-                && cmte_nm LIKE '%$year%'
+              SELECT cmte_id, cmte_nm FROM ctb_ca_ccl 
+              WHERE cand_id = :id 
+                && cmte_nm LIKE '%$year%' 
                 && cmte_nm NOT LIKE '%Officeholder%'
             ");
             $stmt->execute(['id' => $cand_id]);
@@ -1349,9 +1257,9 @@ function get_financials($year)
                 $y2 = $year + 1;
 
                 $stmt = Util::get_ctb_pdo()->prepare("
-                  SELECT cmte_id, cmte_nm FROM ctb_ca_ccl
-                  WHERE cand_id = :id
-                  && (status LIKE 'TERMINATED%'
+                  SELECT cmte_id, cmte_nm FROM ctb_ca_ccl 
+                  WHERE cand_id = :id 
+                  && (status LIKE 'TERMINATED%' 
                     && (status LIKE '%$y1%' || status LIKE '%$y2%')
                     )
                 ");
@@ -1414,18 +1322,16 @@ function get_financials($year)
             }
         }
 
-	$last = [];
-	if(isset($thiscmte)) {
-	        $last = getlastf460($thiscmte) ?? '';
-	}
 
-	if(isset($last['FILING_ID'])) {
-	        $lastdate = $last['RPT_END'] ?? '';
-        	$lastsummary = getsummary($last['FILING_ID']) ?? '';
-	}
 
-        $f497s = getf497filingssince($thiscmte, $lastdate) ?? '';
-        $raisedsince = getf497amounts($f497s, $lastdate) ?? '';
+        $last = getlastf460($thiscmte);
+        //if (!$last) continue;
+
+        $lastdate = $last['RPT_END'];
+        $lastsummary = getsummary($last['FILING_ID']);
+
+        $f497s = getf497filingssince($thiscmte, $lastdate);
+        $raisedsince = getf497amounts($f497s, $lastdate);
 
         $totalraised = $lifetime_raised + $raisedsince;
         $cmte_lnk = "<a href='/ctb-legacy/cmlocal2?id=$thiscmte' target='_blank'>$thiscand</a>";
@@ -1434,14 +1340,14 @@ function get_financials($year)
         $retval .= "
 				<tr>
 					<td>$cmte_lnk</td>
-					<td>\$" . number_format(@$lastsummary['RCPT']) . "</td>
-					<td>\$" . number_format(@$raisedsince) . "</td>
-					<td>\$" . number_format(@$totalraised)  . "</td>
-					<td>\$" . number_format(@$lastsummary['EXPN']) . "</td>
-					<td>\$" . number_format(@$lifetime_spent) . "</td>
-					<td>\$" . number_format(@$lastsummary['COH'])  . "</td>
-                                        <td>$lastdate</td>
-
+					<td>\$" . number_format($lastsummary['RCPT']) . "</td>
+					<td>\$" . number_format($raisedsince) . "</td>
+					<td>\$" . number_format($totalraised) . "</td>
+					<td>\$" . number_format($lastsummary['EXPN']) . "</td>
+					<td>\$" . number_format($lifetime_spent) . "</td>
+					<td>\$" . number_format($lastsummary['COH']) . "</td>
+                                         <td>$lastdate</td>
+					
 				</tr>
 		";
 
@@ -1460,10 +1366,10 @@ function get_county_registrar_url($county_name, $thisyear) {
             break;
         case 2020:
             $tablename = "ctb_e20_county_watch";
-            break;
+            break;      
         case 2022:
             $tablename = "ctb_e22_county_watch";
-            break;
+            break;      
         default:
             return FALSE;
     }
@@ -1528,7 +1434,7 @@ function get_ballot($fourcode, $year) {
 
 
 		$table_contain_head = "
-
+								
 								<div class='table table-striped table-responsive' align='center' style='display: inline-block;'>
 									<p align='center'>";
 
@@ -1576,7 +1482,7 @@ function get_ballot($fourcode, $year) {
 						$class = '';
 				}
 
-				if(isset($cand['website'])) {
+				if($cand['website']) {
 				     $name = "<a href='http://" . $cand['website'] . "' target='_blank'>" . $cand['cand_nm'] . "</a>";
 				} else {
 				     $name = $cand['cand_nm'];
@@ -1628,11 +1534,11 @@ function get_ballot($fourcode, $year) {
 function get_filed($fourcode, $thisyear)
 {
 
-
-
+    
+    
     switch($thisyear) {
         case 2018:
-            $tablename = "ctb_p18_filing_status";
+            $tablename = "ctb_p18_filing_status";           
             break;
         case 2020:
             $tablename = "ctb_p20_filing_status";
@@ -1644,7 +1550,7 @@ function get_filed($fourcode, $thisyear)
 
             return FALSE;
     }
-
+    
     $stmt = Util::get_ctb_pdo()->prepare("
       SELECT * FROM $tablename WHERE fourcode = :id ORDER BY party, naml
     ");
@@ -1656,7 +1562,7 @@ function get_filed($fourcode, $thisyear)
         $abort = FALSE;
     }
 
-
+    
 
     $table_head = "<div class='table table-striped table-responsive' align='center' style='display: inline-block;'>
                     <p align='center'>
@@ -1674,6 +1580,7 @@ function get_filed($fourcode, $thisyear)
                         </thead>
                         <tbody>";
     $table_body = '';
+
     foreach($arr as $x) {
         if(isset($x['namm'])) {
             $name = $x['namf'] . " " . $x['namm'] . " " . $x['naml'];
@@ -1691,7 +1598,7 @@ function get_filed($fourcode, $thisyear)
                             <td>" . $x['sil_file'] . "</td>
                             <td>" . $x['nom_issue'] . "</td>
                             <td>" . $x['nom_file'] . "</td>
-                            <td>$county_lnk</td>
+                            <td>$county_lnk</td>                            
                         </tr>";
     }
 
@@ -1708,7 +1615,7 @@ function get_filed($fourcode, $thisyear)
 
 function get_new_candidates($fourcode, $year)
 {
-
+	
     $stmt = Util::get_ctb_pdo()->prepare("
       SELECT cand_id FROM ctb_cand_filed_v2 WHERE FOURCODE = :id  && hide <> 1 && type != 'K' && cycle = $year && year != '2021' ORDER BY party, cand_id
     ");
@@ -1819,7 +1726,7 @@ function get_fec_filed_candidates($adjusted_fourcode, $year)
 
     $state = mb_substr($fourcode, 0, 2);
     $dist = mb_substr($fourcode, 2, 2);
-    $use_sen='';
+
    if(mb_substr($adjusted_fourcode, 2, 3) == "SEN") {
 	$use_sen = TRUE;
    }
@@ -1853,10 +1760,10 @@ function get_fec_filed_candidates($adjusted_fourcode, $year)
 
 	if(!$use_sen) {
 	        $stmt = Util::get_ctb_pdo()->prepare("
-	          SELECT * FROM $table
-        	  WHERE CAND_ELECTION_YR = :yr
-	            && CAND_OFFICE_ST = :state
-        	    && CAND_OFFICE_DISTRICT = :dist
+	          SELECT * FROM $table 
+        	  WHERE CAND_ELECTION_YR = :yr 
+	            && CAND_OFFICE_ST = :state 
+        	    && CAND_OFFICE_DISTRICT = :dist 
 	          ORDER BY CAND_PTY_AFFILIATION, CAND_NAME
 	        ");
 	        $stmt->execute([
@@ -1900,7 +1807,6 @@ function get_fec_financials($cand_id, $adjusted_fourcode, $year)
     //global $fourcode;
     //global $fec_conn;
     //$conn = $fec_conn;
-    $x=[];
     $prefix = "nufec_";
     switch ($year) {
 	case "2022":
@@ -1925,8 +1831,8 @@ function get_fec_financials($cand_id, $adjusted_fourcode, $year)
     }
 
         $stmt = Util::get_ctb_pdo()->prepare("
-          SELECT * FROM " . $prefix . "weball" . $suffix . "
-          WHERE CAND_ID = :id
+          SELECT * FROM " . $prefix . "weball" . $suffix . " 
+          WHERE CAND_ID = :id 
           ORDER BY CAND_PTY_AFFILIATION, CAND_NAME
         ");
         $stmt->execute([
@@ -1988,8 +1894,8 @@ function get_fec_committee_link($cand_id, $year)
     }
 
         $stmt = Util::get_ctb_pdo()->prepare("
-          SELECT CAND_PCC FROM " . $prefix . $table . "
-          WHERE CAND_ID = :id
+          SELECT CAND_PCC FROM " . $prefix . $table . " 
+          WHERE CAND_ID = :id 
         ");
         $stmt->execute([
             'id' => $cand_id,
@@ -2078,28 +1984,30 @@ function draw_fec_financial_table($adjusted_fourcode, $year)
 
     $financials = get_all_fec($adjusted_fourcode, $year);
 
+    //var_dump($financials);
 
-    $thisid = $fourcode . "_Financials_" . $year . "_" . isset($election);
+
+    $thisid = $fourcode . "_Financials_" . $year . "_" . $election;
 
     $js = "$(document).ready(function() {
-	    $('#" . $thisid . "').tablesorter({
-	            headers: {
-	                2: {
-	                    sorter:'fancyNumber'
-	                },
-	                3: {
-	                    sorter:'fancyNumber'
-	                },
-	                4: {
-	                    sorter:'fancyNumber'
+	    $('#" . $thisid . "').tablesorter({ 
+	            headers: { 
+	                2: { 
+	                    sorter:'fancyNumber' 
+	                },            	
+	                3: { 
+	                    sorter:'fancyNumber' 
+	                }, 
+	                4: { 
+	                    sorter:'fancyNumber' 
 					},
-	                5: {
-	                    sorter:'fancyNumber'
+	                5: { 
+	                    sorter:'fancyNumber' 
 	                },
-	                6: {
-	                    sorter:'fancyNumber'
-	                }
-	            }
+	                6: { 
+	                    sorter:'fancyNumber' 
+	                }                                                                                   
+	            } 
 	        });
 	});
 
@@ -2138,7 +2046,6 @@ function draw_fec_financial_table($adjusted_fourcode, $year)
 							</tr>
 						</thead>
 						<tbody>";
-
     $tablebody = '';
     foreach ($financials as $x) {
 	$cand_id = $x['CAND_ID'];
@@ -2151,10 +2058,10 @@ function draw_fec_financial_table($adjusted_fourcode, $year)
 	if(array_key_exists($cand_id, $blacklist) && $blacklist[$cand_id]){
 		continue;
 	}
-
+	
         $cand_lnk = "<a href='https://www.fec.gov/data/candidate/" . $x['CAND_ID'] . "/?tab=filings' target='_blank'>" . $x['CAND_NM'] . "</a>";
         $cmte_lnk = get_fec_committee_link($x['CAND_ID'], $year);
-	$since = get_fed_since($cmte_lnk['cmte_id'], $x['END_DATE']??'');
+	$since = get_fed_since($cmte_lnk['cmte_id'], $x['END_DATE']);
         $bgclass = '';
         if ($x['PARTY'] == "DEM" || $x['PARTY'] == "D") {
             $bgclass = 'bluebg';
@@ -2163,26 +2070,16 @@ function draw_fec_financial_table($adjusted_fourcode, $year)
         if ($x['PARTY'] == "REP" || $x['PARTY'] == "R") {
             $bgclass = 'redbg';
         }
-        $xArray=[
-            'PARTY'=>$x['PARTY']??'',
-            'COH_START'=>$x['COH_START']??0,
-            'RCPT'=>$x['RCPT']??0,
-            'EXPN'=>$x['EXPN']??0,
-            'COH_END'=>$x['COH_END']??0,
-            'DEBTS'=>$x['DEBTS']??0,
-            'LOANS'=>$x['LOANS']??0,
-            'END_DATE'=>$x['END_DATE']??'',
-        ];
         $tablebody .= "<tr class='$bgclass'>
 							<td>$cand_lnk</td>
-							<td align='right'>" . $xArray['PARTY'] . "</td>
-							<td align='right'>" . number_format($xArray['COH_START']) . "</td>
-							<td align='right'>" . number_format($xArray['RCPT']) . "</td>
-							<td align='right'>" . number_format($xArray['EXPN']) . "</td>
-							<td align='right'>" . number_format($xArray['COH_END']) . "</td>
-							<td align='right'>" . number_format($xArray['DEBTS']) . "</td>
-                            <td align='right'>" . number_format($xArray['LOANS']) . "</td>
-							<td align='right'>" . $xArray['END_DATE']??'' . "</td>
+							<td align='right'>" . $x['PARTY'] . "</td>
+							<td align='right'>" . number_format($x['COH_START']) . "</td>
+							<td align='right'>" . number_format($x['RCPT']) . "</td>
+							<td align='right'>" . number_format($x['EXPN']) . "</td>
+							<td align='right'>" . number_format($x['COH_END']) . "</td>
+							<td align='right'>" . number_format($x['DEBTS']) . "</td>
+                            <td align='right'>" . number_format($x['LOANS']) . "</td>
+							<td align='right'>" . $x['END_DATE'] . "</td>
 							<td align='right'>" . $since . "</td>
 							<td align='right'>" . $cmte_lnk['url'] . "</td>
 						</tr>
@@ -2200,7 +2097,6 @@ function identify_committee($cand_id, $year, $id)
     $conn = Util::get_ctb_conn();
 
     $type = mb_substr($id, 0, 2);
-    $search_for='';
     switch ($type) {
         case "AD":
             $search_for = "ASSEMBLY";
@@ -2323,13 +2219,10 @@ function getfed($cmte_id)
 function getstate($cmte)
 {
 
-    if(!isset($cmte)) return FALSE;
-
     $f460s = getallf460($cmte);
-    $lastf460 = [];
-    // $lastf460 = lookuplastf460($cmte);
-    $lastdate = $lastf460['RPT_END'] ?? '';
-    $f497s = getf497filingssince($cmte, $lastdate) ?? '';
+    $lastf460 = lookuplastf460($cmte);
+    $lastdate = $lastf460['RPT_END'];
+    $f497s = getf497filingssince($thiscmte, $lastdate);
     global $org_array;
 
     $total = 0;
@@ -2348,7 +2241,7 @@ function getstate($cmte)
 
             $org_arr[$ctrib_cmte]['cmte_id'] = $ctrib_cmte;
             $org_arr[$ctrib_cmte]['ctrib_nm'] = $ctrib_nm;
-            @$org_arr[$ctrib_cmte]['ctrib_amt'] += $ctrib_amt;
+            $org_arr[$ctrib_cmte]['ctrib_amt'] += $ctrib_amt;
         }
     }
 
@@ -2364,32 +2257,33 @@ function getstate($cmte)
 
             $org_arr[$ctrib_cmte]['cmte_id'] = $ctrib_cmte;
             $org_arr[$ctrib_cmte]['ctrib_nm'] = $ctrib_nm;
-            @$org_arr[$ctrib_cmte]['ctrib_amt'] += $ctrib_amt;
+            $org_arr[$ctrib_cmte]['ctrib_amt'] += $ctrib_amt;
             $cmte_lnk = "<a href='http://cal-access.ss.ca.gov/Campaign/Committees/Detail.aspx?id=" . $transaction['CMTE_ID'] . "' target='_blank'>" . abbreviate($transaction['CTRIB_NAME']) . "</a>";
         }
     }
 
-    if(isset($org_arr)) {
-	    uasort($org_arr, 'ctrib_sort');
-    	    $list = "<br>$" . number_format($total) . " Received From Committees<br><br>";
-            $table_body = '';
+    uasort($org_arr, 'ctrib_sort');
 
-    	    foreach ($org_arr as $c) {
-                  $list .= "<br>\$" . number_format($c['ctrib_amt']) . "  - <a href='http://cal-access.ss.ca.gov/Campaign/Committees/Detail.aspx?id=" . $c['cmte_id'] . "' target='_blank'>" . $c['ctrib_nm'] . "</a>";
-        	  $table_body .= "<tr>
+    //var_dump($org_arr);
+
+    $list = "<br>$" . number_format($total) . " Received From Committees<br><br>";
+    $table_body = '';
+
+    foreach ($org_arr as $c) {
+        $list .= "<br>\$" . number_format($c['ctrib_amt']) . "  - <a href='http://cal-access.ss.ca.gov/Campaign/Committees/Detail.aspx?id=" . $c['cmte_id'] . "' target='_blank'>" . $c['ctrib_nm'] . "</a>";
+
+        $table_body .= "<tr>
 							<td align='right'>\$" . number_format($c['ctrib_amt']) . "</td>
 							<td align='left'><a href='http://cal-access.ss.ca.gov/Campaign/Committees/Detail.aspx?id=" . $c['cmte_id'] . "' target='_blank'>" . $c['ctrib_nm'] . "</a></td>
 							<td align='right'><a href='/ctb-legacy/cmlocal2.php?id=" . $c['cmte_id'] . "' target='_blank'>" . $c['cmte_id'] . "</a></td>
 						</tr>";
 
-    	    }
-
-            $retval['table_body'] = $table_body;
     }
-    $retval['total'] = "\$" . number_format($total) ?? '';
+
+    $retval['table_body'] = $table_body;
+    $retval['total'] = "\$" . number_format($total);
 
     return $retval;
-
 }
 
 function ctrib_sort($a, $b)
@@ -2413,7 +2307,7 @@ function getf460org($filing)
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            if (!isset($highest)) {
+            if (!$highest) {
                 $highest = $row['AMEND_ID'];
             }
 
@@ -2448,7 +2342,7 @@ function getf497org($filing)
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            if (!isset($highest)) {
+            if (!$highest) {
                 $highest = $row['AMEND_ID'];
             }
 
@@ -2460,7 +2354,7 @@ function getf497org($filing)
                 $tmp['RCPT_DATE'] = $row['CTRIB_DATE'];
                 $tmp['FILING_ID'] = $row['FILING_ID'];
 
-                if (@$row['CTRIB_NAMF']) {
+                if ($row['CTRIB_NAMF']) {
                     $tmp['CTRIB_NAME'] = $row['ENTY_NAMF'] . " " . $row['ENTY_NAML'];
                 } else {
                     $tmp['CTRIB_NAME'] = $row['ENTY_NAML'];
@@ -2489,7 +2383,6 @@ function get_2018_dem_endorse($fourcode) {
 function get_party_endorsements($fourcode, $year) {
 
     $conn = Util::get_ctb_conn();
-    $retval = Array();
     $sql = "SELECT * FROM ctb_party_endorsements WHERE fourcode = '$fourcode' && election_year = '$year'";
     $result = $conn->query($sql);
     if($result->num_rows > 0){
@@ -2653,9 +2546,9 @@ function get_live_image_url($cand_id) {
 function get_live_designation($cand_id, $election_year) {
 	$conn = Util::get_ctb_conn();
 	switch($election_year) {
-		case "2018":
+		case "2018": 
 			$table = "ctb_e18_ballots";
-			break;
+			break;	
 		case "2020":
 			$table = "ctb_e20_ballots";
 			break;
@@ -2786,14 +2679,14 @@ function get_live_candidates($fourcode, $election_year) {
 function check_ads($fourcode, $year) {
     $conn = Util::get_ctb_conn();
     $sql = "SELECT * FROM ctb_ads_e18 WHERE fourcode = '$fourcode' && year = '$year' ORDER BY candidate, buyer";
-    $got_ads = FALSE;
     $result=$conn->query($sql);
+    $got_ads = FALSE;
     if($result->num_rows > 0) {
 	while($row = $result->fetch_assoc()) {
 	     $got_ads = TRUE;
 	}
     }
-    return $got_ads;
+    return $got_ads;	
 }
 
 function populate_temp_cands($fourcode, $this_year) {
@@ -2819,11 +2712,9 @@ function get_temp_panel($x) {
     $name = $x['name'];
     $img_id = $x['img_id'];
     $this_year = $x['year'];
-    $fppc_id='';
-    $link_draw='';
 
-
-    if (!isset($text)) {
+    
+    if (!$text) {
         $text = $name;
     }
 
@@ -2870,20 +2761,32 @@ function get_temp_panel($x) {
 
 
 
-    if (isset($add_img) && isset($twitter_btn)) {
+    if ($add_img && $twitter_btn) {
         $final_img = "<div width='150' align='center' style='display: inline-block; float: left;'>" . $add_img . $twitter_btn . "</div>";
     } else {
         $final_img = $add_img;
     }
 
+    /*
 
+        $cand_div = "<div class='whitebg canddiv $class'><p style='float: left'>" . $final_img . $text . "</p>
+                <p style='clear: both;' align='center'>$link_draw</p>
+                $fppc_id
+                </div>
+        ";
+
+        */
+
+    //echo("<br>IDENTIFYING $cand_id candidate's committee for the year $year and district $fourcode ");
+    //$cand_cmte = identify_committee($cand_id, $year, $fourcode);
+    //var_dump($cand_cmte);
 
 
 	if($role == "admin") {
 		if(mb_substr($fourcode, 0, 2) == "CD" || mb_substr($fourcode, 0, 3) == ".SN") {
 			$edit_btn = "<span><a href='http://198.74.49.22/tmp_cand_editor.php?id=" . $fourcode . "&cand_id=" . $img_id . "&year=" . $this_year . "' target='_blank'><img src='/img/edit_btn.png' height='30px' width='30px'></a></span>";
 		} else {
-			$edit_btn = "<span><a href='http://198.74.49.22/tmp_cand_editor.php?id=" . $fourcode . "&cand_id=" . $img_id . "&year=" . $this_year . "' target='_blank'><img src='/img/edit_btn.png' height='30px' width='30px'></a></span>";
+			$edit_btn = "<span><a href='http://198.74.49.22/tmp_cand_editor.php?id=" . $fourcode . "&cand_id=" . $img_id . "&year=" . $this_year . "' target='_blank'><img src='/img/edit_btn.png' height='30px' width='30px'></a></span>";		
 		}
 	} else {
 		$edit_btn = '';
@@ -2934,7 +2837,6 @@ function get_vids($fourcode, $year) {
 	//global $master_conn;
 	//$conn = $master_conn;
 	$conn = Util::get_ctb_conn();
-	$retval = Array();
 	$sql = "SELECT * FROM ctb_ads_e18 WHERE fourcode = '$fourcode' && provider='youtube' && year = '$year' ORDER BY candidate, position";
 
 	$result = $conn->query($sql);
@@ -2946,15 +2848,14 @@ function get_vids($fourcode, $year) {
 	}
 	return $retval;
 }
+
 function makepct2($piece, $total)
 {
     if($total) {
         $pct = ($piece / $total) * 100;
         return (number_format($pct, 2) . "%");
     } else {
-    return 0;
+        return 0;
     }
-
 }
-
 ?>

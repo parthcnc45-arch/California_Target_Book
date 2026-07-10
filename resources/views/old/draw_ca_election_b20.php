@@ -2,6 +2,7 @@
 
     global $cached;
     $fourcode = $fourcode;
+    $role = $role ?? '';
 
     $cdivs = [];
     $master_year = $year;
@@ -42,9 +43,11 @@
         $candidates_filed = get_filed($fourcode, $year);
         $intention_table = lookup_si($fourcode, $year) ;
         $ballot = get_ballot($fourcode, $year);
-    } elseif ($year == 2024) {
+    } elseif ($year >= 2024) {
         $candidates = get_new_candidates($fourcode, $year);
         $intention_table = lookup_si($fourcode, $year) ;
+    } else {
+        $candidates = [];
     }
 
     if($year > 2017) {
@@ -84,9 +87,9 @@
             } elseif ($year == 2024) {
             $x = lookup_cand_name_new($cand_id, $year);
             }
-            $cand_nm = $x['cand_nm'];
+            $cand_nm = $x['cand_nm'] ?? '';
 
-            $party = $x['party'];
+            $party = $x['party'] ?? '';
 
             //echo("<br>DUMPING X after looking up candidate $cand_id name for Year $master_year:<br>");
             //var_dump($x);

@@ -184,7 +184,7 @@
 
 </ctb-head-nav>
 
-<section class="dashboard-banner">
+<!-- <section class="dashboard-banner">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -196,8 +196,7 @@
                                     style="color: #174F7F;"> Target Book</span></h3>
                         </a>
                         <div class="d-flex gap-4 align-items-center" role="search">
-                            {{-- <!-- <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <buttclass= class="btn btn-outline-success" type="submit">Search</buttclass="img-fluid"on> --> --}}
+                        
                             <img src="{{ url('img/notification.png') }}" class="img-fluid" alt="Notification Icon"
                                 style="width: 20px; height: 20px;" />
                             {{-- <img src="img/profile-img.png" alt="Profile Image" /> --}}
@@ -220,4 +219,4 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->

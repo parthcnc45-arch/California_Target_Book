@@ -126,7 +126,7 @@
         <div v-show="subMenus.district === 'SN'" class="material-icons pull-right">expand_less</div>
     </a>
     <ul v-show="subMenus.district === 'SN'" class="dropdown-menu">
-        <li><a href='/book/new/.SN1'>U.S. Senate 1</a></li>
+        <li><a href='/book/new/S4CA00555'>U.S. Senate 1</a></li>
         <li><a href='/book/new/.SN2'>U.S. Senate 2</a></li>
     </ul>
 </li>

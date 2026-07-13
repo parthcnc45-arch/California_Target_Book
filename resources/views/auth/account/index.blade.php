@@ -472,7 +472,7 @@
                 <a href="#subscriptions" class="nav-link" id="tab-subscriptions"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
                 <a href="#transaction-history" class="nav-link" id="tab-transaction-history"><i class="bi bi-coin"></i> Transaction History</a>
                 <a href="#shipping-tracking" class="nav-link" id="tab-shipping-tracking"><i class="bi bi-truck"></i> Shipping & Tracking</a>
-                <a href="#settings" class="nav-link" id="tab-settings"><i class="bi bi-gear"></i> Settings</a>
+                <a href="#settings" class="nav-link" id="tab-settings"><i class="bi bi-gear"></i> Notifications Settings</a>
                 <a href="#help-support" class="nav-link" id="tab-help-support"><i class="bi bi-question-circle"></i> Help & Support</a>
                 @if ($user->isAdmin())
                     <a href="javascript:void(0)" onclick="toggleAdminSettings(true)" class="nav-link"><i class="bi bi-sliders"></i> Admin Settings</a>
@@ -1063,7 +1063,7 @@
             $(this).addClass('active');
             $('.portal-section').removeClass('active');
             $('#section-settings').addClass('active');
-            window.location.hash = 'settings';
+            window.location.hash = 'notification-settings';
         });
 
         // Tab selection for Help & Support

@@ -32,6 +32,7 @@ class SubscriptionOverviewResource extends JsonResource
                 'name' => $usersName ?? '',
             ],
             'isActive' => $this->isActive(),
+            'frequency' => $this->frequency,
             'cycle' => $this->getCurrentCycle(),
             'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
         ];

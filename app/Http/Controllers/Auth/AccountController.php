@@ -319,7 +319,7 @@ class AccountController extends Controller
         return view('auth.account.shipping_tracking', $data);
     }
 
-    public function settings() {
+    public function notificationSettings() {
         $data = $this->getAccountData();
         if ($data === null) {
             return redirect()->route('register');
@@ -327,7 +327,7 @@ class AccountController extends Controller
         if ($data === 'renew') {
             return redirect()->route('auth.account.renew');
         }
-        return view('auth.account.settings', $data);
+        return view('auth.account.notification_settings', $data);
     }
 
     public function helpSupport() {

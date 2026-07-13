@@ -98,14 +98,23 @@ class Subscription extends Model
         if (empty($existing)) {
             $addonBody = User::make([
                 'email' => $addonEmail,
-                'first_name' => $body['first_name'],
-                'last_name' => $body['last_name'],
+                'first_name' => $body['first_name'] ?? null,
+                'last_name' => $body['last_name'] ?? null,
                 'company_id' => $baseAccount->company_id,
                 'email_token' => base64_encode($addonEmail),
                 'api_token' => \Illuminate\Support\Str::random(60),
             ]);
         } else {
             $addonBody = $existing;
+            if (empty($addonBody->first_name) && !empty($body['first_name'])) {
+                $addonBody->first_name = $body['first_name'];
+            }
+            if (empty($addonBody->last_name) && !empty($body['last_name'])) {
+                $addonBody->last_name = $body['last_name'];
+            }
+            if ($addonBody->isDirty()) {
+                $addonBody->save();
+            }
         }
 
         $addon = $this->users()

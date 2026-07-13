@@ -18,6 +18,10 @@ Route::get('/', function () {
     return view('new');
 })->name('home');
 
+Route::get('/subscriptions', function () {
+    return view('subscriptions.index');
+})->name('subscriptions');
+
 Route::get('/subscriptions/one-year', function () {
     return view('subscriptions.one_year');
 })->name('subscriptions.one-year');
@@ -226,9 +230,9 @@ Route::group([
         'as' => 'auth.account.shipping_tracking',
     ]);
 
-    Route::get('/settings', [
-        'uses' => 'Auth\AccountController@settings',
-        'as' => 'auth.account.settings',
+    Route::get('/notification-settings', [
+        'uses' => 'Auth\AccountController@notificationSettings',
+        'as' => 'auth.account.notification_settings',
     ]);
 
     Route::get('/help-support', [
@@ -863,7 +867,7 @@ Route::get('/ctb-admin/new/subscriptions', function() {
     $sub = ['status' => '', 'role' => ''];
     $pending_bank = null;
     $invoice = null;
-    return view('admin.subscriptions', compact('user', 'sub', 'pending_bank', 'invoice')); 
+    return view('admin.admin-settings.subscriptions', compact('user', 'sub', 'pending_bank', 'invoice')); 
 });
 Route::get('/ctb-admin/new/subscriptions/add', function() { 
     $user = auth()->user();
@@ -871,7 +875,18 @@ Route::get('/ctb-admin/new/subscriptions/add', function() {
     $sub = ['status' => '', 'role' => ''];
     $pending_bank = null;
     $invoice = null;
-    return view('admin.add_subscription', compact('user', 'sub', 'pending_bank', 'invoice')); 
+    return view('admin.admin-settings.add_subscription', compact('user', 'sub', 'pending_bank', 'invoice')); 
+});
+Route::get('/ctb-admin/new/subscriptions/{id}', function($id) { 
+    $user = auth()->user();
+    if (!$user) return redirect('/login');
+    if (!$user->isAdmin()) return abort(403);
+    $subscription = \App\Subscription::with(['users', 'cycles', 'book_subscriptions.address'])->findOrFail($id);
+    $company = \App\Company::find($subscription->account_id);
+    $sub = ['status' => '', 'role' => ''];
+    $pending_bank = null;
+    $invoice = null;
+    return view('admin.admin-settings.subscription_detail', compact('user', 'sub', 'pending_bank', 'invoice', 'subscription', 'company')); 
 });
 Route::get('/ctb-admin/new/hard-copy-subscriptions', function() { 
     $user = auth()->user();
@@ -879,7 +894,7 @@ Route::get('/ctb-admin/new/hard-copy-subscriptions', function() {
     $sub = ['status' => '', 'role' => ''];
     $pending_bank = null;
     $invoice = null;
-    return view('admin.hard_copies', compact('user', 'sub', 'pending_bank', 'invoice')); 
+    return view('admin.admin-settings.hard_copies', compact('user', 'sub', 'pending_bank', 'invoice')); 
 });
 Route::get('/ctb-admin/new/contacts', function() { 
     $user = auth()->user();
@@ -887,7 +902,17 @@ Route::get('/ctb-admin/new/contacts', function() {
     $sub = ['status' => '', 'role' => ''];
     $pending_bank = null;
     $invoice = null;
-    return view('admin.contacts', compact('user', 'sub', 'pending_bank', 'invoice')); 
+    return view('admin.admin-settings.contacts', compact('user', 'sub', 'pending_bank', 'invoice')); 
+});
+Route::get('/ctb-admin/new/contacts/{id}', function($id) { 
+    $user = auth()->user();
+    if (!$user) return redirect('/login');
+    if (!$user->isAdmin()) return abort(403);
+    $contact = \App\User::with(['company', 'subscriptions.cycles'])->findOrFail($id);
+    $sub = ['status' => '', 'role' => ''];
+    $pending_bank = null;
+    $invoice = null;
+    return view('admin.admin-settings.contact_detail', compact('user', 'sub', 'pending_bank', 'invoice', 'contact')); 
 });
 
 Route::group([

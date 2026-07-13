@@ -61,12 +61,11 @@
     <script type="text/javascript" src="/js/tablesaw.jquery.js"></script>
     <script type="text/javascript" src="/js/tablesaw-init.js"></script>
 
+    <script src="{{ mix('js/app.js') }}"></script>
     <script src="/js/jquery.quicksearch.js"></script>
     <script src="/js/jquery-listnav.min.js"></script>
     <script src="/js/jquery.tablesorter.min.js"></script>
-
     <script src="/js/ctb.js"></script>
-    <script src="{{ mix('js/app.js') }}"></script>
 
     @yield('scripts')
 

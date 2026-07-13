@@ -40,6 +40,14 @@ class SubscriptionsController extends Controller
         $val->validate();
 
         $sub = Subscription::find($id);
+
+        // Prevent duplicate entries for the same subscription
+        if ($sub->users()->where('email', $data['email'])->exists()) {
+            return response()->json([
+                'message' => 'This email is already associated with this subscription.'
+            ], 422);
+        }
+
         $sub->addUser($data['email'], $data);
 
         return new SubscriptionResource($sub);
@@ -59,6 +67,15 @@ class SubscriptionsController extends Controller
             ->validate();
 
         $sub = Subscription::find($id);
+
+        // Prevent duplicate cycles with same start date for the same subscription
+        $startsOn = \Carbon\Carbon::parse($data['starts_on'])->format('Y-m-d');
+        if ($sub->cycles()->where('starts_on', $startsOn)->exists()) {
+            return response()->json([
+                'message' => 'A cycle with this start date already exists for this subscription.'
+            ], 422);
+        }
+
         $sub->update([ 'frequency' => $data['length'] ]);
         $cycle = $sub->cycles()->create([
             'starts_on' => $data['starts_on'],

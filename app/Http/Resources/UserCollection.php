@@ -19,7 +19,7 @@ class UserCollection extends ResourceCollection
                 'id' => $u->id,
                 'name' => "$u->first_name $u->last_name",
                 'email' => $u->email,
-                'company' => $u->load('company')->company->name,
+                'company' => $u->load('company')->company ? $u->company->name : '',
                 'role' => $u->role,
                 'hasActiveSubscription' => $u->hasActiveSubscription(),
                 'createdAt' => $u->created_at->format('Y-m-d H:i:s'),

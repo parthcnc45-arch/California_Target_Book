@@ -47,7 +47,7 @@
                 <a href="/account/subscriptions" class="nav-link {{ Request::is('account/subscriptions') ? 'active' : '' }}"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
                 <a href="/account/transaction-history" class="nav-link {{ Request::is('account/transaction-history') ? 'active' : '' }}"><i class="bi bi-coin"></i> Transaction History</a>
                 <a href="/account/shipping-tracking" class="nav-link {{ Request::is('account/shipping-tracking') ? 'active' : '' }}"><i class="bi bi-truck"></i> Shipping & Tracking</a>
-                <a href="/account/settings" class="nav-link {{ Request::is('account/settings') ? 'active' : '' }}"><i class="bi bi-gear"></i> Settings</a>
+                <a href="/account/notification-settings" class="nav-link {{ Request::is('account/notification-settings') ? 'active' : '' }}"><i class="bi bi-gear"></i> Notifications</a>
                 <a href="/account/help-support" class="nav-link {{ Request::is('account/help-support') ? 'active' : '' }}"><i class="bi bi-question-circle"></i> Help & Support</a>
             </div>
 

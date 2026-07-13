@@ -584,7 +584,6 @@
                                     @if($user->company && $user->company->address)
                                         {{ $user->company->address->line1 }}{{ $user->company->address->line2 ? ', ' . $user->company->address->line2 : '' }}, {{ $user->company->address->city }}, {{ $user->company->address->state }} {{ $user->company->address->zip_code }}
                                     @else
-                                        1215 K Street, Suite 1150, Sacramento, CA, 95814
                                     @endif
                                 </td>
                             </tr>
@@ -596,7 +595,6 @@
                                     @elseif($user->company && $user->company->address)
                                         {{ $user->company->address->line1 }}{{ $user->company->address->line2 ? ', ' . $user->company->address->line2 : '' }}, {{ $user->company->address->city }}, {{ $user->company->address->state }} {{ $user->company->address->zip_code }}
                                     @else
-                                        1215 K Street, Suite 1150, Sacramento, CA, 95814
                                     @endif
                                 </td>
                             </tr>

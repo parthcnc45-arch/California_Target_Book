@@ -190,6 +190,247 @@
         justify-content: center;
       }
     }
+    /* Subscription Plans UI (Lovable Theme with CTB Colors) */
+    .subscription-plans {
+      padding: 60px 0 100px;
+      background: #f8fafc;
+    }
+    .plans-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .plan-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 40px 32px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .plan-card:hover {
+      box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+      transform: translateY(-4px);
+    }
+    .best-value-card {
+      border: 2px solid var(--navy-900);
+      box-shadow: 0 8px 20px rgba(16, 28, 51, 0.08);
+    }
+    .plan-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .plan-tag {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      color: #64748b;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .plan-tag.best-value {
+      background: var(--navy-900);
+      color: #ffffff;
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-bottom: 0;
+    }
+    .plan-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .plan-duration {
+      font-size: 14px;
+      color: #64748b;
+      margin: 0;
+    }
+    .plan-price-section {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .price-amount {
+      font-size: 48px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -1px;
+    }
+    .price-suffix {
+      font-size: 20px;
+      font-weight: 600;
+      color: #64748b;
+    }
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 40px 0;
+      flex-grow: 1;
+    }
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.5;
+    }
+    .feature-item i {
+      color: #10b981; /* Green checkmark */
+      font-size: 18px;
+      margin-top: 2px;
+    }
+    .plan-action {
+      text-align: center;
+      margin-top: auto;
+    }
+    .btn-subscribe {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    .btn-subscribe-outline {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+    }
+    .btn-subscribe-outline:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+    .btn-subscribe-solid {
+      background: var(--navy-900);
+      border: 1px solid var(--navy-900);
+      color: #ffffff;
+    }
+    .btn-subscribe-solid:hover {
+      background: #1e293b;
+      border-color: #1e293b;
+      color: #ffffff;
+    }
+    
+    /* New text additions */
+    .pricing-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .pricing-header h2 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--navy-900);
+      margin-bottom: 12px;
+    }
+    .pricing-header p {
+      font-size: 16px;
+      color: var(--primary-red);
+      font-weight: 500;
+      margin: 0;
+    }
+    .plan-card .plan-duration {
+      font-size: 14px;
+      color: #64748b;
+      margin-top: 4px;
+      margin-bottom: 0;
+    }
+    .plan-card .price-amount {
+      font-size: 40px;
+    }
+    .plan-card .price-suffix {
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .sign-in-link {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 14px;
+      color: #64748b;
+    }
+    .sign-in-link a {
+      color: var(--navy-900);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .sign-in-link a:hover {
+      text-decoration: underline;
+    }
+    .addon-banner {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 40px auto 0;
+      max-width: 900px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .addon-banner-content h4 {
+      margin: 0 0 4px 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy-900);
+    }
+    .addon-banner-content p {
+      margin: 0;
+      font-size: 14px;
+      color: #64748b;
+    }
+    .btn-addon-banner {
+      background: #f1f5f9;
+      color: var(--navy-900);
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-addon-banner:hover {
+      background: var(--navy-900);
+      color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      .addon-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+        padding: 24px;
+      }
+      .plans-grid {
+        grid-template-columns: 1fr;
+      }
+      .plan-card {
+        padding: 32px 24px;
+      }
+      .best-value-card {
+        margin-top: 20px;
+      }
+    }
   </style>
 </head>
 
@@ -237,16 +478,6 @@
           <p>
             Experience California politics like never before with the California Target Book subscription. Get convenient, online access to everything you need to stay up to date on every aspect of the state's political landscape. Find comprehensive campaign finance data, candidate profiles, vote history, district maps and analysis in one easy-to-use platform. Choose the subscription model that works for you. Select a plan below to get started.
           </p>
-          <div class="sub-buttons">
-            <a href="/subscriptions/one-year" class="btn-sub-plan btn-sub-red">
-              <span>One-Year Subscription</span>
-              <span class="plan-price">$1,200.00 / year</span>
-            </a>
-            <a href="/subscriptions/two-year" class="btn-sub-plan btn-sub-navy">
-              <span>Two-Year Subscription</span>
-              <span class="plan-price">$2,200.00 / 2 years</span>
-            </a>
-          </div>
         </div>
         <div class="sub-image-wrapper">
           <img src="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/COMPUTER-LAPTOP.png.webp" class="sub-laptop-img" alt="California Target Book Portal Mockup">
@@ -254,6 +485,105 @@
       </div>
     </div>
   </section>
+
+  <!-- =========================================================
+    SUBSCRIPTION OPTIONS
+========================================================= -->
+<section class="subscription-plans" id="plans">
+    <div class="container-ctb">
+        <div class="pricing-header">
+            <h2>Simple, transparent pricing</h2>
+            <p>Full access to California Target Book's comprehensive data.</p>
+        </div>
+        
+        <div class="plans-grid">
+            <!-- One-Year Plan -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <h3 class="plan-title">One-Year Subscription</h3>
+                    <p class="plan-duration">Choose Online Only or Online & Print on the next step.</p>
+                </div>
+                
+                <div class="plan-price-section">
+                    <span style="font-size: 14px; font-weight: 600; color: #64748b; margin-right: 4px;">from</span>
+                    <span class="price-amount">$1,200</span>
+                    <span class="price-suffix">/ year</span>
+                </div>
+                
+                <ul class="plan-features">
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>1 online user account</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Full platform access</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>1st to see email alerts included</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Optional printed book editions</span>
+                    </li>
+                </ul>
+                <div class="plan-action">
+                    <a href="/subscriptions/one-year" class="btn-subscribe btn-subscribe-outline">Subscribe Now</a>
+                </div>
+            </div>
+
+            <!-- Two-Year Plan -->
+            <div class="plan-card best-value-card">
+                <div class="plan-header">
+                    <span class="plan-tag best-value">Best Value</span>
+                    <h3 class="plan-title">Two-Year Subscription</h3>
+                    <p class="plan-duration">Choose Online Only or Online & Print on the next step.</p>
+                </div>
+                
+                <div class="plan-price-section">
+                    <span style="font-size: 14px; font-weight: 600; color: #64748b; margin-right: 4px;">from</span>
+                    <span class="price-amount">$2,200</span>
+                    <span class="price-suffix">/ 2 years</span>
+                </div>
+                
+                <ul class="plan-features">
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>1 online user account</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Full platform access</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>1st to see email alerts included</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Locked in rate for 2 years</span>
+                    </li>
+                </ul>
+                <div class="plan-action">
+                    <a href="/subscriptions/two-year" class="btn-subscribe btn-subscribe-solid">Subscribe Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="addon-banner">
+            <div class="addon-banner-content">
+                <h4>Looking for Printed Books Only?</h4>
+                <p>You can purchase additional printed books without an active subscription.</p>
+            </div>
+            <a href="/subscriptions/book-only" class="btn-addon-banner">
+                Purchase Books <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+
+
 
   <!-- =========================================================
      FEATURES ROW BY ROW

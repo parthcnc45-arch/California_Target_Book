@@ -80,29 +80,6 @@
         <h3 class="section-title">Optional add-ons</h3>
         <p class="section-subtitle">Enhance your subscription with additional features.</p>
 
-        <div class="addon-card" id="addon-user-card">
-            <div class="addon-header-row">
-                <label class="custom-checkbox">
-                    <input type="checkbox" id="addon-user">
-                    <span class="checkmark"></span>
-                    Additional Online User
-                </label>
-                <span class="addon-price">$100/ea</span>
-            </div>
-            <div class="addon-body-row">
-                <div class="addon-desc checkout-mb0">
-                    Adds extra annual online user seats to your subscription.<br>
-                    <span class="checkout-text-muted-italic">Billed annually per user</span>
-                </div>
-                <div class="qty-selector">
-                    <button type="button" class="qty-btn" id="qty-minus"><i class="bi bi-dash"></i></button>
-                    <input type="text" class="qty-input" id="addon-user-qty" value="1" readonly>
-                    <button type="button" class="qty-btn" id="qty-plus"><i class="bi bi-plus"></i></button>
-                </div>
-            </div>
-            <div id="addon-user-emails-container" class="addon-emails-container"></div>
-        </div>
-
         <div class="addon-card" id="addon-deck-card">
             <div class="addon-deck-header-row">
                 <label class="custom-checkbox checkout-mt8">
@@ -123,16 +100,16 @@
 
                 
                 <label class="deck-radio-label selected">
-                    <input type="radio" name="deck_type" value="300" checked>
+                    <input type="radio" name="deck_type" value="1000" checked>
                     <div class="deck-radio-content">
-                        <div class="deck-radio-title">Post-Election Deck Only <span>$300</span></div>
+                        <div class="deck-radio-title">Post-Election Deck Only <span>$1,000</span></div>
                         <div class="deck-radio-desc">Post-election deck presentation file</div>
                     </div>
                 </label>
                 <label class="deck-radio-label">
-                    <input type="radio" name="deck_type" value="200">
+                    <input type="radio" name="deck_type" value="300">
                     <div class="deck-radio-content">
-                        <div class="deck-radio-title">Post-Election Deck + Presentation <span>$200</span></div>
+                        <div class="deck-radio-title">Post-Election Deck + Presentation <span>$300</span></div>
                         <div class="deck-radio-desc">Post-election deck with live or recorded presentation add-on</div>
                     </div>
                 </label>

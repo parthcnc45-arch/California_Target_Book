@@ -1,0 +1,353 @@
+@extends('layouts.master_headless')
+
+@section('title', 'California Target Book One-Year Subscription')
+
+@section('body_class', 'checkout-body landing-body')
+
+@section('styles')
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bellefair&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="/css/portal_custom.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ asset('css/style_new.css') }}">
+<style>
+    .package-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 32px;
+    }
+    .package-card {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 24px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #ffffff;
+        position: relative;
+    }
+    .package-card:hover {
+        border-color: #cbd5e1;
+        background: #f8fafc;
+    }
+    .package-card.selected {
+        border-color: var(--primary-red);
+        background: #fffafa;
+        box-shadow: 0 4px 12px rgba(218, 41, 28, 0.08);
+    }
+    .package-card input[type="radio"] {
+        display: none;
+    }
+    .package-price {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--navy-900);
+        margin-bottom: 12px;
+    }
+    .package-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+    .package-desc {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.5;
+    }
+    .package-check {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .package-card.selected .package-check {
+        background: var(--primary-red);
+        border-color: var(--primary-red);
+    }
+    .package-card.selected .package-check::after {
+        content: '';
+        width: 10px;
+        height: 10px;
+        background: white;
+        border-radius: 50%;
+    }
+    
+    .qty-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 32px;
+        padding: 16px 24px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
+    .qty-section-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--navy-900);
+    }
+    
+    /* Scrollable Container for Shipping Addresses */
+    .scrollable-addresses {
+        max-height: 450px;
+        overflow-y: auto;
+        padding-right: 16px;
+        margin-bottom: 24px;
+        border-radius: 8px;
+    }
+    
+    /* Custom Scrollbar for the addresses container */
+    .scrollable-addresses::-webkit-scrollbar {
+        width: 8px;
+    }
+    .scrollable-addresses::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+    .scrollable-addresses::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    .scrollable-addresses::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+    
+    @media (max-width: 768px) {
+        .package-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+@endsection
+
+@section('content')
+    @include('layouts.navbar')
+
+<div class="checkout-header">
+    <h1>Purchase Post-Election Deck</h1>
+    <p>Get the latest post-election deck and presentations.</p>
+    <div class="header-badges">
+        <div class="badge-item"><i class="bi bi-shield-check"></i> Secure checkout</div>
+        <div class="badge-item"><i class="bi bi-envelope"></i> Hot Sheets alerts included</div>
+        <div class="badge-item"><i class="bi bi-laptop"></i> Full platform access</div>
+    </div>
+</div>
+
+<div class="checkout-container">
+    <div class="checkout-main">
+
+
+        <h3 class="section-title">Select your package</h3>
+        <p class="section-subtitle">Choose the package that fits your needs.</p>
+
+        <!-- Hidden checkbox to keep checkout.js logic working smoothly without rewriting it -->
+        <input type="checkbox" id="addon-deck" checked style="display: none;">
+
+        <div class="package-grid" id="deck-options">
+            
+            <label class="package-card selected" id="pkg-1000">
+                <input type="radio" name="deck_type" value="1000" checked>
+                <div class="package-check"></div>
+                <div class="package-price">$1,000</div>
+                <div class="deck-radio-content">
+                    <div class="deck-radio-title package-title">Post-Election Deck Only</div>
+                    <div class="package-desc">Post-election deck presentation file</div>
+                </div>
+            </label>
+            
+            <label class="package-card" id="pkg-300">
+                <input type="radio" name="deck_type" value="300">
+                <div class="package-check"></div>
+                <div class="package-price">$300</div>
+                <div class="deck-radio-content">
+                    <div class="deck-radio-title package-title">Post-Election Deck + Presentation</div>
+                    <div class="package-desc">Post-election deck with live or recorded presentation add-on</div>
+                </div>
+            </label>
+
+        </div>
+
+        <div class="qty-section">
+            <span class="qty-section-label">Quantity</span>
+            <div class="qty-selector" id="deck-qty-selector">
+                <button type="button" class="qty-btn" id="deck-qty-minus"><i class="bi bi-dash"></i></button>
+                <input type="text" class="qty-input" id="addon-deck-qty" value="1" readonly>
+                <button type="button" class="qty-btn" id="deck-qty-plus"><i class="bi bi-plus"></i></button>
+            </div>
+        </div>
+
+        <div id="deck-shipping-addresses-container" class="scrollable-addresses" style="width: 100%;"></div>
+
+        <form id="payment-form">
+
+            <h3 class="section-title checkout-mt40">Account Information</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">First Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" name="first_name" placeholder="John" value="{{ old('first_name') ?? (auth()->user()->first_name ?? '') }}" required>
+                    <div class="invalid-feedback">Required</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" name="last_name" placeholder="Smith" value="{{ old('last_name') ?? (auth()->user()->last_name ?? '') }}" required>
+                    <div class="invalid-feedback">Required</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Email <span class="required">*</span></label>
+                    <input type="email" class="form-control" name="email" placeholder="john@example.com" value="{{ old('email') ?? (auth()->user()->email ?? '') }}" required>
+                    <div class="invalid-feedback">Required</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number <span class="required">*</span></label>
+                    <input type="text" class="form-control" name="phone_number" placeholder="(555) 123-4567" value="{{ old('phone_number') ?? (auth()->user()->phone_number ?? '') }}" required>
+                    <div class="invalid-feedback">Required</div>
+                </div>
+            </div>
+
+            @guest
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Password <span class="required">*</span></label>
+                    <input type="password" class="form-control" name="password" placeholder="" required>
+                    <div class="invalid-feedback">Required</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password <span class="required">*</span></label>
+                    <input type="password" class="form-control" name="password_confirmation" placeholder="" required>
+                    <div class="invalid-feedback">Required</div>
+                </div>
+            </div>
+            @endguest
+
+            <!-- <div class="checkbox-group checkout-mt16">
+                <input type="checkbox" id="same-shipping" checked>
+                <label for="same-shipping">Shipping address is the same as billing</label>
+            </div> -->
+
+            <div id="shipping-address-block" class="shipping-address-block">
+                <div id="shipping-addresses-container"></div>
+            </div>
+
+            <h3 class="section-title checkout-mt32">Payment Method</h3>
+            <div id="payment-element" class="payment-element-container">
+                <div class="payment-options-loader">
+                    Loading payment options...
+                </div>
+            </div>
+            <div id="payment-message" class="invalid-feedback payment-message-feedback"></div>
+
+            <div class="checkout-mt32">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I agree to the <a href="#">terms & conditions</a> provided by the company. <span class="required">*</span></label>
+                </div>
+                <div class="invalid-feedback checkout-terms-feedback" id="terms-feedback">You must agree to the terms</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="text-consent">
+                    <label for="text-consent">By providing my phone number, I agree to receive text messages from California Target Book.</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Purchase Request</button>
+        </form>
+    </div>
+
+    <div class="checkout-sidebar">
+        <div class="summary-card">
+            <h3 class="summary-title">Order Summary</h3>
+
+            <div class="summary-items">
+                <div class="summary-item" id="summary-base-item" style="display: none;">
+                    <div>
+                        <div class="summary-item-title">Purchase</div>
+                        <div class="summary-item-desc" id="summary-format-text"></div>
+                    </div>
+                    <div class="summary-item-price" id="summary-base-price">$0</div>
+                </div>
+
+                <div class="summary-item" id="summary-addon-user" style="display: none;">
+                    <div>
+                        <div class="summary-item-title">Additional Online User <span id="summary-user-qty">x 1</span></div>
+                        <div class="summary-item-desc">Billed annually per user</div>
+                    </div>
+                    <div class="summary-item-price" id="summary-user-price">$100</div>
+                </div>
+
+                <div class="summary-item" id="summary-addon-deck" style="display: none;">
+                    <div>
+                        <div class="summary-item-title"><span id="summary-deck-title">Post-Election Deck Only (Subscriber)</span> <span id="summary-deck-qty" style="font-weight: 400; color: var(--text-muted); display: none;">x 1</span></div>
+                        <div class="summary-item-desc">One-time charge</div>
+                    </div>
+                    <div class="summary-item-price" id="summary-deck-price">$300</div>
+                </div>
+            </div>
+
+            <div class="summary-total">
+                <div class="summary-total-label">Total</div>
+                <div class="summary-total-price" id="summary-total-price">$1,200</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="success-container" style="display: none;">
+    <div class="success-icon">
+        <i class="bi bi-check-circle-fill"></i>
+    </div>
+    <h2 class="success-title">Purchase Request Submitted!</h2>
+    <p class="success-text">
+        Thank you, <span id="success-first-name">Subscriber</span>. We've received your Post-Election Deck purchase request. You'll receive a confirmation email at <strong id="success-email">your email</strong> shortly.
+    </p>
+    <a href="{{ route('home') }}" class="btn-home">Return to Home</a>
+</div>
+
+    @include('layouts.footer')
+@endsection
+
+@section('scripts')
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+    window.checkoutConfig = {
+        stripeKey: '{{ config('app.STRIPE_PUB_KEY') ?: 'pk_test_TYooMQauvdEDq54NiTphI7jx' }}',
+        registerUrl: '{{ route('purchase.book-only') }}',
+        registerEmailsUrl: '/register-emails',
+        basePriceOnline: 0,
+        basePricePrint: 0,
+        subscriptionLength: -1,
+        formatTextOnline: '',
+        formatTextPrint: ''
+    };
+</script>
+<script src="/js/checkout.js"></script>
+<script>
+    $(document).ready(function() {
+        // Handle custom package selection UI
+        $('.package-card').on('click', function() {
+            $('.package-card').removeClass('selected');
+            $(this).addClass('selected');
+        });
+
+        // Force the deck add-on to be checked and trigger total calculation
+        setTimeout(function() {
+            $('#addon-deck').prop('checked', true).trigger('change');
+            
+            // Hide the base subscription item in the summary if it's there
+            $('#summary-base-item').hide();
+        }, 100);
+    });
+</script>
+@endsection

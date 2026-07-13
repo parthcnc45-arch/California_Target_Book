@@ -3,7 +3,7 @@ $(document).ready(function() {
 
     // Retrieve configuration or fallback to defaults
     const config = window.checkoutConfig || {};
-    const subscriptionLength = config.subscriptionLength || 12;
+    const subscriptionLength = config.subscriptionLength !== undefined ? config.subscriptionLength : 12;
     const formatTextOnline = config.formatTextOnline || 'Online Access Only — 1 Year';
     const formatTextPrint = config.formatTextPrint || 'Online Access & Print — 1 Year';
     const stripeKey = config.stripeKey || 'pk_test_TYooMQauvdEDq54NiTphI7jx';
@@ -321,6 +321,10 @@ $(document).ready(function() {
         renderShippingAddresses();
     });
     $('#same-shipping').trigger('change');
+    
+    if ($('#addon-deck').length) {
+        $('#addon-deck').trigger('change');
+    }
 
     // Real-time password validation
     $(document).on('input keyup', 'input[name="password"], input[name="password_confirmation"]', function() {
@@ -608,7 +612,7 @@ $(document).ready(function() {
         console.log(currentTotal);
         const options = {
             mode: 'payment',
-            amount: currentTotal * 100, // Amount in cents
+            amount: Math.max(currentTotal * 100, 50), // Amount in cents (Stripe requires >= 50)
             currency: 'usd',
             paymentMethodCreation: 'manual',
             paymentMethodTypes: ['card'],

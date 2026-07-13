@@ -12,6 +12,7 @@ class BookSubscription extends Model
     //
     protected $fillable = [
         'subscription_id',
+        'user_id',
         'address_id',
     ];
 

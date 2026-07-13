@@ -45,7 +45,7 @@
                   Instructions: {{ display.billing.special_instructions }}
                 </div>
               </span>
-              <span v-else>1215 K Street, Suite 1150, Sacramento, CA, 95814</span>
+              <span v-else>No billing address set</span>
             </td>
           </tr>
           <tr v-for="(shipping, index) in display.shippings" :key="shipping.id">
@@ -66,7 +66,7 @@
               <span v-if="display.billing && display.billing.line1">
                 {{ display.billing.line1 }}{{ display.billing.line2 ? ', ' + display.billing.line2 : '' }}, {{ display.billing.city }}, {{ display.billing.state }} {{ display.billing.zip_code }}
               </span>
-              <span v-else>1215 K Street, Suite 1150, Sacramento, CA, 95814</span>
+              <span v-else>No shipping address set</span>
             </td>
           </tr>
         </tbody>

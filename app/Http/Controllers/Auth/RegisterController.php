@@ -573,4 +573,184 @@ class RegisterController extends Controller
         return response()->json(['success' => true, 'user' => $user]);
     }
 
+    public function purchaseBookOnly(Request $request)
+    {
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone_number' => 'required|string|max:50',
+            'password' => 'nullable|string|min:6|confirmed',
+            'stripe_token' => 'required|string',
+            'custom_total_amount' => 'required|numeric|min:50', // in cents
+            'deck_addresses' => 'array',
+            'deck_addresses.*.line1' => 'required|string|max:255',
+            'deck_addresses.*.line2' => 'nullable|string|max:255',
+            'deck_addresses.*.city' => 'required|string|max:255',
+            'deck_addresses.*.state' => 'required|string|max:255',
+            'deck_addresses.*.zip_code' => 'required|string|max:255',
+            'deck_addresses.*.special_instructions' => 'nullable|string|max:255',
+        ]);
+
+        $email = $validated['email'];
+        $user = User::where('email', $email)->first();
+
+        // 1. Create or Update User
+        if (!$user) {
+            $password = !empty($validated['password']) ? bcrypt($validated['password']) : bcrypt(\Illuminate\Support\Str::random(10));
+            // Find or create default company
+            $company = \App\Company::firstOrCreate(['name' => 'None']);
+            if (!$company->address_id) {
+                $address = \App\Address::create([
+                    'line1' => '',
+                    'line2' => '',
+                    'city' => '',
+                    'state' => '',
+                    'zip_code' => '',
+                    'special_instructions' => '',
+                ]);
+                $company->address_id = $address->id;
+                $company->save();
+            }
+
+            $user = User::create([
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'email' => $email,
+                'phone_number' => $validated['phone_number'],
+                'password' => $password,
+                'company_id' => $company->id,
+                'register_by' => 'laravel',
+                'verified' => 1,
+            ]);
+            $user->settings()->create([]);
+        } else {
+            $user->update([
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'phone_number' => $validated['phone_number'],
+            ]);
+        }
+
+        // 2. Stripe Charge
+        try {
+            $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
+            \Stripe\Stripe::setApiKey($stripeKey);
+
+            if (empty($user->stripe_id)) {
+                $customer = \Stripe\Customer::create([
+                    'email' => $user->email,
+                    'name' => $user->first_name . ' ' . $user->last_name,
+                ]);
+                $user->stripe_id = $customer->id;
+                $user->save();
+            }
+
+            $cust = \Stripe\Customer::retrieve($user->stripe_id);
+            $amount = (int)$validated['custom_total_amount'];
+            $chargeId = null;
+
+            if (strpos($validated['stripe_token'], 'pm_') === 0) {
+                // Attach the PaymentMethod to the Customer via HTTP
+                \Illuminate\Support\Facades\Http::withToken($stripeKey)->asForm()->post("https://api.stripe.com/v1/payment_methods/{$validated['stripe_token']}/attach", [
+                    'customer' => $cust->id
+                ]);
+
+                // Create a confirmed PaymentIntent via HTTP
+                $response = \Illuminate\Support\Facades\Http::withToken($stripeKey)->asForm()->post("https://api.stripe.com/v1/payment_intents", [
+                    'amount' => $amount,
+                    'currency' => 'usd',
+                    'customer' => $cust->id,
+                    'payment_method' => $validated['stripe_token'],
+                    'confirm' => 'true',
+                    'off_session' => 'true',
+                    'description' => "Post-Election Deck/Book Purchase - California Target Book",
+                ]);
+
+                $resData = $response->json();
+
+                if (!$response->successful() || ($resData['status'] ?? '') !== 'succeeded') {
+                    $errorMsg = $resData['error']['message'] ?? 'Stripe payment failed.';
+                    return response()->json([
+                        'success' => false,
+                        'message' => $errorMsg,
+                    ], 402);
+                }
+                $chargeId = $resData['latest_charge'] ?? $resData['id'];
+            } else {
+                $cust->source = $validated['stripe_token'];
+                $cust->save();
+
+                $charge = \Stripe\Charge::create([
+                    'amount' => $amount,
+                    'currency' => 'usd',
+                    'customer' => $cust->id,
+                    'description' => "Post-Election Deck/Book Purchase - California Target Book",
+                ]);
+
+                if (!$charge->paid) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Stripe payment failed. Please try again.',
+                    ], 402);
+                }
+                $chargeId = $charge->id;
+            }
+        } catch (\Stripe\Error\Base $e) {
+            $body = $e->getJsonBody();
+            return response()->json([
+                'success' => false,
+                'message' => $body['error']['message'] ?? 'Stripe error occurred.',
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process payment: ' . $e->getMessage(),
+            ], 500);
+        }
+
+        // 3. Link to existing Subscription if it exists (no new Subscription created for book-only purchase)
+        $subscription = $user->latestSubscription();
+        $subscriptionId = $subscription ? $subscription->id : null;
+
+        if ($subscriptionId) {
+            $cycle = $subscription->cycles()->create([
+                'payment_method' => 'stripe',
+                'starts_on' => now()->toDateString(),
+                'ends_on' => now()->addYears(1)->toDateString(),
+                'invoice_id' => $chargeId,
+            ]);
+            $cycle->activate();
+        }
+
+        // 4. Save Shipping Addresses & BookSubscriptions
+        $deckAddresses = $validated['deck_addresses'] ?? [];
+        foreach ($deckAddresses as $addr) {
+            $address = \App\Address::create([
+                'line1' => $addr['line1'] ?? '',
+                'line2' => $addr['line2'] ?? null,
+                'city' => $addr['city'] ?? '',
+                'state' => $addr['state'] ?? '',
+                'zip_code' => $addr['zip_code'] ?? '',
+                'special_instructions' => $addr['special_instructions'] ?? null,
+            ]);
+
+            \App\BookSubscription::create([
+                'subscription_id' => $subscriptionId,
+                'user_id' => $user->id,
+                'address_id' => $address->id,
+            ]);
+        }
+
+        // Log in the user if guest checks out
+        if (!Auth::check()) {
+            Auth::login($user);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thank you for your purchase!',
+        ]);
+    }
+
 }

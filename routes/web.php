@@ -30,6 +30,10 @@ Route::get('/subscriptions/two-year', function () {
     return view('subscriptions.two_year');
 })->name('subscriptions.two-year');
 
+Route::get('/subscriptions/book-only', function () {
+    return view('subscriptions.book_only');
+})->name('subscriptions.book-only');
+
 Route::get('/home', 'HomeController@index')->name('home.dashboard');
 
 Route::get('/new', function () {
@@ -134,6 +138,7 @@ Route::post('/signup', 'Auth\RegisterController@signup')->name('signup.post');
 Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('/register', 'Auth\RegisterController@register');
 Route::post('/register-emails', 'Auth\RegisterController@sendRegistrationEmailsAPI');
+Route::post('/purchase-book-only', 'Auth\RegisterController@purchaseBookOnly')->name('purchase.book-only');
 Route::post('/register-addon', 'Auth\RegisterController@register_addon')->name('auth.register_addon');
 Route::get('/register/thank-you', 'Auth\RegisterController@showThankYou')->name('register.thank-you');
 Route::get('/register/coupon/{code}', 'Auth\RegisterController@checkCoupon')->name('register.check-coupon');

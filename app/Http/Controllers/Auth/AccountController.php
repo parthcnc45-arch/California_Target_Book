@@ -30,6 +30,25 @@ class AccountController extends Controller
 
         if (empty($sub)) {
             $prevSub = $user->subscriptions()->first();
+            $directBooks = \App\BookSubscription::where('user_id', $user->id)->with('address')->get();
+            if ($directBooks->isNotEmpty()) {
+                return [
+                    'user' => $user,
+                    'pending_bank' => null,
+                    'cycles' => collect(),
+                    'sub' => [
+                        'cycle' => null,
+                        'status' => 'None',
+                        'end' => null,
+                        'start' => null,
+                        'base_account' => $user,
+                        'role' => 'owner',
+                        'addons' => collect(),
+                        'books' => $directBooks,
+                        'invoice' => null,
+                    ]
+                ];
+            }
             if (empty($prevSub)) {
                 return [
                     'user' => $user,
@@ -101,6 +120,10 @@ class AccountController extends Controller
             }
         }
 
+        $books = $sub->load('book_subscriptions.address')->book_subscriptions;
+        $directBooks = \App\BookSubscription::where('user_id', $user->id)->with('address')->get();
+        $mergedBooks = $books->merge($directBooks)->unique('id')->values();
+
         return [
             'user' => $user,
             'pending_bank' => $ba,
@@ -113,7 +136,7 @@ class AccountController extends Controller
                 'base_account' => $base_account,
                 'role' => $sub->pivot->role,
                 'addons' => $sub->addons()->get(),
-                'books' => $sub->load('book_subscriptions.address')->book_subscriptions,
+                'books' => $mergedBooks,
                 'invoice' => $invoice,
                 'stripe_data' => $stripe_subscription,
                 'stripe_product_name' => $stripe_product_name,

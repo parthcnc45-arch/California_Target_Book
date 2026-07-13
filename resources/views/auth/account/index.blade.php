@@ -3,6 +3,7 @@
 @section('title', 'Your Account | California Target Book')
 
 @section('styles')
+@include('components.admin-menu-state')
 <!-- Google Fonts - Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -481,8 +482,8 @@
 
             <!-- Admin Settings Submenu -->
             @if ($user->isAdmin())
-                <div id="admin-settings-menu" style="display: none;">
-                    <a href="/account/account-info" onclick="toggleAdminSettings(false)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
+                <div id="admin-settings-menu">
+                    <a href="javascript:void(0)" onclick="handleBackToMainMenu(event)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
                     <div class="nav-section-title admin-section-title">ADMIN SETTINGS</div>
                     <a href="/ctb-admin/new/subscriptions" class="nav-link {{ Request::is('ctb-admin/new/subscriptions*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Subscriptions</a>
                     <a href="/ctb-admin/new/hard-copy-subscriptions" class="nav-link {{ Request::is('ctb-admin/new/hard-copy-subscriptions') ? 'active' : '' }}"><i class="bi bi-book"></i> Hard Copies</a>
@@ -1091,30 +1092,7 @@
         } else if (hash === '#help-support') {
             $('#tab-help-support').trigger('click');
         }
-
-        // Handle Admin Settings sub-menu state on load
-        if (localStorage.getItem('adminSettingsOpen') === 'true') {
-            toggleAdminSettings(true);
-        }
     });
-
-    function toggleAdminSettings(show) {
-        const userMenu = document.getElementById('user-nav-menu');
-        const adminMenu = document.getElementById('admin-settings-menu');
-        const bottomActions = document.getElementById('bottom-actions-menu');
-        if (userMenu && adminMenu) {
-            if (show) {
-                userMenu.style.display = 'none';
-                adminMenu.style.display = 'block';
-                if(bottomActions) bottomActions.style.display = 'none';
-                localStorage.setItem('adminSettingsOpen', 'true');
-            } else {
-                userMenu.style.display = 'block';
-                adminMenu.style.display = 'none';
-                if(bottomActions) bottomActions.style.display = 'block';
-                localStorage.setItem('adminSettingsOpen', 'false');
-            }
-        }
-    }
 </script>
+@include('components.admin-menu-script')
 @endsection

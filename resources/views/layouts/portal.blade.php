@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <link href="/css/portal_custom.css" rel="stylesheet">
+@include('components.admin-menu-state')
 @yield('portal_styles')
 @endsection
 
@@ -53,8 +54,8 @@
 
             <!-- Admin Settings Submenu -->
             @if ($user->isAdmin())
-                <div id="admin-settings-menu" style="display: none;">
-                    <a href="/account/account-info" onclick="toggleAdminSettings(false)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
+                <div id="admin-settings-menu">
+                    <a href="/account/account-info" onclick="handleBackToMainMenu(event)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
                     <div class="nav-section-title admin-section-title">ADMIN SETTINGS</div>
                     <a href="/ctb-admin/new/subscriptions" class="nav-link {{ Request::is('ctb-admin/new/subscriptions*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Subscriptions</a>
                     <a href="/ctb-admin/new/hard-copy-subscriptions" class="nav-link {{ Request::is('ctb-admin/new/hard-copy-subscriptions') ? 'active' : '' }}"><i class="bi bi-book"></i> Hard Copies</a>
@@ -84,7 +85,7 @@
             @endif
         </nav>
 
-        <div id="bottom-actions-menu"><div class="sidebar-actions"><a href="/ctb-admin/new/subscriptions" onclick="toggleAdminSettings(true)" class="nav-link signout-link"><i class="bi bi-sliders"></i> Admin Settings</a><a href="/logout" class="nav-link signout-link"><i class="bi bi-box-arrow-left"></i> Sign Out</a></div> </div>
+        <div id="bottom-actions-menu"><div class="sidebar-actions"><a href="/ctb-admin/new/subscriptions" onclick="openAdminSettings(event)" class="nav-link signout-link"><i class="bi bi-sliders"></i> Admin Settings</a><a href="/logout" class="nav-link signout-link"><i class="bi bi-box-arrow-left"></i> Sign Out</a></div> </div>
     </aside>
 
     <!-- Main Content Area -->
@@ -113,30 +114,5 @@
 
 @section('scripts')
 @yield('portal_scripts')
-<script>
-    function toggleAdminSettings(show) {
-        const userMenu = document.getElementById('user-nav-menu');
-        const adminMenu = document.getElementById('admin-settings-menu');
-        const bottomActions = document.getElementById('bottom-actions-menu');
-        if (userMenu && adminMenu) {
-            if (show) {
-                userMenu.style.display = 'none';
-                adminMenu.style.display = 'block';
-                if(bottomActions) bottomActions.style.display = 'none';
-                localStorage.setItem('adminSettingsOpen', 'true');
-            } else {
-                userMenu.style.display = 'block';
-                adminMenu.style.display = 'none';
-                if(bottomActions) bottomActions.style.display = 'block';
-                localStorage.setItem('adminSettingsOpen', 'false');
-            }
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('adminSettingsOpen') === 'true') {
-            toggleAdminSettings(true);
-        }
-    });
-</script>
+@include('components.admin-menu-script')
 @endsection

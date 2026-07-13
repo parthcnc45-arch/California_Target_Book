@@ -471,6 +471,7 @@
                 <a href="/" class="nav-link"><i class="bi bi-house-door"></i> Home</a>
                 <a href="#account-info" class="nav-link active" id="tab-account-info"><i class="bi bi-person"></i> Account info</a>
                 <a href="#subscriptions" class="nav-link" id="tab-subscriptions"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
+                 <a href="#subscriptions" class="nav-link" id="tab-subscriptions"><i class="bi bi-credit-card-2-front"></i> Manage add-ons</a>
                 <a href="#transaction-history" class="nav-link" id="tab-transaction-history"><i class="bi bi-coin"></i> Transaction History</a>
                 <a href="#shipping-tracking" class="nav-link" id="tab-shipping-tracking"><i class="bi bi-truck"></i> Shipping & Tracking</a>
                 <a href="#settings" class="nav-link" id="tab-settings"><i class="bi bi-gear"></i> Notifications Settings</a>

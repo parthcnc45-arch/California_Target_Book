@@ -100,6 +100,6 @@
         <script src="/js/ctb.js"></script>
 
         @yield('scripts')
+        <script src="{{ asset('js/script.js') }}"></script>
     </body>
-    <script src="{{ asset('js/script.js') }}"></script>
 </html>

@@ -164,6 +164,19 @@ Route::group([
         'as' => 'auth.account.info',
     ]);
 
+    Route::get('/manage-add-ons', [
+        'uses' => 'Auth\AccountController@manageAddOns',
+        'as' => 'auth.account.manage_add_ons',
+    ]);
+    Route::get('/addon-checkout', [
+        'uses' => 'Auth\AccountController@addonCheckout',
+        'as' => 'auth.account.addon_checkout',
+    ]);
+    Route::post('/addon-checkout/process', [
+        'uses' => 'Auth\AccountController@processAddonCheckout',
+        'as' => 'auth.account.process_addon_checkout',
+    ]);
+
     Route::get('/subscriptions', [
         'uses' => 'Auth\AccountController@subscriptions',
         'as' => 'auth.account.subscriptions',

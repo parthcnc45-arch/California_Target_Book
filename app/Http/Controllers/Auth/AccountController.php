@@ -147,6 +147,137 @@ class AccountController extends Controller
         return view('auth.account.subscriptions', $data);
     }
 
+    public function manageAddOns() {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+        return view('auth.account.manage_add_ons', $data);
+    }
+
+    public function addonCheckout(\Illuminate\Http\Request $request) {
+        $data = $this->getAccountData();
+        if ($data === null) {
+            return redirect()->route('register');
+        }
+        if ($data === 'renew') {
+            return redirect()->route('auth.account.renew');
+        }
+
+        $addonType = $request->input('addon', 'deck'); // 'deck' or 'presentation'
+        
+        if ($addonType === 'presentation') {
+            $data['addonTitle'] = 'Post-Election Deck Presentation';
+            $data['addonPrice'] = 300;
+        } else {
+            $data['addonTitle'] = 'Post-Election Deck';
+            $data['addonPrice'] = 1000;
+        }
+        $data['addonType'] = $addonType;
+
+        return view('auth.account.addon_checkout', $data);
+    }
+
+    public function processAddonCheckout(\Illuminate\Http\Request $request) {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'stripe_token' => 'required|string',
+            'qty' => 'required|integer|min:1',
+            'addon_price' => 'required|numeric',
+            'addon_name' => 'required|string',
+            'addresses' => 'array'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $qty = (int) $request->input('qty');
+        $addonPrice = (float) $request->input('addon_price');
+        $amount = $qty * $addonPrice * 100; // in cents
+        $stripe_token = $request->input('stripe_token');
+
+        try {
+            $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
+            \Stripe\Stripe::setApiKey($stripeKey);
+
+            if (empty($user->stripe_id)) {
+                $customer = \Stripe\Customer::create([
+                    'email' => $user->email,
+                    'name' => $user->first_name . ' ' . $user->last_name,
+                ]);
+                $user->stripe_id = $customer->id;
+                $user->save();
+            }
+
+            $cust = \Stripe\Customer::retrieve($user->stripe_id);
+            $cust->source = $stripe_token;
+            $cust->save();
+
+            $charge = \Stripe\Charge::create([
+                'amount' => $amount,
+                'currency' => 'usd',
+                'customer' => $cust->id,
+                'description' => "Purchase of {$qty}x " . $request->input('addon_name') . " - California Target Book",
+            ]);
+
+            if ($charge->paid) {
+                $sub = $user->latestSubscription();
+                if ($sub) {
+                    $addresses = $request->input('addresses', []);
+                    foreach ($addresses as $addrData) {
+                        $address = \App\Address::create([
+                            'line1' => $addrData['line1'] ?? '',
+                            'line2' => $addrData['line2'] ?? null,
+                            'city' => $addrData['city'] ?? '',
+                            'state' => $addrData['state'] ?? '',
+                            'zip_code' => $addrData['zip_code'] ?? '',
+                            'special_instructions' => $addrData['special_instructions'] ?? null,
+                        ]);
+
+                        \App\BookSubscription::create([
+                            'subscription_id' => $sub->id,
+                            'address_id' => $address->id,
+                        ]);
+                    }
+                }
+
+                \Log::info("User {$user->id} purchased {$qty}x " . $request->input('addon_name') . " for $" . ($amount/100));
+
+                $request->session()->flash('message', 'Payment processed successfully!');
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Payment processed successfully.',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment was not successful. Please try again.',
+                ], 402);
+            }
+        } catch (\Stripe\Error\Base $e) {
+            $body = $e->getJsonBody();
+            return response()->json([
+                'success' => false,
+                'message' => $body['error']['message'] ?? 'Stripe error occurred.',
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error("Addon Purchase Failed: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process payment: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function transactionHistory() {
         $data = $this->getAccountData();
         if ($data === null) {

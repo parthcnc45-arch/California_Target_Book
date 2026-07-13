@@ -201,7 +201,7 @@
   <nav class="navbar-ctb" id="mainNav">
     <div class="container-ctb navbar-inner">
       <a href="/" class="nav-logo">
-        <img fetchpriority="high" decoding="async" width="150" height="80" src="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/ctb_logo-2.png.webp" alt="" title="ctb_logo.png" srcset="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/ctb_logo-2.png.webp 250w, https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/ctb_logo-2-100x100.png.webp 100w, https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/ctb_logo-2-150x150.png.webp 150w" sizes="(max-width: 250px) 100vw, 250px" class="wp-image-18" data-smush-webp-fallback="{&quot;src&quot;:&quot;https:\/\/ctb.epicenterconsulting.net\/wp-content\/uploads\/2023\/04\/ctb_logo-2.png&quot;,&quot;srcset&quot;:&quot;https:\/\/ctb.epicenterconsulting.net\/wp-content\/uploads\/2023\/04\/ctb_logo-2.png 250w, https:\/\/ctb.epicenterconsulting.net\/wp-content\/uploads\/2023\/04\/ctb_logo-2-100x100.png 100w, https:\/\/ctb.epicenterconsulting.net\/wp-content\/uploads\/2023\/04\/ctb_logo-2-150x150.png 150w&quot;}">
+        <img src="/img/ctb_logo.png" alt="California Target Book">
       </a>
 
       <ul class="nav-menu" id="navMenu">
@@ -369,19 +369,22 @@
 ========================================================= -->
   <section class="section-newsletter" id="subscribe">
     <div class="container-ctb">
-      <h2>Subscribe To Our Newsletter</h2>
-      <p class="sub">Receive the best political content right in your email</p>
-      <form class="newsletter-form" id="newsletterForm">
-        <input type="text" placeholder="Name" required>
-        <input type="email" placeholder="Email" required>
-        <button type="submit" class="btn-ctb btn-red">Subscribe</button>
-      </form>
+      <div class="newsletter-card-wrap">
+        <h2>Subscribe To Our Newsletter</h2>
+        <p class="sub">Receive the best political content right in your email</p>
+        <form class="newsletter-form" id="newsletterForm">
+          <input type="text" placeholder="Name" required>
+          <input type="email" placeholder="Email" required>
+          <button type="submit" class="btn-ctb btn-red">Subscribe</button>
+        </form>
+      </div>
     </div>
   </section>
 
   <!-- =========================================================
      FOOTER
 ========================================================= -->
+  <!--
   <footer class="footer-ctb" id="contact">
     <div class="container-ctb">
       <div class="footer-bottom">
@@ -389,6 +392,8 @@
       </div>
     </div>
   </footer>
+  -->
+  @include('layouts.footer')
 
 </body>
 </html>

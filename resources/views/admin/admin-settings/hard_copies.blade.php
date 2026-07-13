@@ -1,5 +1,26 @@
 @extends('layouts.portal')
 
+@section('portal_styles')
+    <style>
+        .table-action-edit {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #0f172a;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+        .table-action-edit:hover {
+            background-color: #f1f5f9;
+            color: #b91c1c;
+        }
+    </style>
+@endsection
+
 @section('portal_content')
     <div class="section-header" style="justify-content: space-between;">
         <div class="header-title-container">
@@ -61,6 +82,7 @@
                         <th style="width: 20%;">Contact</th>
                         <th style="width: 30%;">Address</th>
                         <th style="width: 25%;">Special Instructions</th>
+                        <th style="width: 90px; text-align: center;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -158,7 +180,7 @@
                 // 3. Render only rows for current page
                 $tbody.empty();
                 if (totalEntries === 0) {
-                    $tbody.append(`<tr><td colspan="5" style="text-align: center; color: #64748b; padding: 24px;">No hard copy subscriptions found</td></tr>`);
+                    $tbody.append(`<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 24px;">No hard copy subscriptions found</td></tr>`);
                 } else {
                     const pageRows = filteredRows.slice(startIndex, endIndex);
                     pageRows.forEach(item => {
@@ -170,12 +192,17 @@
                         const specialInstructions = addr.special_instructions || '';
                         
                         const rowHtml = `
-                            <tr class="clickable-row" data-id="${sub.id}" style="cursor: pointer;">
+                            <tr>
                                 <td><span class="status-pill-completed" style="${statusStyle}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
                                 <td class="fw-semibold" style="color: #0f172a !important;">${sub.company || 'Not Specified'}</td>
                                 <td style="color: #0f172a !important; font-weight: 500;">${contactName}</td>
                                 <td style="color: #475569;">${formatAddress(addr)}</td>
                                 <td style="color: #64748b; font-style: italic; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${specialInstructions}">${specialInstructions}</td>
+                                <td style="text-align: center;">
+                                    <a href="/ctb-admin/new/subscriptions/${sub.id}" class="table-action-edit">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                </td>
                             </tr>
                         `;
                         $tbody.append(rowHtml);
@@ -328,20 +355,8 @@
                 });
             }
 
-            // Row click listener for redirect
-            $tbody.on('click', 'tr.clickable-row', function(e) {
-                // Prevent redirect if clicking on an anchor or button inside the row
-                if ($(e.target).closest('a').length || $(e.target).closest('button').length) {
-                    return;
-                }
-                const subId = $(this).data('id');
-                if (subId) {
-                    window.location.href = `/ctb-admin/new/subscriptions/${subId}`;
-                }
-            });
-
             // Load data from API
-            $tbody.html(`<tr><td colspan="5" style="text-align: center; color: #64748b; padding: 24px;"><i class="bi bi-arrow-repeat spin" style="font-size: 20px; display: inline-block; animation: spin 1s linear infinite; margin-right: 8px;"></i> Loading hard copies...</td></tr>`);
+            $tbody.html(`<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 24px;"><i class="bi bi-arrow-repeat spin" style="font-size: 20px; display: inline-block; animation: spin 1s linear infinite; margin-right: 8px;"></i> Loading hard copies...</td></tr>`);
 
             $('<style>')
                 .prop('type', 'text/css')
@@ -367,7 +382,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching hard copies:', error);
-                    $tbody.html(`<tr><td colspan="5" style="text-align: center; color: #ef4444; padding: 24px;">Failed to load hard copy subscriptions. Please try again later.</td></tr>`);
+                    $tbody.html(`<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 24px;">Failed to load hard copy subscriptions. Please try again later.</td></tr>`);
                 }
             });
         });

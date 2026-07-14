@@ -24,9 +24,9 @@
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
         <link href="{{ mix('css/app.css') }}" rel="stylesheet">
         <link href="css/app.css" rel="stylesheet">
-        <link href="{{ asset('css/portal_custom.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/style_new.css') }}">
+        <link href="/css/portal_custom.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/style_new.css">
         
 
 
@@ -100,6 +100,6 @@
         <script src="/js/ctb.js"></script>
 
         @yield('scripts')
-        <script src="{{ asset('js/script.js') }}"></script>
+        <script src="/js/script.js"></script>
     </body>
 </html>

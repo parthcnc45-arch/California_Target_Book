@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bellefair&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="/css/portal_custom.css" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/style_new.css') }}">
+<link rel="stylesheet" href="/css/style_new.css">
 
 @endsection
 

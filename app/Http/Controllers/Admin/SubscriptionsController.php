@@ -105,26 +105,64 @@ class SubscriptionsController extends Controller
 
         $address = Address::create($data['address']);
         $bs = Subscription::find($id)->book_subscriptions()
-            ->create([ 'address_id' => $address->id ]);
+            ->create([ 
+                'address_id' => $address->id,
+                'item_name' => $request->input('item_name', 'California Target Book')
+            ]);
 
         return BookSubscription::with('address')->find($bs->id);
     }
 
     public function updateHardCopy($id, $bookId, Request $request) {
 
-        $data = $request->only(['address']);
-        Validator::make($data, [
-            'address.line1' => 'required|string|max:255',
-            'address.line2' => 'nullable|string|max:255',
-            'address.city' => 'required|string|max:255',
-            'address.state' => 'required|string|max:255',
-            'address.zip_code' => 'required|string|max:255',
-            'address.special_instructions' => 'nullable|string|max:255',
-        ])
-            ->validate();
-
         $bs = BookSubscription::find($bookId);
-        $bs->address()->update($data['address']);
+
+        if ($request->has('address')) {
+            $data = $request->only(['address']);
+            Validator::make($data, [
+                'address.line1' => 'required|string|max:255',
+                'address.line2' => 'nullable|string|max:255',
+                'address.city' => 'required|string|max:255',
+                'address.state' => 'required|string|max:255',
+                'address.zip_code' => 'required|string|max:255',
+                'address.special_instructions' => 'nullable|string|max:255',
+            ])->validate();
+            $bs->address()->update($data['address']);
+        }
+
+        if ($request->has('shipment')) {
+            $shipmentData = $request->input('shipment');
+            
+            $rules = [
+                'status' => 'nullable|string|max:255',
+                'carrier' => 'nullable|string|max:255',
+                'tracking_id' => 'nullable|string|max:255',
+                'tracking_url' => 'nullable|url|max:255',
+                'ship_date' => 'nullable|date',
+                'estimated_delivery' => 'nullable|date|after_or_equal:ship_date',
+                'item_name' => 'nullable|string|max:255',
+            ];
+
+            $activeStatuses = ['Shipped', 'In Transit', 'Out for Delivery', 'Delivered'];
+            $statusVal = $shipmentData['status'] ?? '';
+            
+            if (in_array($statusVal, $activeStatuses)) {
+                $rules['carrier'] = 'required|string|max:255';
+                $rules['tracking_id'] = 'required|string|max:255';
+                $rules['ship_date'] = 'required|date';
+            }
+
+            Validator::make($shipmentData, $rules, [
+                'carrier.required' => "Carrier is required when status is {$statusVal}.",
+                'tracking_id.required' => "Tracking Number is required when status is {$statusVal}.",
+                'ship_date.required' => "Ship Date is required when status is {$statusVal}.",
+                'tracking_url.url' => 'Please enter a valid Tracking URL.',
+                'estimated_delivery.after_or_equal' => 'Estimated Delivery date cannot be before the Ship Date.',
+            ])->validate();
+            
+            $bs->update($shipmentData);
+        }
+
         return BookSubscription::with('address')->find($bookId);
     }
 

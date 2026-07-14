@@ -183,16 +183,6 @@
 
             <ctb-address-block :input="{{ json_encode(old('billing') ?? (auth()->user()->company->address ?? (object)[])) }}" name="billing" layout="checkout"></ctb-address-block>
 
-
-            <!-- <div class="checkbox-group checkout-mt16">
-                <input type="checkbox" id="same-shipping" checked>
-                <label for="same-shipping">Shipping address is the same as billing</label>
-            </div> -->
-
-            <div id="shipping-address-block" class="shipping-address-block">
-                <div id="shipping-addresses-container"></div>
-            </div>
-
             <h3 class="section-title checkout-mt32">Payment Method</h3>
             <div id="payment-element" class="payment-element-container">
                 <div class="payment-options-loader">

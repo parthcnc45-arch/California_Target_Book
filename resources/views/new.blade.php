@@ -16,7 +16,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Site styles -->
- <link rel="stylesheet" href="{{ asset('css/style_new.css') }}">
+ <link rel="stylesheet" href="/css/style_new.css">
 </head>
 
 <body>
@@ -371,7 +371,7 @@
   </footer>
   -->
   @include('layouts.footer')
-        <script src="{{ asset('js/script.js') }}"></script>
+        <script src="/js/script.js"></script>
   
 </body>
 

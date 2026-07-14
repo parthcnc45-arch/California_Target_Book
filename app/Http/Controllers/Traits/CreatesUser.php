@@ -378,12 +378,23 @@ trait CreatesUser {
      */
     $bookAddresses = $data['book_addresses'] ?? [];
     $deckAddresses = $data['deck_addresses'] ?? [];
+
+    foreach ($bookAddresses as &$addr) {
+        $addr['item_name'] = '-';
+    }
+    foreach ($deckAddresses as &$addr) {
+        $addr['item_name'] = $data['deck_title'] ?? '-';
+    }
+
     $addresses = collect(array_merge($bookAddresses, $deckAddresses));
 
     $book_subs = $addresses->map(function ($addr) use ($subscription) {
         $address = Address::create($addr);
         $book_sub = $subscription->book_subscriptions()
-        ->create([ 'address_id' => $address->id ]);
+        ->create([ 
+            'address_id' => $address->id,
+            'item_name' => $addr['item_name'] ?? '-' 
+        ]);
 
         $book_sub->address = $address;
         return $book_sub;
@@ -1082,3 +1093,4 @@ trait CreatesUser {
   }
 
 }
+//  14/07/2026

@@ -126,29 +126,7 @@ $(document).ready(function() {
     }
 
     function renderShippingAddresses() {
-        let bookContainer = $('#shipping-addresses-container');
         let deckContainer = $('#deck-shipping-addresses-container');
-        
-        let isSame = $('#same-shipping').is(':checked');
-        
-        if (isSame) {
-            $('#shipping-address-block').hide();
-            bookContainer.empty();
-            deckContainer.empty();
-            return;
-        }
-
-        // Save existing values to avoid overwriting typed input
-        let existingBook = [];
-        bookContainer.find('.shipping-address-item').each(function(index) {
-            existingBook.push({
-                line1: $(this).find('input[name*="[line1]"]').val() || '',
-                line2: $(this).find('input[name*="[line2]"]').val() || '',
-                city: $(this).find('input[name*="[city]"]').val() || '',
-                state: $(this).find('select[name*="[state]"]').val() || '',
-                zip_code: $(this).find('input[name*="[zip_code]"]').val() || ''
-            });
-        });
 
         let existingDeck = [];
         deckContainer.find('.shipping-address-item').each(function(index) {
@@ -161,33 +139,9 @@ $(document).ready(function() {
             });
         });
 
-        bookContainer.empty();
         deckContainer.empty();
 
         let AddressBlockClass = Vue.extend(Vue.component('ctb-address-block'));
-
-        if (isPrint) {
-            $('#shipping-address-block').show();
-            let data = existingBook[0] || { line1: '', line2: '', city: '', state: 'CA', zip_code: '' };
-            let itemDiv = $(`
-                <div class="shipping-address-item">
-                    <!-- <h4 class="shipping-address-item-title">Book Shipping Address</h4> -->
-                </div>
-            `);
-            let instance = new AddressBlockClass({
-                propsData: {
-                    name: 'book_shipping_0',
-                    input: { line1: data.line1, line2: data.line2, city: data.city, state: data.state, zip_code: data.zip_code },
-                    layout: 'checkout'
-                }
-            });
-            let targetDiv = $('<div class="shipping-address-instance"></div>');
-            itemDiv.append(targetDiv);
-            bookContainer.append(itemDiv);
-            instance.$mount(targetDiv[0]);
-        } else {
-            $('#shipping-address-block').hide();
-        }
 
         if (hasDeckAddon) {
             for (let i = 0; i < deckQty; i++) {
@@ -317,10 +271,7 @@ $(document).ready(function() {
 
 
     // Shipping Address Toggle
-    $('#same-shipping').on('change', function() {
-        renderShippingAddresses();
-    });
-    $('#same-shipping').trigger('change');
+
     
     if ($('#addon-deck').length) {
         $('#addon-deck').trigger('change');
@@ -441,53 +392,28 @@ $(document).ready(function() {
                     return;
                 }
 
-                let book_addresses = [];
-                if (isPrint) {
-                    if ($('#same-shipping').is(':checked')) {
-                        book_addresses.push({
-                            line1: $('input[name="billing[line1]"]').val(),
-                            line2: $('input[name="billing[line2]"]').val() || null,
-                            city: $('input[name="billing[city]"]').val(),
-                            state: $('select[name="billing[state]"]').val(),
-                            zip_code: $('input[name="billing[zip_code]"]').val(),
-                            special_instructions: $('input[name="billing[special_instructions]"]').val() || null
-                        });
-                    } else {
-                        book_addresses.push({
-                            line1: $('input[name="book_shipping_0[line1]"]').val(),
-                            line2: $('input[name="book_shipping_0[line2]"]').val() || null,
-                            city: $('input[name="book_shipping_0[city]"]').val(),
-                            state: $('select[name="book_shipping_0[state]"]').val(),
-                            zip_code: $('input[name="book_shipping_0[zip_code]"]').val(),
-                            special_instructions: $('input[name="book_shipping_0[special_instructions]"]').val() || null
-                        });
-                    }
-                }
+                let bookAddresses = [];
+                // Using billing address as book shipping address
+                bookAddresses.push({
+                    line1: $('input[name="billing[line1]"]').val(),
+                    line2: $('input[name="billing[line2]"]').val(),
+                    city: $('input[name="billing[city]"]').val(),
+                    state: $('select[name="billing[state]"]').val(),
+                    zip_code: $('input[name="billing[zip_code]"]').val(),
+                    special_instructions: $('input[name="billing[special_instructions]"]').val()
+                });
 
-                let deck_addresses = [];
+                let deckAddresses = [];
                 if (hasDeckAddon) {
-                    if ($('#same-shipping').is(':checked')) {
-                        for (let i = 0; i < deckQty; i++) {
-                            deck_addresses.push({
-                                line1: $('input[name="billing[line1]"]').val(),
-                                line2: $('input[name="billing[line2]"]').val() || null,
-                                city: $('input[name="billing[city]"]').val(),
-                                state: $('select[name="billing[state]"]').val(),
-                                zip_code: $('input[name="billing[zip_code]"]').val(),
-                                special_instructions: $('input[name="billing[special_instructions]"]').val() || null
-                            });
-                        }
-                    } else {
-                        for (let i = 0; i < deckQty; i++) {
-                            deck_addresses.push({
-                                line1: $(`input[name="deck_shipping_${i}[line1]"]`).val(),
-                                line2: $(`input[name="deck_shipping_${i}[line2]"]`).val() || null,
-                                city: $(`input[name="deck_shipping_${i}[city]"]`).val(),
-                                state: $(`select[name="deck_shipping_${i}[state]"]`).val(),
-                                zip_code: $(`input[name="deck_shipping_${i}[zip_code]"]`).val(),
-                                special_instructions: $(`input[name="deck_shipping_${i}[special_instructions]"]`).val() || null
-                            });
-                        }
+                    for (let i = 0; i < deckQty; i++) {
+                        deckAddresses.push({
+                            line1: $(`input[name="deck_shipping_${i}[line1]"]`).val(),
+                            line2: $(`input[name="deck_shipping_${i}[line2]"]`).val(),
+                            city: $(`input[name="deck_shipping_${i}[city]"]`).val(),
+                            state: $(`select[name="deck_shipping_${i}[state]"]`).val(),
+                            zip_code: $(`input[name="deck_shipping_${i}[zip_code]"]`).val(),
+                            special_instructions: $(`input[name="deck_shipping_${i}[special_instructions]"]`).val()
+                        });
                     }
                 }
 
@@ -517,7 +443,7 @@ $(document).ready(function() {
                             special_instructions: $('input[name="billing[special_instructions]"]').val() || null
                         }
                     },
-                    book_addresses: book_addresses,
+                    book_addresses: bookAddresses,
                     addons: addons,
                     payment_method: 'stripe',
                     stripe_token: paymentMethod.id,
@@ -527,7 +453,7 @@ $(document).ready(function() {
                     deck_qty: hasDeckAddon ? deckQty : 0,
                     deck_type: hasDeckAddon ? parseInt($('input[name="deck_type"]:checked').val()) : 0,
                     deck_title: hasDeckAddon ? deckTitle : '',
-                    deck_addresses: deck_addresses,
+                    deck_addresses: deckAddresses,
                     subscription_cost: basePrice * 100,
                     custom_total_amount: currentTotal * 100
                 };

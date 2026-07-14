@@ -59,7 +59,7 @@
                     <a href="/account/account-info" onclick="handleBackToMainMenu(event)" class="nav-link" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;"><i class="bi bi-arrow-left"></i> Back to Main Menu</a>
                     <div class="nav-section-title admin-section-title">ADMIN SETTINGS</div>
                     <a href="/ctb-admin/new/subscriptions" class="nav-link {{ Request::is('ctb-admin/new/subscriptions*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Subscriptions</a>
-                    <a href="/ctb-admin/new/hard-copy-subscriptions" class="nav-link {{ Request::is('ctb-admin/new/hard-copy-subscriptions') ? 'active' : '' }}"><i class="bi bi-book"></i> Hard Copies</a>
+                    <a href="/ctb-admin/new/hard-copy-subscriptions" class="nav-link {{ Request::is('ctb-admin/new/hard-copy-subscriptions') ? 'active' : '' }}"><i class="bi bi-book"></i> Shipments</a>
                     <a href="/ctb-admin/new/contacts" class="nav-link {{ Request::is('ctb-admin/new/contacts') ? 'active' : '' }}"><i class="bi bi-people"></i> Contacts</a>
 
                 </div>

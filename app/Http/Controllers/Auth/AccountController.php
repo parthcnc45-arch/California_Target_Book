@@ -268,6 +268,7 @@ class AccountController extends Controller
                         \App\BookSubscription::create([
                             'subscription_id' => $sub->id,
                             'address_id' => $address->id,
+                            'item_name' => $request->input('addon_name')
                         ]);
                     }
                 }

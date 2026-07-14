@@ -18,29 +18,183 @@
             background-color: #f1f5f9;
             color: #b91c1c;
         }
+        /* Custom modal overrides */
+        .ctb-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .ctb-modal-box {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            max-width: 520px;
+            width: 100%;
+            overflow: hidden;
+            animation: modalFadeIn 0.2s ease-out;
+            margin: 16px;
+        }
+        .ctb-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 20px 0;
+        }
+        .ctb-modal-body {
+            padding: 24px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .form-col {
+            flex: 1;
+        }
+        .form-label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%;
+            height: 38px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #0f172a;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-input:focus {
+            border-color: #b91c1c !important;
+            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
+            outline: none;
+        }
+        .form-select {
+            width: 100%;
+            height: 38px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #ffffff;
+            color: #0f172a;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-select:focus {
+            border-color: #b91c1c !important;
+            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
+            outline: none;
+        }
+        .form-textarea {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            box-sizing: border-box;
+            font-size: 14px;
+            resize: vertical;
+            font-family: inherit;
+            color: #0f172a;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-textarea:focus {
+            border-color: #b91c1c !important;
+            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
+            outline: none;
+        }
+        .ctb-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            align-items: center;
+        }
+        .btn-modal-cancel {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 8px 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+        .btn-modal-cancel:hover {
+            background: #f1f5f9;
+        }
+        .btn-modal-submit {
+            background: #b91c1c;
+            border: 1px solid #b91c1c;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 6px;
+            transition: opacity 0.15s;
+        }
+        .btn-modal-submit:hover {
+            background: #991b1b;
+        }
+        .btn-modal-submit:disabled {
+            background: #cbd5e1;
+            border-color: #cbd5e1;
+            cursor: not-allowed;
+            opacity: 1;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
     </style>
 @endsection
 
 @section('portal_content')
     <div class="section-header" style="justify-content: space-between;">
         <div class="header-title-container">
-            <h1 class="header-title">Hard Copy Subscriptions</h1>
+            <h1 class="header-title">Shipments</h1>
         </div>
     </div>
 
     <!-- Stats Row -->
     <div style="display: flex; gap: 24px; margin-bottom: 24px;">
         <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #0d9488;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Total Hard Copies</div>
+            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Total Shipments</div>
             <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-total">-</div>
         </div>
+        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #3b82f6;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Shipped</div>
+            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-shipped">-</div>
+        </div>
+        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #f59e0b;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">In transit</div>
+            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-intransit">-</div>
+        </div>
         <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #16a34a;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Active</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-active">-</div>
+            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Delivered</div>
+            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-delivered">-</div>
         </div>
         <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #ef4444;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Inactive</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-inactive">-</div>
+            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Delayed</div>
+            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-delayed">-</div>
         </div>
     </div>
 
@@ -48,7 +202,7 @@
     <div class="portal-card" style="padding: 0;">
         <div class="card-header-custom" style="display: flex; flex-direction: column; gap: 16px; padding: 20px 24px;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; width: 100%;">
-                <h2 class="card-title-custom" style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">Hard Copy List</h2>
+                <h2 class="card-title-custom" style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">Shipments List</h2>
                 <div style="position: relative;">
                     <i class="bi bi-search" style="position: absolute; left: 12px; top: 10px; color: #94a3b8; font-size: 14px;"></i>
                     <input type="text" class="form-input-style" id="search-hard-copies" placeholder="Search companies or addresses..." style="padding-left: 36px; width: 300px; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px;">
@@ -61,8 +215,13 @@
                     <span style="font-size: 12.5px; font-weight: 600; color: #475569;">Status</span>
                     <select class="form-input-style" id="filter-status" style="width: 150px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
                         <option value="all">All Statuses</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
+                        <option value="pending">Pending</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="in transit">In Transit</option>
+                        <option value="out for delivery">Out for Delivery</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="exception / delayed">Exception / Delayed</option>
+                        <option value="returned to sender">Returned to Sender</option>
                     </select>
                 </div>
                 <!-- Clear Filters Button -->
@@ -74,15 +233,18 @@
             </div>
         </div>
         <div class="card-body-custom">
-            <table class="portal-grid-table" id="hard-copies-table">
+            <table class="portal-grid-table" id="hard-copies-table" style="table-layout: fixed; width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 120px;">Status</th>
-                        <th style="width: 25%;">Company</th>
-                        <th style="width: 20%;">Contact</th>
-                        <th style="width: 30%;">Address</th>
-                        <th style="width: 25%;">Special Instructions</th>
-                        <th style="width: 90px; text-align: center;">Action</th>
+                        <th style="width: 100px; min-width: 100px; white-space: nowrap;">Status</th>
+                        <th style="width: 120px; min-width: 120px; white-space: nowrap;">Shipment NO#</th>
+                        <th style="width: 200px; min-width: 150px; white-space: nowrap;">Contact Name</th>
+                        <th style="width: 220px; min-width: 150px; white-space: nowrap;">Item Name</th>
+                        <th style="width: 100px; min-width: 100px; white-space: nowrap;">Carrier</th>
+                        <th style="width: 120px; min-width: 120px; white-space: nowrap;">Tracking NO#</th>
+                        <th style="width: 110px; min-width: 110px; white-space: nowrap;">Ship Date</th>
+                        <th style="width: 110px; min-width: 110px; white-space: nowrap;">Est. Delivery</th>
+                        <th style="width: 130px; min-width: 130px; text-align: center; white-space: nowrap;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -100,11 +262,322 @@
             </div>
         </div>
     </div>
+
+    <!-- Edit Shipment Modal (CTB Custom Modal) -->
+    <div id="editShipmentModal" class="ctb-modal">
+        <div class="ctb-modal-box">
+            <div class="ctb-modal-body">
+                <h3 class="ctb-modal-title" id="editShipmentModalLabel">Edit Shipment</h3>
+                <form id="edit-shipment-form" novalidate>
+                    <input type="hidden" id="edit-shipment-id">
+                    
+                    <div class="form-row">
+                        <div class="form-col" style="flex: 1;">
+                            <label class="form-label">Item Name</label>
+                            <input type="text" id="shipment-edit-item-name" class="form-input" maxlength="255" placeholder="e.g. California Target Book">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col" style="flex: 1;">
+                            <label class="form-label">Status</label>
+                            <select id="shipment-edit-status" class="form-select">
+                                <option value="Pending">Pending</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="In Transit">In Transit</option>
+                                <option value="Out for Delivery">Out for Delivery</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Exception / Delayed">Exception / Delayed</option>
+                                <option value="Returned to Sender">Returned to Sender</option>
+                            </select>
+                        </div>
+                        <div class="form-col" style="flex: 1;">
+                            <label class="form-label">Carrier</label>
+                            <input type="text" id="shipment-edit-carrier" class="form-input" maxlength="255" placeholder="e.g. FedEx, UPS">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col" style="flex: 1;">
+                            <label class="form-label">Tracking Number</label>
+                            <input type="text" id="shipment-edit-tracking" class="form-input" maxlength="255">
+                        </div>
+                        <div class="form-col" style="flex: 1;">
+                            <label class="form-label">Tracking URL</label>
+                            <input type="url" id="shipment-edit-tracking-url" class="form-input" maxlength="255" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col" style="flex: 1;">
+                            <label class="form-label">Ship Date</label>
+                            <input type="date" id="shipment-edit-ship-date" class="form-input">
+                        </div>
+                        <div class="form-col" style="flex: 1;">
+                            <label class="form-label">Delivery Estimate</label>
+                            <input type="date" id="shipment-edit-est-delivery" class="form-input">
+                        </div>
+                    </div>
+
+                    <div id="shipment-edit-error" class="modal-error" style="display: none; color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; padding: 10px; border-radius: 6px; margin-bottom: 16px; font-size: 13px;"></div>
+                    
+                    <div class="ctb-modal-footer">
+                        <button type="button" class="btn-modal-cancel" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn-modal-submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- View Shipment Modal -->
+    <div id="viewShipmentModal" class="ctb-modal">
+        <div class="ctb-modal-box">
+            <div class="ctb-modal-body">
+                <h3 class="ctb-modal-title">View Shipment Details</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Shipment Number</div>
+                        <div id="view-order-id" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Status</div>
+                        <div id="view-status" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px; text-transform: capitalize;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Carrier</div>
+                        <div id="view-carrier" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Tracking Number</div>
+                        <div id="view-tracking" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Ship Date</div>
+                        <div id="view-ship-date" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Estimated Delivery</div>
+                        <div id="view-est-delivery" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+
+                <h4 style="font-size: 14px; font-weight: 700; color: #0f172a; margin: 0 0 16px 0;">Address & Contact</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Contact Name</div>
+                        <div id="view-contact-name" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Company Name</div>
+                        <div id="view-company-name" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Item Name</div>
+                        <div id="view-item-name" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Shipping Address</div>
+                        <div id="view-address" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px; line-height: 1.5;">-</div>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Special Instructions</div>
+                        <div id="view-instructions" style="font-size: 14px; color: #0f172a; font-style: italic; margin-top: 4px;">-</div>
+                    </div>
+                </div>
+
+                <div class="ctb-modal-footer" style="margin-top: 24px;">
+                    <button type="button" class="btn-modal-cancel" onclick="closeViewModal()" style="background: #f1f5f9; color: #0f172a;">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="custom-toast" class="portal-toast" style="display: none;">
+        <h4 class="portal-toast-title" id="toast-title"></h4>
+        <p class="portal-toast-body" id="toast-body"></p>
+    </div>
 @endsection
 
 @section('portal_scripts')
     <script>
         $(document).ready(function () {
+            function showToast(title, body, isError = false) {
+                $('#toast-title').text(title).css('color', isError ? '#ef4444' : '#10b981');
+                $('#toast-body').text(body);
+                $('#custom-toast').stop(true, true).fadeIn(300).delay(4000).fadeOut(300);
+            }
+
+            window.openEditModal = function(id) {
+                $('#shipment-edit-error').hide().empty();
+                // Populate data (you can fetch from allHardCopies array)
+                const item = allHardCopies.find(x => x.id == id);
+                if (item) {
+                    $('#edit-shipment-id').val(item.id);
+                    $('#shipment-edit-item-name').val(item.item_name || '');
+                    $('#shipment-edit-status').val(item.status || 'Pending');
+                    $('#shipment-edit-carrier').val(item.carrier || '');
+                    $('#shipment-edit-tracking').val(item.tracking_id || '');
+                    $('#shipment-edit-tracking-url').val(item.tracking_url || '');
+                    $('#shipment-edit-ship-date').val(item.ship_date || '');
+                    $('#shipment-edit-est-delivery').val(item.estimated_delivery || '');
+                    
+                    const addr = item.address || {};
+                    $('#shipment-edit-line1').val(addr.line1 || '');
+                    $('#shipment-edit-line2').val(addr.line2 || '');
+                    $('#shipment-edit-city').val(addr.city || '');
+                    $('#shipment-edit-state').val(addr.state || 'CA');
+                    $('#shipment-edit-zip').val(addr.zip_code || '');
+                    $('#shipment-edit-instructions').val(addr.special_instructions || '');
+                }
+
+                // Show modal
+                $('#editShipmentModal').css('display', 'flex');
+            };
+
+            window.closeEditModal = function() {
+                $('#editShipmentModal').css('display', 'none');
+            };
+
+            window.openViewModal = function(id) {
+                const item = allHardCopies.find(x => x.id == id);
+                if (item) {
+                    const sub = item.subscription || {};
+                    const addr = item.address || {};
+                    const contactName = sub.baseAccount ? sub.baseAccount.name : 'Not Specified';
+                    const companyName = sub.company || 'Not Specified';
+
+                    $('#view-order-id').text('SH-' + item.id);
+                    $('#view-item-name').text(item.item_name || '');
+                    $('#view-status').text(item.status || 'Processing');
+                    $('#view-carrier').text(item.carrier || '-');
+                    
+                    let trackingHtml = '-';
+                    if (item.tracking_id) {
+                        trackingHtml = item.tracking_id;
+                        if (item.tracking_url) {
+                            trackingHtml = `<a href="${item.tracking_url}" target="_blank" style="color: #b91c1c; text-decoration: underline;">${item.tracking_id}</a>`;
+                        }
+                    }
+                    $('#view-tracking').html(trackingHtml);
+
+                    $('#view-ship-date').text(item.ship_date ? new Date(item.ship_date).toLocaleDateString() : '-');
+                    $('#view-est-delivery').text(item.estimated_delivery ? new Date(item.estimated_delivery).toLocaleDateString() : '-');
+
+                    $('#view-contact-name').text(contactName);
+                    $('#view-company-name').text(companyName);
+                    $('#view-address').html(formatAddress(addr).replace(/<br>/g, ', '));
+                    $('#view-instructions').text(addr.special_instructions || '-');
+                }
+                $('#viewShipmentModal').css('display', 'flex');
+            };
+
+            window.closeViewModal = function() {
+                $('#viewShipmentModal').css('display', 'none');
+            };
+
+            $('#edit-shipment-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const btn = $('#edit-shipment-form .btn-modal-submit');
+                const errDiv = $('#shipment-edit-error');
+                const id = $('#edit-shipment-id').val();
+                
+                if (!id) return;
+                
+                const item = allHardCopies.find(x => x.id == id);
+                if (!item) return;
+
+                const subId = item.subscription_id;
+                
+                const statusVal = $('#shipment-edit-status').val();
+                const carrierVal = $('#shipment-edit-carrier').val().trim();
+                const trackingVal = $('#shipment-edit-tracking').val().trim();
+                const shipDateVal = $('#shipment-edit-ship-date').val();
+                const estDeliveryVal = $('#shipment-edit-est-delivery').val();
+                
+                let validationErrors = [];
+
+                if (['Shipped', 'In Transit', 'Out for Delivery', 'Delivered'].includes(statusVal)) {
+                    if (!carrierVal) validationErrors.push('Carrier is required when status is ' + statusVal + '.');
+                    if (!trackingVal) validationErrors.push('Tracking Number is required when status is ' + statusVal + '.');
+                    if (!shipDateVal) validationErrors.push('Ship Date is required when status is ' + statusVal + '.');
+                }
+
+                if (shipDateVal && estDeliveryVal) {
+                    const shipTime = new Date(shipDateVal).getTime();
+                    const estTime = new Date(estDeliveryVal).getTime();
+                    if (estTime < shipTime) {
+                        validationErrors.push('Estimated Delivery date cannot be before the Ship Date.');
+                    }
+                }
+
+                const trackingUrlVal = $('#shipment-edit-tracking-url').val().trim();
+                if (trackingUrlVal) {
+                    const urlPattern = /^(https?:\/\/)?([\w\-]+(\.[\w\-]+)+)([\/\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+                    if (!urlPattern.test(trackingUrlVal)) {
+                        validationErrors.push('Please enter a valid Tracking URL (e.g. https://www.carrier.com/...).');
+                    }
+                }
+
+                if (validationErrors.length > 0) {
+                    errDiv.html(validationErrors.join('<br>')).show();
+                    return;
+                }
+
+                btn.prop('disabled', true).text('Saving...');
+                errDiv.hide();
+
+                const payload = {
+                    shipment: {
+                        item_name: $('#shipment-edit-item-name').val(),
+                        status: $('#shipment-edit-status').val(),
+                        carrier: $('#shipment-edit-carrier').val(),
+                        tracking_id: $('#shipment-edit-tracking').val(),
+                        tracking_url: $('#shipment-edit-tracking-url').val(),
+                        ship_date: $('#shipment-edit-ship-date').val() || null,
+                        estimated_delivery: $('#shipment-edit-est-delivery').val() || null
+                    }
+                };
+
+                $.ajax({
+                    url: `/api/subscriptions/${subId}/hard-copies/${id}`,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(payload),
+                    success: function(res) {
+                        btn.prop('disabled', false).text('Save');
+                        // Update local data
+                        const updated = res.data || res;
+                        const index = allHardCopies.findIndex(x => x.id == id);
+                        if (index !== -1) {
+                            allHardCopies[index] = { ...allHardCopies[index], ...updated };
+                        }
+                        
+                        closeEditModal();
+                        filterAndPaginate();
+                        showToast('Success', 'Shipment updated successfully.', false);
+                    },
+                    error: function(xhr) {
+                        btn.prop('disabled', false).text('Save');
+                        let msg = 'Failed to save changes. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        errDiv.text(msg).show();
+                        showToast('Error', msg, true);
+                    }
+                });
+            });
+
             const apiToken = "{{ Auth::user()->api_token }}";
             const $searchInput = $('#search-hard-copies');
             const $statusFilter = $('#filter-status');
@@ -134,12 +607,19 @@
 
             function updateStats(items) {
                 const total = items.length;
-                const active = items.filter(item => item.subscription && item.subscription.isActive).length;
-                const inactive = total - active;
+                const shipped = items.filter(item => (item.status || '').toLowerCase() === 'shipped').length;
+                const inTransit = items.filter(item => (item.status || '').toLowerCase() === 'in transit').length;
+                const delivered = items.filter(item => (item.status || '').toLowerCase() === 'delivered').length;
+                const delayed = items.filter(item => {
+                    const status = (item.status || '').toLowerCase();
+                    return status.includes('delay') || status.includes('exception');
+                }).length;
 
                 $('#stat-total').text(total);
-                $('#stat-active').text(active);
-                $('#stat-inactive').text(inactive);
+                $('#stat-shipped').text(shipped);
+                $('#stat-intransit').text(inTransit);
+                $('#stat-delivered').text(delivered);
+                $('#stat-delayed').text(delayed);
             }
 
             function filterAndPaginate() {
@@ -152,7 +632,7 @@
                     const addr = item.address || {};
                     
                     const company = (sub.company || '').toLowerCase();
-                    const status = sub.isActive ? 'active' : 'inactive';
+                    const itemStatus = (item.status || 'pending').toLowerCase();
                     const contactName = (sub.baseAccount ? sub.baseAccount.name : '').toLowerCase();
                     const specialInstructions = (addr.special_instructions || '').toLowerCase();
                     
@@ -162,7 +642,13 @@
                                           addrText.includes(searchVal) || 
                                           contactName.includes(searchVal) || 
                                           specialInstructions.includes(searchVal);
-                    const matchesStatus = statusVal === 'all' || status === statusVal;
+                    
+                    let matchesStatus = false;
+                    if (statusVal === 'all') {
+                        matchesStatus = true;
+                    } else {
+                        matchesStatus = itemStatus === statusVal;
+                    }
 
                     return matchesSearch && matchesStatus;
                 });
@@ -191,17 +677,27 @@
                         const contactName = sub.baseAccount ? sub.baseAccount.name : 'Not Specified';
                         const specialInstructions = addr.special_instructions || '';
                         
+                        const shipmentStatus = item.status ? (item.status.charAt(0).toUpperCase() + item.status.slice(1)) : 'Processing';
+
                         const rowHtml = `
                             <tr>
-                                <td><span class="status-pill-completed" style="${statusStyle}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
-                                <td class="fw-semibold" style="color: #0f172a !important;">${sub.company || 'Not Specified'}</td>
+                                <td><span class="status-pill-completed" style="${statusStyle}">${shipmentStatus}</span></td>
+                                <td class="fw-semibold" style="color: #0f172a !important;">SH-${item.id}</td>
                                 <td style="color: #0f172a !important; font-weight: 500;">${contactName}</td>
-                                <td style="color: #475569;">${formatAddress(addr)}</td>
-                                <td style="color: #64748b; font-style: italic; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${specialInstructions}">${specialInstructions}</td>
-                                <td style="text-align: center;">
-                                    <a href="/ctb-admin/new/subscriptions/${sub.id}" class="table-action-edit">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </a>
+                                <td style="color: #0f172a !important;">${item.item_name || ''}</td>
+                                <td style="color: #475569;">${item.carrier || '-'}</td>
+                                <td style="color: #475569;">${item.tracking_url ? `<a href="${item.tracking_url}" target="_blank" style="color: #2563eb; text-decoration: underline;">${item.tracking_id || 'Link'}</a>` : (item.tracking_id || '-')}</td>
+                                <td style="color: #475569;">${item.ship_date ? new Date(item.ship_date).toLocaleDateString() : '-'}</td>
+                                <td style="color: #475569;">${item.estimated_delivery ? new Date(item.estimated_delivery).toLocaleDateString() : '-'}</td>
+                                <td class="action-column-cell">
+                                    <div class="action-column-container">
+                                        <a href="javascript:void(0)" onclick="openViewModal(${item.id})" class="table-action-edit" title="View">
+                                            <i class="bi bi-eye" style="font-size: 16px;"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" onclick="openEditModal(${item.id})" class="table-action-edit" title="Edit">
+                                            <i class="bi bi-pencil" style="font-size: 16px;"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         `;

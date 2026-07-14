@@ -20,6 +20,12 @@ class BookSubscriptionCollection extends ResourceCollection
             return [
                 'id' => $bookSub->id,
                 'subscription_id' => $bookSub->subscription_id,
+                'carrier' => $bookSub->carrier,
+                'tracking_id' => $bookSub->tracking_id,
+                'ship_date' => $bookSub->ship_date,
+                'estimated_delivery' => $bookSub->estimated_delivery,
+                'status' => $bookSub->status,
+                'item_name' => $bookSub->item_name,
                 'address' => $bookSub->address()->first(),
                 'subscription' => new SubscriptionOverviewResource(Subscription::find($bookSub->subscription_id)),
             ];

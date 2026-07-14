@@ -590,6 +590,7 @@ class RegisterController extends Controller
             'deck_addresses.*.state' => 'required|string|max:255',
             'deck_addresses.*.zip_code' => 'required|string|max:255',
             'deck_addresses.*.special_instructions' => 'nullable|string|max:255',
+            'deck_title' => 'nullable|string|max:255',
         ]);
 
         $email = $validated['email'];
@@ -739,6 +740,7 @@ class RegisterController extends Controller
                 'subscription_id' => $subscriptionId,
                 'user_id' => $user->id,
                 'address_id' => $address->id,
+                'item_name' => $validated['deck_title'] ?? '-'
             ]);
         }
 

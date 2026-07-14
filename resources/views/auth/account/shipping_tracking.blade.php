@@ -18,72 +18,57 @@
                 <table class="portal-grid-table shipping-table-layout">
                     <thead>
                         <tr>
-                            <th class="portal-col-w-80">Order</th>
-                            <th class="portal-col-w-110">Order Date</th>
-                            <th class="portal-col-w-240">Company</th>
-                            <th class="portal-col-w-80">Carrier</th>
-                            <th class="portal-col-w-150">Tracking</th>
+                            <th class="portal-col-w-120">Status</th>
+                            <th class="portal-col-w-120">Shipment NO#</th>
+                            <th class="portal-col-w-240">Contact Name</th>
+                            <th class="portal-col-w-240">Item Name</th>
+                            <th class="portal-col-w-120">Carrier</th>
+                            <th class="portal-col-w-120">Tracking NO#</th>
+                            <th class="portal-col-w-120">Ship Date</th>
                             <th class="portal-col-w-120">Est. Delivery</th>
-                            <th class="portal-col-w-120"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="portal-col-w-80 portal-word-break-all"><a href="javascript:void(0)">TB-2026-001</a></td>
-                            <td>Apr 1, 2026</td>
-                            <td class="fw-semibold">California Target Book 2026...</td>
-                            <td>UPS</td>
-                            <td><a href="https://www.ups.com/track?tracknum=1Z999AA10123011234" target="_blank" class="tracking-link">1Z999AA10123...</a></td>
-                            <td>Apr 15, 2026</td>
-                            <td>
-                                <span class="portal-status-container portal-status-in-transit">
-                                    <span class="portal-status-dot"></span>
-                                    In Transit
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="portal-col-w-80 portal-word-break-all"><a href="javascript:void(0)">TB-2025-003</a></td>
-                            <td>Mar 15, 2025</td>
-                            <td class="fw-semibold">CTB District Map Supple...</td>
-                            <td>UPS</td>
-                            <td><a href="https://www.ups.com/track?tracknum=1Z999AA10124021234" target="_blank" class="tracking-link">1Z999AA10124...</a></td>
-                            <td>Mar 20, 2025</td>
-                            <td>
-                                <span class="portal-status-container portal-status-delivered">
-                                    <span class="portal-status-dot"></span>
-                                    Delivered
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="portal-col-w-80 portal-word-break-all"><a href="javascript:void(0)">TB-2025-001</a></td>
-                            <td>Jan 10, 2025</td>
-                            <td class="fw-semibold">California Target Book 2025...</td>
-                            <td>FedEx</td>
-                            <td><a href="https://www.fedex.com/apps/fedextrack/?tracknumbers=773210987654321" target="_blank" class="tracking-link">773210987654...</a></td>
-                            <td>Jan 20, 2025</td>
-                            <td>
-                                <span class="portal-status-container portal-status-delivered">
-                                    <span class="portal-status-dot"></span>
-                                    Delivered
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="portal-col-w-80 portal-word-break-all"><a href="javascript:void(0)">TB-2024-002</a></td>
-                            <td>Apr 10, 2024</td>
-                            <td class="fw-semibold">California Target Book 2024...</td>
-                            <td>&nbsp;</td>
-                            <td>Pending</td>
-                            <td>Apr 25, 2024</td>
-                            <td>
-                                <span class="portal-status-container portal-status-processing">
-                                    <span class="portal-status-dot"></span>
-                                    Processing
-                                </span>
-                            </td>
-                        </tr>
+                        @if(isset($sub['books']) && count($sub['books']) > 0)
+                            @foreach($sub['books'] as $book)
+                                @php
+                                    $status = strtolower($book->status ?? 'processing');
+                                    $statusClass = 'portal-status-processing';
+                                    if ($status === 'delivered') $statusClass = 'portal-status-delivered';
+                                    elseif ($status === 'in transit' || $status === 'shipped') $statusClass = 'portal-status-in-transit';
+                                    elseif ($status === 'exception / delayed') $statusClass = 'portal-status-processing'; 
+                                @endphp
+                                <tr>
+                                    <td>
+                                        <span class="portal-status-container {{ $statusClass }}">
+                                            <span class="portal-status-dot"></span>
+                                            {{ ucfirst($book->status ?? 'Processing') }}
+                                        </span>
+                                    </td>
+                                    <td class="portal-col-w-80 portal-word-break-all">SH-{{ $book->id }}</td>
+                                    <td class="fw-semibold">{{ isset($sub['base_account']) && $sub['base_account'] ? $sub['base_account']->name() : 'Not Specified' }}</td>
+                                    <td class="fw-semibold">{{ $book->item_name ?? '-' }}</td>
+                                    <td>{{ $book->carrier ?? '-' }}</td>
+                                    <td>
+                                        @if($book->tracking_url)
+                                            <a href="{{ $book->tracking_url }}" target="_blank" class="tracking-link">{{ \Illuminate\Support\Str::limit($book->tracking_id, 15) }}</a>
+                                        @elseif($book->tracking_id)
+                                            {{ $book->tracking_id }}
+                                        @else
+                                            Pending
+                                        @endif
+                                    </td>
+                                    <td>{{ $book->ship_date ? \Carbon\Carbon::parse($book->ship_date)->format('M j, Y') : '-' }}</td>
+                                    <td>{{ $book->estimated_delivery ? \Carbon\Carbon::parse($book->estimated_delivery)->format('M j, Y') : '-' }}</td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 32px; color: #64748b;">
+                                    No shipments found.
+                                </td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>

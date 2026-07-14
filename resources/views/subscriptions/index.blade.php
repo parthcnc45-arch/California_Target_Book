@@ -73,11 +73,15 @@
                     </li>
                     <li class="feature-item">
                         <i class="bi bi-check-circle-fill"></i>
-                        <span>1st to see email alerts included</span>
+                        <span>Hot Sheets email alerts included</span>
                     </li>
                     <li class="feature-item">
                         <i class="bi bi-check-circle-fill"></i>
-                        <span>Optional printed book editions</span>
+                        <span>3 printed book editions</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>One book per mailing, three mailings per year</span>
                     </li>
                 </ul>
                 <div class="plan-action">
@@ -110,11 +114,15 @@
                     </li>
                     <li class="feature-item">
                         <i class="bi bi-check-circle-fill"></i>
-                        <span>1st to see email alerts included</span>
+                        <span>Hot Sheets email alerts included</span>
                     </li>
                     <li class="feature-item">
                         <i class="bi bi-check-circle-fill"></i>
-                        <span>Locked in rate for 2 years</span>
+                        <span>6 printed book editions over 2 years</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>One book per mailing, three mailings per year</span>
                     </li>
                 </ul>
                 <div class="plan-action">

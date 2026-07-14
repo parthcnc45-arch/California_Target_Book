@@ -13,9 +13,6 @@
                 <a href="{{ route('auth.account.subscriptions.add') }}" class="btn-add-subscription">
                     <i class="bi bi-plus-lg"></i> Add Subscription
                 </a>
-                <a href="{{ route('auth.account.subscriptions.add') }}" class="btn-add-subscription">
-                    <i class="bi bi-plus-lg"></i> Add add-ons
-                </a>
             </div>
         </header>
 

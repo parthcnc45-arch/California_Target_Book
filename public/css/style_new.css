@@ -10,9 +10,9 @@
   --navy-btn: #1c3a63;
   --blue-grad-start: #1e56d6;
   --blue-grad-end: #0a2f7a;
-  --red-600: #c85a54;
-  --red-700: #b34842;
-  --red-800: #9c3b36;
+  --red-600: #d8454a;
+  --red-700: #c52026;
+  --red-800: #a91b21;
   --grey-100: #f4f4f4;
   --grey-150: #eeeeee;
   --grey-200: #e4e4e4;
@@ -1117,11 +1117,6 @@ body.landing-body footer.footer-ctb .footer-col {
 /* =========================================================
    SUBSCRIPTIONS PAGE STYLES (from index.blade.php)
    ========================================================= */
-.navbar-ctb {
-  background: rgba(16, 28, 51, 0.98) !important;
-  position: sticky !important;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
-}
 
 .sub-hero {
   padding: 80px 0 100px;

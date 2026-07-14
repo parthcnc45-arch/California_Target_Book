@@ -121,15 +121,6 @@
         </div>
 
         <form id="payment-form">
-            <h3 class="section-title checkout-mt32">Have a Coupon?</h3>
-            <p class="section-subtitle">If you have a coupon, for the California Target Book, apply it here.</p>
-            <div class="coupon-row">
-                <div class="coupon-input-wrapper">
-                    <input type="text" name="coupon" class="coupon-input" placeholder="">
-                </div>
-                <button type="button" class="btn-coupon-apply">Apply</button>
-            </div>
-
             <h3 class="section-title checkout-mt40">Account Information</h3>
 
             <div class="form-row">

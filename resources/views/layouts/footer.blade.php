@@ -36,7 +36,6 @@
             <li><a href="/">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="/subscriptions">Subscribe</a></li>
-            <li><a href="#subscribe">Newsletter</a></li>
             @guest
               <li><a href="/login">Sign In</a></li>
             @else

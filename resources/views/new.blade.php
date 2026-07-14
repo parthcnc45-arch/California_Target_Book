@@ -127,7 +127,7 @@
         <div class="hardcopy-text">
           <div class="hardcopy-head">
             <h2>Hard Copy<br>Edition</h2>
-            <a href="#" class="btn-ctb btn-navy">Buy Now</a>
+            <a href="/subscriptions/book-only" class="btn-ctb btn-navy">Buy Now</a>
           </div>
           <p>Many readers supplement their online subscriptions by choosing to receive the hard
             copy edition of the California Target Book, a handy abridged version of the

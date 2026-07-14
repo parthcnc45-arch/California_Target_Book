@@ -11,122 +11,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="/css/portal_custom.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('css/style_new.css') }}">
-<style>
-    .package-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-bottom: 32px;
-    }
-    .package-card {
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 24px;
-        cursor: pointer;
-        transition: all 0.2s;
-        background: #ffffff;
-        position: relative;
-    }
-    .package-card:hover {
-        border-color: #cbd5e1;
-        background: #f8fafc;
-    }
-    .package-card.selected {
-        border-color: var(--primary-red);
-        background: #fffafa;
-        box-shadow: 0 4px 12px rgba(218, 41, 28, 0.08);
-    }
-    .package-card input[type="radio"] {
-        display: none;
-    }
-    .package-price {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--navy-900);
-        margin-bottom: 12px;
-    }
-    .package-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 8px;
-    }
-    .package-desc {
-        font-size: 14px;
-        color: #64748b;
-        line-height: 1.5;
-    }
-    .package-check {
-        position: absolute;
-        top: 24px;
-        right: 24px;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        border: 2px solid #cbd5e1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .package-card.selected .package-check {
-        background: var(--primary-red);
-        border-color: var(--primary-red);
-    }
-    .package-card.selected .package-check::after {
-        content: '';
-        width: 10px;
-        height: 10px;
-        background: white;
-        border-radius: 50%;
-    }
-    
-    .qty-section {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 32px;
-        padding: 16px 24px;
-        background: #f8fafc;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-    }
-    .qty-section-label {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--navy-900);
-    }
-    
-    /* Scrollable Container for Shipping Addresses */
-    .scrollable-addresses {
-        max-height: 450px;
-        overflow-y: auto;
-        padding-right: 16px;
-        margin-bottom: 24px;
-        border-radius: 8px;
-    }
-    
-    /* Custom Scrollbar for the addresses container */
-    .scrollable-addresses::-webkit-scrollbar {
-        width: 8px;
-    }
-    .scrollable-addresses::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 4px;
-    }
-    .scrollable-addresses::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-    }
-    .scrollable-addresses::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
-    
-    @media (max-width: 768px) {
-        .package-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
+
 @endsection
 
 @section('content')
@@ -231,12 +116,6 @@
                 </div>
             </div>
             @endguest
-
-            <!-- <div class="checkbox-group checkout-mt16">
-                <input type="checkbox" id="same-shipping" checked>
-                <label for="same-shipping">Shipping address is the same as billing</label>
-            </div> -->
-
             <div id="shipping-address-block" class="shipping-address-block">
                 <div id="shipping-addresses-container"></div>
             </div>

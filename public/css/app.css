@@ -1,6 +1,4 @@
 @import url(https://fonts.googleapis.com/css?family=Bellefair|Nunito+Sans:300,400,700);
-@
-
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 html {
     -ms-text-size-adjust: 100%;
@@ -5883,8 +5881,6 @@ a.tablesaw-btn {
     pointer-events: none
 }
 
-@charset "UTF-8";
-
 table.dataTable td.dt-control {
     cursor: pointer;
     text-align: center
@@ -6607,8 +6603,6 @@ table.dataTable th {
         margin-top: .5em
     }
 }
-
-@charset "UTF-8";
 
 /*!
  * Bootstrap v3.4.1 (https://getbootstrap.com/)
@@ -15507,7 +15501,6 @@ span {
 a {
     color: #3e51b5;
     cursor: pointer;
-    font-style: italic;
     text-decoration: underline;
     transition: color 50ms ease 0s
 }

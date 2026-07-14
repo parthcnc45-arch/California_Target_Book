@@ -44,19 +44,6 @@
             @endguest
           </ul>
         </div>
-        <div class="footer-nav-group">
-          <h5 class="footer-col-title">Book</h5>
-          <ul class="footer-links">
-            <li><a href="{{ route('book') }}#districts">Districts</a></li>
-            <li><a href="{{ route('book') }}#candidates">Candidates</a></li>
-            <li><a href="{{ route('book') }}#census-data">Census Data</a></li>
-            <li><a href="{{ route('book') }}#elections">Elections</a></li>
-            <li><a href="{{ route('book.hotsheet') }}">Hotsheets</a></li>
-            <li><a href="{{ route('book') }}#propositions">Propositions</a></li>
-            <li><a href="{{ route('book') }}#finance">Finance</a></li>
-            <li><a href="{{ route('book') }}#maps">Maps</a></li>
-          </ul>
-        </div>
       </div>
 
       <div class="footer-col footer-contact">

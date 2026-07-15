@@ -107,7 +107,7 @@
         <div class="online-image">
           <div class="laptop-mock">
             <div class="laptop-screen">
-              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=900&auto=format&fit=crop"
+              <img src="/landing_page_img/sdfsdfsdf-1-1.jpg.webp"
                 alt="Online edition dashboard preview">
             </div>
             <div class="laptop-base"></div>
@@ -151,7 +151,7 @@
 
         <div class="service-card">
           <div class="img-wrap">
-            <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=700&auto=format&fit=crop"
+            <img src="/landing_page_img/NEW-AD04-_-California-Target-Book-1.png.webp"
               alt="Legislative Districts map">
           </div>
           <div class="card-body">
@@ -165,7 +165,7 @@
 
         <div class="service-card">
           <div class="img-wrap">
-            <img src="https://images.unsplash.com/photo-1591189863430-ab87e120f312?q=80&w=700&auto=format&fit=crop"
+            <img src="/landing_page_img/admin-work-voting-station_236854-40896-1.jpg.webp"
               alt="Ballot Initiatives voting">
           </div>
           <div class="card-body">
@@ -177,7 +177,7 @@
 
         <div class="service-card">
           <div class="img-wrap">
-            <img src="https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?q=80&w=700&auto=format&fit=crop"
+            <img src="/landing_page_img/exchange-in-manhattan-finance-distr-LKSLMNJ-1.jpg.webp"
               alt="Election Information building">
           </div>
           <div class="card-body">
@@ -190,7 +190,7 @@
 
         <div class="service-card">
           <div class="img-wrap">
-            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=700&auto=format&fit=crop"
+            <img src="/landing_page_img/FPPC-2021-Lobbying-Totals-_-California-Target-Book-1.png.webp"
               alt="Data and Analysis charts">
           </div>
           <div class="card-body">
@@ -204,7 +204,7 @@
 
         <div class="service-card">
           <div class="img-wrap">
-            <img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&w=700&auto=format&fit=crop"
+            <img src="/landing_page_img/2024-Candidate-Directory-_-California-Target-Book-1-1.png.webp"
               alt="News listings">
           </div>
           <div class="card-body">
@@ -217,7 +217,7 @@
 
         <div class="service-card">
           <div class="img-wrap">
-            <img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&w=700&auto=format&fit=crop"
+            <img src="/landing_page_img/Fwd_-HOT-SHEET-WEDNESDAY-CANDIDATE-UPDATE-juanpablodevis@gmail.com-Gmail-2-1.png.webp"
               alt="Hot Sheets news update">
           </div>
           <div class="card-body">
@@ -239,7 +239,7 @@
       <h2 class="new-section-title">Testimonial quotes</h2>
       <div class="testimonial-card">
         <div class="avatar">
-          <img src="https://i.pravatar.cc/120?img=52" alt="Dan Morain">
+          <img src="/img/ctb_logo.png" alt="Dan Morain">
         </div>
         <div>
           <p>There's a reason why the California Target Book is flourishing more than 30 years
@@ -261,7 +261,176 @@
       <p class="board-sub">Our team offers an extensive, balanced knowledge of California politics.</p>
 
       <div class="board-grid" id="boardGrid">
-        <!-- Cards injected by script.js -->
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/sdfsdfsdf-4.jpg.webp" alt="Marva Diaz">
+          </div>
+          <div class="staff-info">
+            <h4>Marva Diaz</h4>
+            <span class="role">Publisher</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/sdfsdfsd-4.jpg.webp" alt="Darry Sragow">
+          </div>
+          <div class="staff-info">
+            <h4>Darry Sragow</h4>
+            <span class="role">Publisher Emeritus</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/sdfsfsdfsd.jpg.webp" alt="Rob Pyers">
+          </div>
+          <div class="staff-info">
+            <h4>Rob Pyers</h4>
+            <span class="role">Research Director</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/sdfsdfsd-3.jpg.webp" alt="Marty Wilson">
+          </div>
+          <div class="staff-info">
+            <h4>Marty Wilson</h4>
+            <span class="role">Senior Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/tony2.jpg.webp" alt="Tony Quinn">
+          </div>
+          <div class="staff-info">
+            <h4>Tony Quinn</h4>
+            <span class="role">Ph.D., Senior Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/1.jpg.webp" alt="Andrew Acosta">
+          </div>
+          <div class="staff-info">
+            <h4>Andrew Acosta</h4>
+            <span class="role">Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/3.jpg.webp" alt="Robb Korinke">
+          </div>
+          <div class="staff-info">
+            <h4>Robb Korinke</h4>
+            <span class="role">Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/7.jpg.webp" alt="Carla Marinucci">
+          </div>
+          <div class="staff-info">
+            <h4>Carla Marinucci</h4>
+            <span class="role">Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/4.jpg.webp" alt="Susan Mcentire">
+          </div>
+          <div class="staff-info">
+            <h4>Susan Mcentire</h4>
+            <span class="role">Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/6.jpg.webp" alt="Evan Mclaughlin">
+          </div>
+          <div class="staff-info">
+            <h4>Evan Mclaughlin</h4>
+            <span class="role">Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/CTB-Headshots.jpg.webp" alt="Dan Morain">
+          </div>
+          <div class="staff-info">
+            <h4>Dan Morain</h4>
+            <span class="role">Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/2.jpg.webp" alt="Stephanie Roberson">
+          </div>
+          <div class="staff-info">
+            <h4>Stephanie Roberson</h4>
+            <span class="role">Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/5.jpg.webp" alt="Rob Stutzman">
+          </div>
+          <div class="staff-info">
+            <h4>Rob Stutzman</h4>
+            <span class="role">Editor</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/sdfsdfsdf-5.jpg.webp" alt="Roxanne Connelly">
+          </div>
+          <div class="staff-info">
+            <h4>Roxanne Connelly</h4>
+            <span class="role">Administrative Director</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/Jelena-correct-size-pic.jpg.webp" alt="Jelena Herrera">
+          </div>
+          <div class="staff-info">
+            <h4>Jelena Herrera</h4>
+            <span class="role">Communications Director</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/sdfsdsdfsd.jpg.webp" alt="Allan Hoffenblum">
+          </div>
+          <div class="staff-info">
+            <h4>Allan Hoffenblum</h4>
+            <span class="role">(1940-2015)</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-photo">
+            <img src="/staff_img/sdfdfsfsd.jpg.webp" alt="Al Pross">
+          </div>
+          <div class="staff-info">
+            <h4>Al Pross</h4>
+            <span class="role">(1942-2019)</span>
+            <a href="#" class="btn-see-more">See more</a>
+          </div>
+        </div>
       </div>
     </div>
   </section>

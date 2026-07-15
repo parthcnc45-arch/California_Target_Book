@@ -506,11 +506,10 @@ a[class*="btn"]:hover, button:hover, input[type="submit"]:hover, input[type="but
 
 .new-section-title {
   text-align: center;
-  font-size: 30px;
+  font-size: 47px;
+  font-weight: 500;
   letter-spacing: 1px;
-  color: var(--navy-900);
   margin-bottom: 55px;
-  text-transform: uppercase;
 }
 
 .services-grid {
@@ -587,7 +586,6 @@ a[class*="btn"]:hover, button:hover, input[type="submit"]:hover, input[type="but
   height: 60px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid var(--red-700);
 }
 
 .testimonial-card .avatar img {
@@ -613,32 +611,32 @@ a[class*="btn"]:hover, button:hover, input[type="submit"]:hover, input[type="but
    EDITORIAL BOARD
    ========================================================= */
 .section-board {
-  padding: 95px 0 100px;
+  padding: 27px;
   background: #fff;
 }
 
 .board-sub {
   text-align: center;
-  font-size: 14.5px;
-  color: var(--text-body);
+  font-size: 17px;
+  font-weight: 400;
   margin-top: -38px;
   margin-bottom: 50px;
 }
 
 .board-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 26px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
 .staff-card {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   background: #fff;
   border: 1px solid var(--grey-200);
-  border-radius: var(--radius-md);
-  padding: 16px 18px;
+  border-radius: 12px;
+  padding: 12px 14px;
   box-shadow: var(--shadow-card-sm);
 }
 

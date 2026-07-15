@@ -32,7 +32,7 @@
           </p>
         </div>
         <div class="sub-image-wrapper">
-          <img src="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/COMPUTER-LAPTOP.png.webp" class="sub-laptop-img" alt="California Target Book Portal Mockup">
+          <img src="/subscriptions_page_img/COMPUTER-LAPTOP.png.webp" class="sub-laptop-img" alt="California Target Book Portal Mockup">
         </div>
       </div>
     </div>
@@ -152,7 +152,7 @@
     <div class="container-ctb">
       <div class="feat-grid">
         <div class="feat-img">
-          <img src="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/Large-screen-with-a-gaming-gear_42502910-9799-422a-8571-7b399a7ca173-removebg-preview.png.webp" alt="California Legislative Districts">
+          <img src="/subscriptions_page_img/Large-screen-with-a-gaming-gear_42502910-9799-422a-8571-7b399a7ca173-removebg-preview.png.webp" alt="California Legislative Districts">
         </div>
         <div class="feat-text">
           <h2>California Legislative Districts</h2>
@@ -175,7 +175,7 @@
           </p>
         </div>
         <div class="feat-img">
-          <img src="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/Smart-TV-mounted-on-the-white-wall-in-the-conference-room_Slide_Citysdsd.jpg.webp" alt="County Government Information">
+          <img src="/subscriptions_page_img/Smart-TV-mounted-on-the-white-wall-in-the-conference-room_Slide_Citysdsd.jpg.webp" alt="County Government Information">
         </div>
       </div>
     </div>
@@ -186,7 +186,7 @@
     <div class="container-ctb">
       <div class="feat-grid">
         <div class="feat-img">
-          <img src="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/Samsung-Galaxy-Tab-S7_ctb-tablet1234.png.webp" alt="Ballot Initiatives">
+          <img src="/subscriptions_page_img/Samsung-Galaxy-Tab-S7_ctb-tablet1234.png.webp" alt="Ballot Initiatives">
         </div>
         <div class="feat-text">
           <h2>Ballot Initiatives</h2>
@@ -209,7 +209,7 @@
           </p>
         </div>
         <div class="feat-img">
-          <img src="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/TABLE-3.png.webp" alt="Campaign Finance Reports">
+          <img src="/subscriptions_page_img/TABLE-3.png.webp" alt="Campaign Finance Reports">
         </div>
       </div>
     </div>
@@ -220,7 +220,7 @@
     <div class="container-ctb">
       <div class="feat-grid">
         <div class="feat-img">
-          <img src="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/Samsung-Galaxy-Tab-S7_ctb-tablet1-CHANGED.png.webp" alt="Candidate Directory">
+          <img src="/subscriptions_page_img/Samsung-Galaxy-Tab-S7_ctb-tablet1-CHANGED.png.webp" alt="Candidate Directory">
         </div>
         <div class="feat-text">
           <h2>Candidate Directory</h2>
@@ -246,7 +246,7 @@
           </p>
         </div>
         <div class="feat-img">
-          <img src="https://ctb.epicenterconsulting.net/wp-content/smush-webp/2023/04/TABLET-2.png.webp" alt="Hot Sheet Newsletter">
+          <img src="/subscriptions_page_img/TABLET-2.png.webp" alt="Hot Sheet Newsletter">
         </div>
       </div>
     </div>

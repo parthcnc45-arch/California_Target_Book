@@ -105,8 +105,11 @@ class User extends Authenticatable
 
     public function activeSubscription() {
         return $this->subscriptions()
+            ->orderBy('id', 'desc')
             ->get()
-            ->first();
+            ->first(function ($sub) {
+                return $sub->isActive();
+            });
     }
 
     public function settings() {
@@ -119,6 +122,7 @@ class User extends Authenticatable
     // Get active or pending subscription
     public function latestSubscription() {
         return $this->subscriptions()
+            ->orderBy('id', 'desc')
             ->get()
             ->first(function ($sub) {
                 return $sub->isActive() || $sub->isPending();

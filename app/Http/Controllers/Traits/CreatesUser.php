@@ -388,10 +388,11 @@ trait CreatesUser {
 
     $addresses = collect(array_merge($bookAddresses, $deckAddresses));
 
-    $book_subs = $addresses->map(function ($addr) use ($subscription) {
+    $book_subs = $addresses->map(function ($addr) use ($subscription, $baseUser) {
         $address = Address::create($addr);
         $book_sub = $subscription->book_subscriptions()
         ->create([ 
+            'user_id' => $baseUser->id,
             'address_id' => $address->id,
             'item_name' => $addr['item_name'] ?? '-' 
         ]);

@@ -267,6 +267,7 @@ class AccountController extends Controller
 
                         \App\BookSubscription::create([
                             'subscription_id' => $sub->id,
+                            'user_id' => $user->id,
                             'address_id' => $address->id,
                             'item_name' => $request->input('addon_name')
                         ]);
@@ -383,12 +384,27 @@ class AccountController extends Controller
 
                         // If we still don't have a descriptive product name or it defaults to "Subscription creation"
                         if (empty($description) || $description === 'Subscription creation') {
+                            $isTwoYear = ($charge->amount >= 220000);
+                            
+                            // Check if we can infer from the global stripe product name if available
+                            if (!empty($data['stripe_product_name'])) {
+                                if (stripos($data['stripe_product_name'], 'Two-Year') !== false) {
+                                    $isTwoYear = true;
+                                } elseif (stripos($data['stripe_product_name'], 'One-Year') !== false) {
+                                    $isTwoYear = false;
+                                }
+                            }
+                            
+                            $plan = $isTwoYear ? 'Two-Year' : 'One-Year';
+                            $period = $isTwoYear ? '2 years' : 'year';
+
                             if ($charge->amount === 220000) {
                                 $description = '1 × CTB Online Two-Year Subscription (Online Access Only) (at $2,200.00 / 2 years)';
-                                $plan = 'Two-Year';
-                            } else {
+                            } elseif ($charge->amount === 120000) {
                                 $description = '1 × CTB Online One-Year Subscription (Online Access Only) (at $1,200.00 / year)';
-                                $plan = 'One-Year';
+                            } else {
+                                $amtStr = number_format($charge->amount / 100, 2);
+                                $description = "1 × CTB Online {$plan} Subscription (Custom Plan) (at \${$amtStr} / {$period})";
                             }
                         }
                         
@@ -396,8 +412,10 @@ class AccountController extends Controller
                         if (empty($invoiceUrl) && !empty($invoiceId)) {
                             $invoiceUrl = route('auth.account.invoice', ['invoice_id' => $invoiceId]);
                         }
-                    } else {
+                    }
 
+                    if (empty($invoiceUrl) && !empty($charge->receipt_url)) {
+                        $invoiceUrl = $charge->receipt_url;
                     }
 
                     $transactions->push((object)[
@@ -751,10 +769,13 @@ class AccountController extends Controller
         // Add new
         $book_cost = Globals::getBookSubscriptionPrice($sub->frequency);
         $new_book_subs = collect($data['book_addresses'])
-            ->map(function ($addr) use (&$sub) {
+            ->map(function ($addr) use (&$sub, &$user) {
                 $address = Address::create($addr);
                 $book_sub = $sub->book_subscriptions()
-                    ->create([ 'address_id' => $address->id ]);
+                    ->create([
+                        'user_id' => $user->id,
+                        'address_id' => $address->id 
+                    ]);
                 $book_sub->address = $address;
                 return $book_sub;
             });

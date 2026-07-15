@@ -136,6 +136,7 @@ class ImportSpreadsheet extends Command
 
             $book_sub = $subscription->book_subscriptions()
                 ->create([
+                    'user_id' => $u->id,
                     'address_line1' => $subscriber->address_line1,
                     'city' => $subscriber->city,
                     'zip_code' => $subscriber->zip_code,

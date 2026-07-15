@@ -10,18 +10,13 @@
       @if (Auth::check() && Auth::user()->hasActiveSubscription())
         <li><a href="/book">Book</a></li>
       @endif
+      <li><a href="#contact">Contact</a></li>
       @guest
         <li><a href="/login">Sign In</a></li>
       @else
         <li><a href="/account">My account</a></li>
-        @if (Auth::user()->isAdmin())
-          <li><a href="/ctb-admin">Admin</a></li>
-        @endif
-      @endguest
-      <li><a href="#contact">Contact</a></li>
-      @auth
         <li><a href="/logout">Logout</a></li>
-      @endauth
+      @endguest
     </ul>
 
     <div class="nav-right">

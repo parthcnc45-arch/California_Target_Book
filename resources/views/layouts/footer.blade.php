@@ -60,9 +60,8 @@
 
     </div>
 
-    <div class="footer-bottom">
+    <div class="footer-bottom" style="justify-content: center; text-align: center;">
       <p>&copy; {{ date('Y') }} California Target Book. All Rights Reserved.</p>
-      <a href="/copyright">Copyright</a>
     </div>
   </div>
 </footer>

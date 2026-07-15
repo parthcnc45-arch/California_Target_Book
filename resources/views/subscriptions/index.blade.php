@@ -53,7 +53,6 @@
             <div class="plan-card">
                 <div class="plan-header">
                     <h3 class="plan-title">One-Year Subscription</h3>
-                    <p class="plan-duration">Choose Online Only or Online & Print on the next step.</p>
                 </div>
                 
                 <div class="plan-price-section">
@@ -94,7 +93,6 @@
                 <div class="plan-header">
                     <span class="plan-tag best-value">Best Value</span>
                     <h3 class="plan-title">Two-Year Subscription</h3>
-                    <p class="plan-duration">Choose Online Only or Online & Print on the next step.</p>
                 </div>
                 
                 <div class="plan-price-section">

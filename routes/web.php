@@ -879,6 +879,29 @@ Route::group(['prefix' => 'ctb-legacy'], function() {
 });
 
 
+Route::get('/classifieds', function() {
+    $today = date('Y-m-d');
+    $classifieds = \App\Classified::with('rateOption')->where('status', 'Active')
+        ->where('starts_on', '<=', $today)
+        ->where('ends_on', '>=', $today)
+        ->orderBy('created_at', 'desc')
+        ->get();
+        
+    // $rates = \App\ClassifiedRate::whereIn('id', [1, 2])->orderBy('id', 'asc')->get();
+    $rates = \App\ClassifiedRate::orderBy('id', 'asc')->get();
+        
+    return view('classifieds.index', compact('classifieds', 'rates'));
+})->name('classifieds.index');
+
+Route::get('/ctb-admin/new/classifieds', function() { 
+    $user = auth()->user();
+    if (!$user) return redirect('/login');
+    if (!$user->isAdmin()) return abort(403);
+    $sub = ['status' => '', 'role' => ''];
+    $pending_bank = null;
+    $invoice = null;
+    return view('admin.admin-settings.classifieds', compact('user', 'sub', 'pending_bank', 'invoice')); 
+});
 Route::get('/ctb-admin/new/subscriptions', function() { 
     $user = auth()->user();
     if (!$user) return redirect('/login');

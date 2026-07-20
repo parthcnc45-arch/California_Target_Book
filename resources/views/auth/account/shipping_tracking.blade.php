@@ -1,4 +1,31 @@
 @extends('layouts.portal')
+
+@section('portal_styles')
+    <style>
+        .portal-status-container {
+            margin: 0;
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+        .portal-status-delivered {
+            background-color: #e6f4ea !important;
+            color: #137333 !important;
+        }
+        .portal-status-in-transit {
+            background-color: #fff3e0 !important;
+            color: #e65100 !important;
+        }
+        .portal-status-processing {
+            background-color: #f1f5f9 !important;
+            color: #475569 !important;
+        }
+    </style>
+@endsection
+
 @section('portal_content')
     <section id="section-shipping-tracking" class="portal-section active">
         <header class="section-header">
@@ -41,7 +68,6 @@
                                 <tr>
                                     <td>
                                         <span class="portal-status-container {{ $statusClass }}">
-                                            <span class="portal-status-dot"></span>
                                             {{ ucfirst($book->status ?? 'Processing') }}
                                         </span>
                                     </td>
@@ -55,7 +81,7 @@
                                         @elseif($book->tracking_id)
                                             {{ $book->tracking_id }}
                                         @else
-                                            Pending
+                                            -
                                         @endif
                                     </td>
                                     <td>{{ $book->ship_date ? \Carbon\Carbon::parse($book->ship_date)->format('M j, Y') : '-' }}</td>

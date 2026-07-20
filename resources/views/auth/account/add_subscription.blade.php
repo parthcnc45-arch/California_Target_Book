@@ -55,11 +55,11 @@
                     <div class="addons-list">
                         <div class="addon-item">
                             <span>Additional Online User</span>
-                            <span>$100/ea</span>
+                            <span>$100/year</span>
                         </div>
                         <div class="addon-item">
                             <span>Post-Election Deck Only (Subscriber)</span>
-                            <span>$300</span>
+                            <span>$1000</span>
                         </div>
                         <div class="addon-item">
                             <span>Post-Election Deck + Presentation (Subscriber)</span>
@@ -111,11 +111,11 @@
                     <div class="addons-list">
                         <div class="addon-item">
                             <span>Additional Online User</span>
-                            <span>$100/ea</span>
+                            <span>$100/year</span>
                         </div>
                         <div class="addon-item">
                             <span>Post-Election Deck Only (Subscriber)</span>
-                            <span>$300</span>
+                            <span>$1000</span>
                         </div>
                         <div class="addon-item">
                             <span>Post-Election Deck + Presentation (Subscriber)</span>

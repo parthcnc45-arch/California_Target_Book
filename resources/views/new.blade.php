@@ -439,8 +439,30 @@
      NEWSLETTER
 ========================================================= -->
   <section class="section-newsletter" id="subscribe">
+
     <div class="container-ctb">
-      <div class="newsletter-card-wrap">
+                  <iframe
+    src="https://api.epcwebconsulting.com/widget/form/Vr6LK2d4U676vhAL2XlY"
+    style="width:100%;height:100%;border:none;border-radius:8px"
+    id="inline-Vr6LK2d4U676vhAL2XlY" 
+    data-layout="{'id':'INLINE'}"
+    data-trigger-type="alwaysShow"
+    data-trigger-value=""
+    data-activation-type="alwaysActivated"
+    data-activation-value=""
+    data-deactivation-type="neverDeactivate"
+    data-deactivation-value=""
+    data-form-name="CTB Home NL Form"
+    data-height="434"
+    data-layout-iframe-id="inline-Vr6LK2d4U676vhAL2XlY"
+    data-form-id="Vr6LK2d4U676vhAL2XlY"
+    title="CTB Home NL Form"
+    
+        >
+</iframe>
+<script src="https://api.epcwebconsulting.com/js/form_embed.js"></script>
+      <!-- <div class="newsletter-card-wrap">
+
         <h2>Subscribe To Our Newsletter</h2>
         <p class="sub">Receive the best political content right in your email</p>
         <form class="newsletter-form" id="newsletterForm">
@@ -448,7 +470,7 @@
           <input type="email" placeholder="Email" required>
           <button type="submit" class="btn-ctb btn-red">Subscribe</button>
         </form>
-      </div>
+      </div> -->
     </div>
   </section>
 

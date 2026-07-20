@@ -339,20 +339,26 @@ class AccountController extends Controller
                     $invoiceUrl = null;
 
                     // Determine if this charge is for the main subscription activation/renewal
+                    // OLD CODE:
+                    // $isSubscription = !empty($invoiceId) || 
+                    //                  $charge->description === 'Subscription creation' || 
+                    //                  in_array($charge->amount, [120000, 220000]);
+                    
+                    // NEW CODE: Added support for 150000 ($1,500 1-yr print) and 280000 ($2,800 2-yr print)
                     $isSubscription = !empty($invoiceId) || 
                                      $charge->description === 'Subscription creation' || 
-                                     in_array($charge->amount, [120000, 220000]);
+                                     in_array($charge->amount, [120000, 220000, 150000, 280000]);
 
                     if ($isSubscription) {
-                        // If the charge object itself doesn't contain the invoice ID, fallback to the user's cycles
-                        if (empty($invoiceId)) {
-                            foreach ($data['cycles'] as $c) {
-                                if (!empty($c->invoice_id)) {
-                                    $invoiceId = $c->invoice_id;
-                                    break;
-                                }
-                            }
-                        }
+                        // OLD CODE: Fallback that incorrectly forced the current active subscription's invoice ID on all charges
+                        // if (empty($invoiceId)) {
+                        //     foreach ($data['cycles'] as $c) {
+                        //         if (!empty($c->invoice_id)) {
+                        //             $invoiceId = $c->invoice_id;
+                        //             break;
+                        //         }
+                        //     }
+                        // }
 
                         // If we have resolved the invoice ID, fetch details from Stripe to get the actual product description
                         if (!empty($invoiceId)) {
@@ -382,26 +388,58 @@ class AccountController extends Controller
                             }
                         }
 
+                        // NEW CODE: Explicitly map the plan term based on the transaction amount paid
+                        if ($charge->amount === 220000 || $charge->amount === 280000) {
+                            $plan = 'Two-Year';
+                        } elseif ($charge->amount === 120000 || $charge->amount === 150000) {
+                            $plan = 'One-Year';
+                        }
+
                         // If we still don't have a descriptive product name or it defaults to "Subscription creation"
-                        if (empty($description) || $description === 'Subscription creation') {
-                            $isTwoYear = ($charge->amount >= 220000);
+                        if (empty($description) || $description === 'Subscription creation' || stripos($description, 'Subscription creation') !== false) {
+                            // OLD CODE:
+                            // $isTwoYear = ($charge->amount >= 220000);
+                            // if (!empty($data['stripe_product_name'])) {
+                            //     if (stripos($data['stripe_product_name'], 'Two-Year') !== false) {
+                            //         $isTwoYear = true;
+                            //     } elseif (stripos($data['stripe_product_name'], 'One-Year') !== false) {
+                            //         $isTwoYear = false;
+                            //     }
+                            // }
                             
-                            // Check if we can infer from the global stripe product name if available
-                            if (!empty($data['stripe_product_name'])) {
-                                if (stripos($data['stripe_product_name'], 'Two-Year') !== false) {
-                                    $isTwoYear = true;
-                                } elseif (stripos($data['stripe_product_name'], 'One-Year') !== false) {
-                                    $isTwoYear = false;
+                            // NEW CODE: Infer plan type from charge amount, fallback to global product name only if the amount is custom/unknown
+                            $isTwoYear = ($charge->amount >= 220000);
+                            if ($charge->amount !== 220000 && $charge->amount !== 280000 && $charge->amount !== 120000 && $charge->amount !== 150000) {
+                                if (!empty($data['stripe_product_name'])) {
+                                    if (stripos($data['stripe_product_name'], 'Two-Year') !== false) {
+                                        $isTwoYear = true;
+                                    } elseif (stripos($data['stripe_product_name'], 'One-Year') !== false) {
+                                        $isTwoYear = false;
+                                    }
                                 }
                             }
                             
                             $plan = $isTwoYear ? 'Two-Year' : 'One-Year';
                             $period = $isTwoYear ? '2 years' : 'year';
 
+                            // OLD CODE:
+                            // if ($charge->amount === 220000) {
+                            //     $description = '1 × CTB Online Two-Year Subscription (Online Access Only) (at $2,200.00 / 2 years)';
+                            // } elseif ($charge->amount === 120000) {
+                            //     $description = '1 × CTB Online One-Year Subscription (Online Access Only) (at $1,200.00 / year)';
+                            // } else {
+                            //     ...
+                            // }
+
+                            // NEW CODE: Correctly maps descriptions for all 4 basic plan formats (One-Year Online, One-Year Print, Two-Year Online, Two-Year Print)
                             if ($charge->amount === 220000) {
                                 $description = '1 × CTB Online Two-Year Subscription (Online Access Only) (at $2,200.00 / 2 years)';
+                            } elseif ($charge->amount === 280000) {
+                                $description = '1 × CTB Online Two-Year Subscription (Online Access & Print) (at $2,800.00 / 2 years)';
                             } elseif ($charge->amount === 120000) {
                                 $description = '1 × CTB Online One-Year Subscription (Online Access Only) (at $1,200.00 / year)';
+                            } elseif ($charge->amount === 150000) {
+                                $description = '1 × CTB Online One-Year Subscription (Online Access & Print) (at $1,500.00 / year)';
                             } else {
                                 $amtStr = number_format($charge->amount / 100, 2);
                                 $description = "1 × CTB Online {$plan} Subscription (Custom Plan) (at \${$amtStr} / {$period})";

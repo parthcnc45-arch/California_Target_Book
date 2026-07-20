@@ -393,15 +393,17 @@ $(document).ready(function() {
                 }
 
                 let bookAddresses = [];
-                // Using billing address as book shipping address
-                bookAddresses.push({
-                    line1: $('input[name="billing[line1]"]').val(),
-                    line2: $('input[name="billing[line2]"]').val(),
-                    city: $('input[name="billing[city]"]').val(),
-                    state: $('select[name="billing[state]"]').val(),
-                    zip_code: $('input[name="billing[zip_code]"]').val(),
-                    special_instructions: $('input[name="billing[special_instructions]"]').val()
-                });
+                if (isPrint) {
+                    // Using billing address as book shipping address
+                    bookAddresses.push({
+                        line1: $('input[name="billing[line1]"]').val(),
+                        line2: $('input[name="billing[line2]"]').val(),
+                        city: $('input[name="billing[city]"]').val(),
+                        state: $('select[name="billing[state]"]').val(),
+                        zip_code: $('input[name="billing[zip_code]"]').val(),
+                        special_instructions: $('input[name="billing[special_instructions]"]').val()
+                    });
+                }
 
                 let deckAddresses = [];
                 if (hasDeckAddon) {

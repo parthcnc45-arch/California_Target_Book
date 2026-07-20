@@ -25,10 +25,25 @@ class SubscriptionResource extends JsonResource
             return $c;
         });
 
+        // Generate dynamic product name based on frequency and book delivery
+        $hasPrint = $this->book_subscriptions()->count() > 0;
+        $formatString = $hasPrint ? 'Online Access & Print' : 'Online Access Only';
+        
+        if ((int)$this->frequency === 12) {
+            $productName = "CTB Online One-Year Subscription ($formatString)";
+        } elseif ((int)$this->frequency === 24) {
+            $productName = "CTB Online Two-Year Subscription ($formatString)";
+        } elseif ((int)$this->frequency === 0) {
+            $productName = "CTB Online Trial Subscription";
+        } else {
+            $productName = "CTB Online Subscription (" . $this->frequency . " Months)";
+        }
+
         return [
             'id' => $this->id,
             'accountId' => $this->account_id,
             'frequency' => $this->frequency,
+            'productName' => $productName,
             'company' => $company,
             'pivot' => $this->pivot,
             'createdAt' => $this->created_at->format('Y-m-d H:i:s'),

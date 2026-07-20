@@ -1,7 +1,7 @@
 <ctb-head-nav inline-template>
     <div class="nav-container">
         @if (Auth::check() && Auth::user()->isAdmin())
-            <div class="admin-nav hidden-xs">
+            <div class="admin-nav hidden-xs" style="display:none">
                 <div class="container-fluid">
                     <ul class="nav navbar-nav navbar-left">
                         <li>

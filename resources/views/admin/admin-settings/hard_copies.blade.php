@@ -226,7 +226,7 @@
                 </div>
                 <!-- Clear Filters Button -->
                 <div style="padding-bottom: 2px;">
-                    <button id="btn-clear-filters" onmouseenter="this.style.backgroundColor='#e2e8f0'" onmouseleave="this.style.backgroundColor='#f1f5f9'" style="height: 36px; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease-in-out;">
+                    <button id="btn-clear-filters" onmouseenter="this.style.backgroundColor='#e2e8f0'" onmouseleave="this.style.backgroundColor='#f1f5f9'" style="display: none; height: 36px; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; align-items: center; gap: 6px; transition: all 0.15s ease-in-out;">
                         <i class="bi bi-x-circle"></i> Clear Filters
                     </button>
                 </div>
@@ -625,6 +625,14 @@
             function filterAndPaginate() {
                 const searchVal = $searchInput.val().toLowerCase().trim();
                 const statusVal = $statusFilter.val().toLowerCase();
+
+                // Toggle Clear Filters button visibility
+                const isFiltered = searchVal !== '' || statusVal !== 'all';
+                if (isFiltered) {
+                    $clearFiltersBtn.css('display', 'inline-flex');
+                } else {
+                    $clearFiltersBtn.css('display', 'none');
+                }
 
                 // 1. Get filtered list of rows
                 const filteredRows = allHardCopies.filter(item => {

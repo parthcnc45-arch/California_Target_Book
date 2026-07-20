@@ -4,7 +4,7 @@
 
         <nav class="navbar navbar-inverse navbar-fixed-top no-select" role="navigation">
             @if(Auth::check() && Auth::user()->isAdmin())
-                <div class="admin-nav hidden-xs">
+                <div class="admin-nav hidden-xs" style="display:none">
                     <div class="container">
                         <ul class="nav navbar-nav navbar-left">
                             <li>

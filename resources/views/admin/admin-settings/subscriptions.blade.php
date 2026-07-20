@@ -87,7 +87,7 @@
                 </div>
                 <!-- Clear Filters Button -->
                 <div style="padding-bottom: 2px;">
-                    <button id="btn-clear-filters" onmouseenter="this.style.backgroundColor='#e2e8f0'" onmouseleave="this.style.backgroundColor='#f1f5f9'" style="height: 36px; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease-in-out;">
+                    <button id="btn-clear-filters" onmouseenter="this.style.backgroundColor='#e2e8f0'" onmouseleave="this.style.backgroundColor='#f1f5f9'" style="display: none; height: 36px; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; align-items: center; gap: 6px; transition: all 0.15s ease-in-out;">
                         <i class="bi bi-x-circle"></i> Clear Filters
                     </button>
                 </div>
@@ -97,12 +97,13 @@
             <table class="portal-grid-table" id="subscribers-table">
                 <thead>
                     <tr>
-                        <th style="width: 120px;">Status</th>
-                        <th style="width: 25%;">Company</th>
-                        <th style="width: 20%;">Contact</th>
-                        <th style="width: 15%;">Term</th>
-                        <th style="width: 15%;">Starts On</th>
-                        <th style="width: 15%;">Ends On</th>
+                        <th style="width: 100px;">Status</th>
+                        <th style="width: 18%;">Company</th>
+                        <th style="width: 15%;">Contact</th>
+                        <th style="width: 25%;">Product</th>
+                        <th style="width: 10%;">Term</th>
+                        <th style="width: 12%;">Starts On</th>
+                        <th style="width: 12%;">Ends On</th>
                         <th style="width: 90px; text-align: center;">Action</th>
                     </tr>
                 </thead>
@@ -179,15 +180,24 @@
                 const startsOnVal = $startsOnFilter.val();
                 const endsOnVal = $endsOnFilter.val();
 
+                // Toggle Clear Filters button visibility
+                const isFiltered = searchVal !== '' || statusVal !== 'all' || freqVal !== 'all' || startsOnVal !== '' || endsOnVal !== '';
+                if (isFiltered) {
+                    $btnClearFilters.css('display', 'inline-flex');
+                } else {
+                    $btnClearFilters.css('display', 'none');
+                }
+
                 // 1. Get filtered list of rows
                 const filteredRows = allSubscriptions.filter(sub => {
                     const company = (sub.company || '').toLowerCase();
                     const name = (sub.baseAccount ? sub.baseAccount.name : '').toLowerCase();
+                    const productName = (sub.productName || '').toLowerCase();
                     const status = sub.isActive ? 'active' : 'inactive';
                     const startsOnStr = sub.cycle ? sub.cycle.starts_on : null;
                     const endsOnStr = sub.cycle ? sub.cycle.ends_on : null;
 
-                    const matchesSearch = company.includes(searchVal) || name.includes(searchVal);
+                    const matchesSearch = company.includes(searchVal) || name.includes(searchVal) || productName.includes(searchVal);
                     const matchesStatus = statusVal === 'all' || status === statusVal;
                     const matchesFrequency = freqVal === 'all' || String(sub.frequency) === freqVal;
 
@@ -221,7 +231,7 @@
                 // 3. Render only rows for current page
                 $tbody.empty();
                 if (totalEntries === 0) {
-                    $tbody.append(`<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 24px;">No subscriptions found</td></tr>`);
+                    $tbody.append(`<tr><td colspan="8" style="text-align: center; color: #64748b; padding: 24px;">No subscriptions found</td></tr>`);
                 } else {
                     const pageRows = filteredRows.slice(startIndex, endIndex);
                     pageRows.forEach(sub => {
@@ -234,6 +244,7 @@
                                 <td><span class="status-pill-completed" style="${statusStyle}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
                                 <td class="fw-semibold" style="color: #0f172a !important;">${sub.company || ''}</td>
                                 <td><a href="#" style="color: #0f172a !important; font-weight: 600;">${sub.baseAccount ? sub.baseAccount.name : 'N/A'}</a></td>
+                                <td style="color: #475569; font-weight: 500;">${sub.productName || '—'}</td>
                                 <td style="color: #475569;">${formatFrequency(sub.frequency)}</td>
                                 <td style="color: #475569;">${formatDate(startsOnStr)}</td>
                                 <td style="color: #475569;">${formatDate(endsOnStr)}</td>
@@ -403,7 +414,7 @@
             }
 
             // Load data from API
-            $tbody.html(`<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 24px;"><i class="bi bi-arrow-repeat spin" style="font-size: 20px; display: inline-block; animation: spin 1s linear infinite; margin-right: 8px;"></i> Loading subscriptions...</td></tr>`);
+            $tbody.html(`<tr><td colspan="8" style="text-align: center; color: #64748b; padding: 24px;"><i class="bi bi-arrow-repeat spin" style="font-size: 20px; display: inline-block; animation: spin 1s linear infinite; margin-right: 8px;"></i> Loading subscriptions...</td></tr>`);
 
             $('<style>')
                 .prop('type', 'text/css')
@@ -429,7 +440,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching subscriptions:', error);
-                    $tbody.html(`<tr><td colspan="7" style="text-align: center; color: #ef4444; padding: 24px;">Failed to load subscriptions. Please try again later.</td></tr>`);
+                    $tbody.html(`<tr><td colspan="8" style="text-align: center; color: #ef4444; padding: 24px;">Failed to load subscriptions. Please try again later.</td></tr>`);
                 }
             });
         });

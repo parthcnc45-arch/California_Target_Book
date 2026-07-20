@@ -48,14 +48,34 @@
       <div class="footer-col footer-contact">
         <h5 class="footer-col-title">Get In Touch</h5>
         <p class="footer-contact-sub">Have a question? Send us a message and we'll get back to you.</p>
-        <form id="contactForm" class="footer-contact-form">
+        <iframe
+    src="https://api.epcwebconsulting.com/widget/form/ClUvTAc5n72U5gILGpiQ"
+    style="width:100%;height:100%;border:none;border-radius:0px"
+    id="inline-ClUvTAc5n72U5gILGpiQ" 
+    data-layout="{'id':'INLINE'}"
+    data-trigger-type="alwaysShow"
+    data-trigger-value=""
+    data-activation-type="alwaysActivated"
+    data-activation-value=""
+    data-deactivation-type="neverDeactivate"
+    data-deactivation-value=""
+    data-form-name="CTB Footer Get in Touch Form"
+    data-height="432"
+    data-layout-iframe-id="inline-ClUvTAc5n72U5gILGpiQ"
+    data-form-id="ClUvTAc5n72U5gILGpiQ"
+    title="CTB Footer Get in Touch Form"
+    
+        >
+</iframe>
+<script src="https://api.epcwebconsulting.com/js/form_embed.js"></script>
+        <!-- <form id="contactForm" class="footer-contact-form">
           <div class="row-inline">
             <input type="text" name="name" placeholder="Name" required>
             <input type="email" name="email" placeholder="Email Address" required>
           </div>
           <textarea name="message" placeholder="Message" required></textarea>
           <button type="submit" class="btn-ctb btn-red btn-footer-submit">Send Message</button>
-        </form>
+        </form> -->
       </div>
 
     </div>

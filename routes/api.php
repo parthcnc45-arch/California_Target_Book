@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/mail', 'ContactController@send');
 Route::get('/ghl/public-subscriptions', 'Admin\GHLIntegrationController@getPublicSubscriptions');
+Route::get('/public/classifieds', 'Admin\ClassifiedsController@getPublicClassifieds');
 Route::post('/ghl/subscriptions/{stripeSubId}/cancel', 'Admin\GHLIntegrationController@cancelSubscription');
 Route::post('/ghl/subscriptions/{stripeSubId}/pause', 'Admin\GHLIntegrationController@pausedSubscription');
 Route::post('/ghl/subscriptions/{stripeSubId}/resume', 'Admin\GHLIntegrationController@resumeSubscription');
@@ -93,6 +94,18 @@ Route::group([
     'middleware' => ['auth:api', 'admin:api'],
 ], function() {
     Route::put('/{id}', 'Admin\CompaniesController@update');
+});
+
+Route::group([
+    'prefix' => '/classifieds',
+    'middleware' => ['auth:api', 'admin:api'],
+], function() {
+    Route::get('/', 'Admin\ClassifiedsController@index');
+    Route::get('/rates/options', 'Admin\ClassifiedsController@getRates');
+    Route::post('/', 'Admin\ClassifiedsController@create');
+    Route::get('/{id}', 'Admin\ClassifiedsController@get');
+    Route::put('/{id}', 'Admin\ClassifiedsController@update');
+    Route::delete('/{id}', 'Admin\ClassifiedsController@delete');
 });
 
 

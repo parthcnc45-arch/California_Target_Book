@@ -44,6 +44,7 @@
                 @endif -->
                 <div class="nav-section-title">MY ACCOUNT</div>
                 <a href="/" class="nav-link"><i class="bi bi-house-door"></i> Home</a>
+                <!-- <a href="/classifieds" class="nav-link {{ Request::is('classifieds*') ? 'active' : '' }}"><i class="bi bi-megaphone"></i> Classifieds</a> -->
                 <a href="/account/account-info" class="nav-link {{ Request::is('account/account-info') ? 'active' : '' }}"><i class="bi bi-person"></i> Account info</a>
                 <a href="/account/subscriptions" class="nav-link {{ Request::is('account/subscriptions') ? 'active' : '' }}"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
                 <a href="/account/manage-add-ons" class="nav-link {{ Request::is('account/manage-add-ons') || Request::is('account/addon-checkout') ? 'active' : '' }}"><i class="bi bi-gift"></i> Manage add-ons</a>
@@ -61,6 +62,8 @@
                     <a href="/ctb-admin/new/subscriptions" class="nav-link {{ Request::is('ctb-admin/new/subscriptions*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Subscriptions</a>
                     <a href="/ctb-admin/new/hard-copy-subscriptions" class="nav-link {{ Request::is('ctb-admin/new/hard-copy-subscriptions') ? 'active' : '' }}"><i class="bi bi-book"></i> Shipments</a>
                     <a href="/ctb-admin/new/contacts" class="nav-link {{ Request::is('ctb-admin/new/contacts') ? 'active' : '' }}"><i class="bi bi-people"></i> Contacts</a>
+                    <a href="/ctb-admin/new/classifieds" class="nav-link {{ Request::is('ctb-admin/new/classifieds*') ? 'active' : '' }}"><i class="bi bi-megaphone"></i> Classifieds</a>
+
 
                 </div>
             @endif

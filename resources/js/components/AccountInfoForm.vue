@@ -63,10 +63,7 @@
           <tr v-if="!display.shippings || !display.shippings.length">
             <td class="info-label">Shipping Address</td>
             <td class="info-value">
-              <span v-if="display.billing && display.billing.line1">
-                {{ display.billing.line1 }}{{ display.billing.line2 ? ', ' + display.billing.line2 : '' }}, {{ display.billing.city }}, {{ display.billing.state }} {{ display.billing.zip_code }}
-              </span>
-              <span v-else>No shipping address set</span>
+              <span>—</span>
             </td>
           </tr>
         </tbody>

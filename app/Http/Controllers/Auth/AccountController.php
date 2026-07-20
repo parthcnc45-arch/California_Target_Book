@@ -107,7 +107,6 @@ class AccountController extends Controller
                 \Stripe\Stripe::setApiKey(config('app.STRIPE_KEY'));
                 $stripe_subscription = \Stripe\Subscription::retrieve($sub->wordpress_subscription_id);
                 
-                // Fetch product name from Stripe
                 if (!empty($stripe_subscription->plan->product)) {
                     $product = \Stripe\Product::retrieve($stripe_subscription->plan->product);
                     $stripe_product_name = $product->name;
@@ -276,6 +275,26 @@ class AccountController extends Controller
 
                 \Log::info("User {$user->id} purchased {$qty}x " . $request->input('addon_name') . " for $" . ($amount/100));
 
+                // Save transaction to local database
+                try {
+                    \App\Transaction::create([
+                        'user_id' => $user->id,
+                        'subscription_id' => $sub ? $sub->id : null,
+                        'stripe_charge_id' => $charge->id ?? null,
+                        'stripe_invoice_id' => null,
+                        'description' => "Purchase of {$qty}x " . $request->input('addon_name') . " - California Target Book",
+                        'plan' => '—',
+                        'amount' => $amount,
+                        'status' => 'Completed',
+                        'payment_method' => 'stripe',
+                        'invoice_url' => $charge->receipt_url ?? null,
+                        'raw_stripe_data' => isset($charge) ? $charge->jsonSerialize() : null,
+                        'transaction_date' => now(),
+                    ]);
+                } catch (\Exception $txEx) {
+                    \Log::error("Failed to save transaction record in processAddonCheckout: " . $txEx->getMessage());
+                }
+
                 $request->session()->flash('message', 'Payment processed successfully!');
 
                 return response()->json([
@@ -302,7 +321,6 @@ class AccountController extends Controller
             ], 500);
         }
     }
-
     public function transactionHistory() {
         $data = $this->getAccountData();
         if ($data === null) {
@@ -312,167 +330,32 @@ class AccountController extends Controller
             return redirect()->route('auth.account.renew');
         }
 
-        $transactions = collect();
         $user = Auth::user();
-        
-        $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
-        \Stripe\Stripe::setApiKey($stripeKey);
+        $dbTransactions = \App\Transaction::where('user_id', $user->id)
+            ->orderBy('transaction_date', 'desc')
+            ->paginate(10);
 
-        if ($user && !empty($user->stripe_id)) {
-            try {
-                $allCharges = \Stripe\Charge::all([
-                    'customer' => $user->stripe_id,
-                    'limit' => 100
-                ]);
-                foreach ($allCharges->data as $charge) {
-                    $status = 'Pending';
-                    if ($charge->paid) {
-                        $status = 'Completed';
-                        if ($charge->refunded) {
-                            $status = 'Refunded';
-                        }
-                    }
-                    
-                    $invoiceId = $charge->invoice;
-                    $description = $charge->description ?? 'Charge';
-                    $plan = '—';
-                    $invoiceUrl = null;
+        $dbTransactions->through(function ($t) {
+            $dateFormatted = $t->transaction_date 
+                ? $t->transaction_date->format('F j, Y') 
+                : $t->created_at->format('F j, Y');
+                
+            $timestamp = $t->transaction_date 
+                ? $t->transaction_date->timestamp 
+                : $t->created_at->timestamp;
 
-                    // Determine if this charge is for the main subscription activation/renewal
-                    // OLD CODE:
-                    // $isSubscription = !empty($invoiceId) || 
-                    //                  $charge->description === 'Subscription creation' || 
-                    //                  in_array($charge->amount, [120000, 220000]);
-                    
-                    // NEW CODE: Added support for 150000 ($1,500 1-yr print) and 280000 ($2,800 2-yr print)
-                    $isSubscription = !empty($invoiceId) || 
-                                     $charge->description === 'Subscription creation' || 
-                                     in_array($charge->amount, [120000, 220000, 150000, 280000]);
+            return (object)[
+                'date' => $dateFormatted,
+                'timestamp' => $timestamp,
+                'description' => $t->description,
+                'plan' => $t->plan ?? '—',
+                'amount' => '$' . number_format($t->amount / 100, 2),
+                'status' => $t->status,
+                'invoice_url' => $t->invoice_url,
+            ];
+        });
 
-                    if ($isSubscription) {
-                        // OLD CODE: Fallback that incorrectly forced the current active subscription's invoice ID on all charges
-                        // if (empty($invoiceId)) {
-                        //     foreach ($data['cycles'] as $c) {
-                        //         if (!empty($c->invoice_id)) {
-                        //             $invoiceId = $c->invoice_id;
-                        //             break;
-                        //         }
-                        //     }
-                        // }
-
-                        // If we have resolved the invoice ID, fetch details from Stripe to get the actual product description
-                        if (!empty($invoiceId)) {
-                            try {
-                                $inv = \Stripe\Invoice::retrieve($invoiceId);
-                                $description = $inv->description ?? 'Subscription Charge';
-                                
-                                if ($inv->lines && isset($inv->lines->data[0])) {
-                                    $line = $inv->lines->data[0];
-                                    if (!empty($line->description)) {
-                                        $description = $line->description; 
-                                    }
-                                    
-                                    // Parse Plan
-                                    if (stripos($description, 'One-Year') !== false || stripos($description, '1 Year') !== false || (isset($line->plan) && $line->plan->interval === 'year' && $line->plan->interval_count === 1)) {
-                                        $plan = 'One-Year';
-                                    } elseif (stripos($description, 'Two-Year') !== false || stripos($description, '2 Year') !== false || (isset($line->plan) && $line->plan->interval === 'year' && $line->plan->interval_count === 2)) {
-                                        $plan = 'Two-Year';
-                                    } elseif (stripos($description, 'Addon') !== false) {
-                                        $plan = 'One-Year';
-                                    }
-                                }
-                                
-                                $invoiceUrl = route('auth.account.invoice', ['invoice_id' => $invoiceId]);
-                            } catch (\Exception $e) {
-                                \Log::error("Invoice retrieval failed for ID {$invoiceId}: " . $e->getMessage());
-                            }
-                        }
-
-                        // NEW CODE: Explicitly map the plan term based on the transaction amount paid
-                        if ($charge->amount === 220000 || $charge->amount === 280000) {
-                            $plan = 'Two-Year';
-                        } elseif ($charge->amount === 120000 || $charge->amount === 150000) {
-                            $plan = 'One-Year';
-                        }
-
-                        // If we still don't have a descriptive product name or it defaults to "Subscription creation"
-                        if (empty($description) || $description === 'Subscription creation' || stripos($description, 'Subscription creation') !== false) {
-                            // OLD CODE:
-                            // $isTwoYear = ($charge->amount >= 220000);
-                            // if (!empty($data['stripe_product_name'])) {
-                            //     if (stripos($data['stripe_product_name'], 'Two-Year') !== false) {
-                            //         $isTwoYear = true;
-                            //     } elseif (stripos($data['stripe_product_name'], 'One-Year') !== false) {
-                            //         $isTwoYear = false;
-                            //     }
-                            // }
-                            
-                            // NEW CODE: Infer plan type from charge amount, fallback to global product name only if the amount is custom/unknown
-                            $isTwoYear = ($charge->amount >= 220000);
-                            if ($charge->amount !== 220000 && $charge->amount !== 280000 && $charge->amount !== 120000 && $charge->amount !== 150000) {
-                                if (!empty($data['stripe_product_name'])) {
-                                    if (stripos($data['stripe_product_name'], 'Two-Year') !== false) {
-                                        $isTwoYear = true;
-                                    } elseif (stripos($data['stripe_product_name'], 'One-Year') !== false) {
-                                        $isTwoYear = false;
-                                    }
-                                }
-                            }
-                            
-                            $plan = $isTwoYear ? 'Two-Year' : 'One-Year';
-                            $period = $isTwoYear ? '2 years' : 'year';
-
-                            // OLD CODE:
-                            // if ($charge->amount === 220000) {
-                            //     $description = '1 × CTB Online Two-Year Subscription (Online Access Only) (at $2,200.00 / 2 years)';
-                            // } elseif ($charge->amount === 120000) {
-                            //     $description = '1 × CTB Online One-Year Subscription (Online Access Only) (at $1,200.00 / year)';
-                            // } else {
-                            //     ...
-                            // }
-
-                            // NEW CODE: Correctly maps descriptions for all 4 basic plan formats (One-Year Online, One-Year Print, Two-Year Online, Two-Year Print)
-                            if ($charge->amount === 220000) {
-                                $description = '1 × CTB Online Two-Year Subscription (Online Access Only) (at $2,200.00 / 2 years)';
-                            } elseif ($charge->amount === 280000) {
-                                $description = '1 × CTB Online Two-Year Subscription (Online Access & Print) (at $2,800.00 / 2 years)';
-                            } elseif ($charge->amount === 120000) {
-                                $description = '1 × CTB Online One-Year Subscription (Online Access Only) (at $1,200.00 / year)';
-                            } elseif ($charge->amount === 150000) {
-                                $description = '1 × CTB Online One-Year Subscription (Online Access & Print) (at $1,500.00 / year)';
-                            } else {
-                                $amtStr = number_format($charge->amount / 100, 2);
-                                $description = "1 × CTB Online {$plan} Subscription (Custom Plan) (at \${$amtStr} / {$period})";
-                            }
-                        }
-                        
-                        // Ensure invoice URL is set for the subscription (fallback to local cycle's invoice ID or hardcoded link if we still have invoiceId)
-                        if (empty($invoiceUrl) && !empty($invoiceId)) {
-                            $invoiceUrl = route('auth.account.invoice', ['invoice_id' => $invoiceId]);
-                        }
-                    }
-
-                    if (empty($invoiceUrl) && !empty($charge->receipt_url)) {
-                        $invoiceUrl = $charge->receipt_url;
-                    }
-
-                    $transactions->push((object)[
-                        'date' => Carbon::createFromTimestamp($charge->created)->format('F j, Y'),
-                        'timestamp' => $charge->created,
-                        'description' => $description,
-                        'plan' => $plan,
-                        'amount' => '$' . number_format($charge->amount / 100, 2),
-                        'status' => $status,
-                        'invoice_url' => $invoiceUrl,
-                    ]);
-                }
-            } catch (\Exception $e) {
-                \Log::warning("Stripe Charge Fetch Failed for user {$user->id}: " . $e->getMessage());
-            }
-        }
-
-        // Sort all transactions chronologically (newest first)
-        $data['transactions'] = $transactions->sortByDesc('timestamp')->values();
+        $data['transactions'] = $dbTransactions;
 
         return view('auth.account.transaction_history', $data);
     }
@@ -1314,6 +1197,26 @@ class AccountController extends Controller
 
                 $owner->additional_online_users = ((int) $owner->additional_online_users) + $seats;
                 $owner->save();
+
+                // Save transaction to local database
+                try {
+                    \App\Transaction::create([
+                        'user_id' => $user->id,
+                        'subscription_id' => $sub ? $sub->id : null,
+                        'stripe_charge_id' => $charge->id ?? null,
+                        'stripe_invoice_id' => null,
+                        'description' => "Purchase of {$seats} Additional User Seat(s) - California Target Book",
+                        'plan' => '—',
+                        'amount' => $amount,
+                        'status' => 'Completed',
+                        'payment_method' => 'stripe',
+                        'invoice_url' => $charge->receipt_url ?? null,
+                        'raw_stripe_data' => isset($charge) ? $charge->jsonSerialize() : null,
+                        'transaction_date' => now(),
+                    ]);
+                } catch (\Exception $txEx) {
+                    \Log::error("Failed to save transaction record in purchaseSeatsPost: " . $txEx->getMessage());
+                }
 
                 // 5. Update Stripe Subscription if it exists so it's added to Upcoming Invoice
                 if ($sub && !empty($sub->wordpress_subscription_id) && strpos($sub->wordpress_subscription_id, 'sub_') === 0) {

@@ -380,7 +380,7 @@ trait CreatesUser {
     $deckAddresses = $data['deck_addresses'] ?? [];
 
     foreach ($bookAddresses as &$addr) {
-        $addr['item_name'] = '-';
+        $addr['item_name'] = 'California Target Book';
     }
     foreach ($deckAddresses as &$addr) {
         $addr['item_name'] = $data['deck_title'] ?? '-';
@@ -697,6 +697,76 @@ trait CreatesUser {
     // Save additional online users count in Owner's row
     $baseUser->additional_online_users = count($data['addons'] ?? []);
     $baseUser->save();
+
+    // Save transaction to local database
+    if (isset($invoice) && !empty($invoice->id)) {
+        try {
+            // Re-retrieve the invoice from Stripe to ensure we have the latest status
+            try {
+                $invoice = \Stripe\Invoice::retrieve($invoice->id);
+            } catch (\Exception $retrieveEx) {
+                \Illuminate\Support\Facades\Log::warning("Failed to re-retrieve Stripe invoice {$invoice->id}: " . $retrieveEx->getMessage());
+            }
+
+            $chargeId = null;
+            $invoiceUrl = $invoice->hosted_invoice_url ?? $invoice->invoice_pdf ?? null;
+            
+            // In this older SDK version, the Invoice object does not return charge/payment_intent directly.
+            // We retrieve the associated charge by querying the Stripe Charges API filtered by invoice ID.
+            try {
+                $charges = \Stripe\Charge::all(['invoice' => $invoice->id, 'limit' => 1]);
+                if (!empty($charges->data)) {
+                    $charge = $charges->data[0];
+                    $chargeId = $charge->id;
+                    if (!empty($charge->receipt_url)) {
+                        $invoiceUrl = $charge->receipt_url;
+                    }
+                }
+            } catch (\Exception $chargeEx) {
+                \Illuminate\Support\Facades\Log::warning("Failed to find charge for invoice {$invoice->id}: " . $chargeEx->getMessage());
+            }
+
+            $description = $invoice->description ?? 'Subscription payment';
+            if ($invoice->lines && !empty($invoice->lines->data)) {
+                $descriptions = [];
+                foreach ($invoice->lines->data as $line) {
+                    if (!empty($line->description)) {
+                        $qtyStr = $line->quantity > 1 ? " (Qty: {$line->quantity})" : "";
+                        $descriptions[] = $line->description . $qtyStr;
+                    }
+                }
+                if (!empty($descriptions)) {
+                    $description = implode(', ', $descriptions);
+                }
+            }
+
+            $planName = '—';
+            if ($subscription->frequency === 12) {
+                $planName = 'One-Year';
+            } elseif ($subscription->frequency === 24) {
+                $planName = 'Two-Year';
+            }
+
+            $isCompleted = ($invoice->status === 'paid' || !empty($invoice->paid));
+
+            \App\Transaction::create([
+                'user_id' => $baseUser->id,
+                'subscription_id' => $subscription->id,
+                'stripe_charge_id' => $chargeId,
+                'stripe_invoice_id' => $invoice->id,
+                'description' => $description,
+                'plan' => $planName,
+                'amount' => $invoice->total,
+                'status' => $isCompleted ? 'Completed' : 'Pending',
+                'payment_method' => $cycle->payment_method,
+                'invoice_url' => $invoiceUrl,
+                'raw_stripe_data' => $invoice->jsonSerialize(),
+                'transaction_date' => \Carbon\Carbon::createFromTimestamp($invoice->created),
+            ]);
+        } catch (\Exception $txEx) {
+            \Illuminate\Support\Facades\Log::error("Failed to save transaction record in createUser: " . $txEx->getMessage());
+        }
+    }
 
     $baseUser['addons'] = $addons;
     return $baseUser;

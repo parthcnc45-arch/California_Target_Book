@@ -119,7 +119,7 @@
                             <span class="addon-badge-applied">
                                 <i class="bi bi-check-circle-fill"></i> One-time charge
                             </span>
-                            <h3 class="addon-item-title">Post-Election Deck</h3>
+                            <h3 class="addon-item-title">Post-Election Deck Only</h3>
                             <p class="addon-item-desc">Post-election deck presentation file</p>
                         </div>
                         <div>

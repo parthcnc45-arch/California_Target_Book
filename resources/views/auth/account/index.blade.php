@@ -592,8 +592,7 @@
                                 <td class="info-value">
                                     @if(count($sub['books']))
                                         {{ $sub['books'][0]->address->line1 }}{{ $sub['books'][0]->address->line2 ? ', ' . $sub['books'][0]->address->line2 : '' }}, {{ $sub['books'][0]->address->city }}, {{ $sub['books'][0]->address->state }} {{ $sub['books'][0]->address->zip_code }}
-                                    @elseif($user->company && $user->company->address)
-                                        {{ $user->company->address->line1 }}{{ $user->company->address->line2 ? ', ' . $user->company->address->line2 : '' }}, {{ $user->company->address->city }}, {{ $user->company->address->state }} {{ $user->company->address->zip_code }}
+
                                     @else
                                     @endif
                                 </td>

@@ -724,6 +724,44 @@ class RegisterController extends Controller
             $cycle->activate();
         }
 
+        // Save transaction to local database
+        try {
+            $txAmount = $amount;
+            $txDesc = $validated['deck_title'] ?? "Post-Election Deck/Book Purchase - California Target Book";
+            $txReceiptUrl = null;
+            $txRaw = null;
+
+            if (isset($charge) && $charge instanceof \Stripe\Charge) {
+                $txReceiptUrl = $charge->receipt_url;
+                $txRaw = $charge->jsonSerialize();
+            } elseif (isset($resData) && is_array($resData)) {
+                $txRaw = $resData;
+                if (!empty($chargeId)) {
+                    try {
+                        $chObj = \Stripe\Charge::retrieve($chargeId);
+                        $txReceiptUrl = $chObj->receipt_url;
+                    } catch (\Exception $chEx) {}
+                }
+            }
+
+            \App\Transaction::create([
+                'user_id' => $user->id,
+                'subscription_id' => $subscriptionId,
+                'stripe_charge_id' => $chargeId,
+                'stripe_invoice_id' => null,
+                'description' => $txDesc,
+                'plan' => '—',
+                'amount' => $txAmount,
+                'status' => 'Completed',
+                'payment_method' => 'stripe',
+                'invoice_url' => $txReceiptUrl,
+                'raw_stripe_data' => $txRaw,
+                'transaction_date' => now(),
+            ]);
+        } catch (\Exception $txEx) {
+            Log::error("Failed to save transaction record in purchaseBookOnly: " . $txEx->getMessage());
+        }
+
         // 4. Save Shipping Addresses & BookSubscriptions
         $deckAddresses = $validated['deck_addresses'] ?? [];
         foreach ($deckAddresses as $addr) {

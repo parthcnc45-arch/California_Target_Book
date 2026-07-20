@@ -140,6 +140,12 @@
                 </div>
             </div>
 
+            <div class="recaptcha-container">
+                <div class="recaptcha-inner">
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+                </div>
+            </div>
+
             <button type="submit" class="btn-submit">Submit Purchase Request</button>
         </form>
     </div>

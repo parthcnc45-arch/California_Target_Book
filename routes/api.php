@@ -141,7 +141,7 @@ Route::post('/help-support/contact', function(\Illuminate\Http\Request $request)
 
     try {
         \Illuminate\Support\Facades\Mail::raw("From: {$userEmail}\n\nSubject: {$validated['subject']}\n\nMessage:\n{$validated['message']}", function ($message) use ($validated) {
-            $message->to('info@californiatargetbook.com')
+            $message->to('parthcnc45@gmail.com')
                     ->subject('Support Contact: ' . $validated['subject']);
         });
         return response()->json(['success' => true]);

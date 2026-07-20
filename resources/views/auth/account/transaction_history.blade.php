@@ -27,7 +27,7 @@
                         <thead>
                             <tr>
                                 <th class="th-w-18">Date</th>
-                                <th class="th-w-37">Description</th>
+                                <th class="th-w-37">Items</th>
                                 <th class="th-w-12">Plan</th>
                                 <th class="th-w-13">Amount</th>
                                 <th class="th-w-12">Status</th>
@@ -69,6 +69,10 @@
                             @endforeach
                         </tbody>
                     </table>
+
+                    <div class="pagination-container">
+                        {{ $transactions->links('vendor.pagination.default') }}
+                    </div>
                 @else
                     <div class="empty-state-container">
                         <i class="bi bi-receipt-cutoff empty-state-icon"></i>
@@ -77,10 +81,70 @@
                 @endif
             </div>
         </div>
-        <p class="table-footer-note">
-            Showing {{ count($transactions) }} transactions. Contact support for records older than 3 years.
-        </p>
     </section>
+
+    <style>
+    /* Custom Premium Pagination Styling */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 24px;
+        margin-bottom: 8px;
+    }
+    
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 6px;
+        align-items: center;
+    }
+    
+    .pagination li {
+        display: inline-block;
+    }
+    
+    .pagination li a,
+    .pagination li span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 38px;
+        height: 38px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #475569;
+        background-color: #ffffff;
+        border: 1px solid var(--border-color, #e2e8ee);
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.15s ease-in-out;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+    
+    .pagination li a:hover {
+        color: var(--primary-color, #d93838);
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    
+    .pagination li.active span {
+        color: #ffffff;
+        background-color: var(--primary-color, #d93838);
+        border-color: var(--primary-color, #d93838);
+        font-weight: 600;
+    }
+    
+    .pagination li.disabled span {
+        color: #94a3b8;
+        background-color: #f8fafc;
+        border-color: var(--border-color, #e2e8ee);
+        cursor: not-allowed;
+    }
+    </style>
 
     <script>
     function exportTransactionsCSV() {

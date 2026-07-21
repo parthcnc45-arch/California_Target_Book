@@ -87,7 +87,7 @@ class SubscriptionsController extends Controller
     }
 
     public function indexHardCopies() {
-        return new BookSubscriptionCollection(BookSubscription::all());
+        return new BookSubscriptionCollection(BookSubscription::orderBy('id', 'desc')->get());
     }
 
     public function createHardCopy($id, Request $request) {

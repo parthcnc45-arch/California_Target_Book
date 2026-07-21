@@ -283,7 +283,7 @@ class AccountController extends Controller
                         'stripe_charge_id' => $charge->id ?? null,
                         'stripe_invoice_id' => null,
                         'description' => "Purchase of {$qty}x " . $request->input('addon_name') . " - California Target Book",
-                        'plan' => '—',
+                        'plan' => 'Add-on - One-Time',
                         'amount' => $amount,
                         'status' => 'Completed',
                         'payment_method' => 'stripe',
@@ -344,11 +344,25 @@ class AccountController extends Controller
                 ? $t->transaction_date->timestamp 
                 : $t->created_at->timestamp;
 
+            $displayPlan = $t->plan ?? '—';
+            if ($displayPlan === 'One-Year') {
+                $displayPlan = 'Subscription - 1 Year';
+            } elseif ($displayPlan === 'Two-Year') {
+                $displayPlan = 'Subscription - 2 Year';
+            } elseif ($displayPlan === '—' || empty($displayPlan)) {
+                $descLower = strtolower($t->description);
+                if (str_contains($descLower, 'user seat')) {
+                    $displayPlan = 'Seat - Yearly';
+                } elseif (str_contains($descLower, 'deck') || str_contains($descLower, 'presentation') || str_contains($descLower, 'book')) {
+                    $displayPlan = 'Add-on - One-Time';
+                }
+            }
+
             return (object)[
                 'date' => $dateFormatted,
                 'timestamp' => $timestamp,
                 'description' => $t->description,
-                'plan' => $t->plan ?? '—',
+                'plan' => $displayPlan,
                 'amount' => '$' . number_format($t->amount / 100, 2),
                 'status' => $t->status,
                 'invoice_url' => $t->invoice_url,
@@ -1206,7 +1220,7 @@ class AccountController extends Controller
                         'stripe_charge_id' => $charge->id ?? null,
                         'stripe_invoice_id' => null,
                         'description' => "Purchase of {$seats} Additional User Seat(s) - California Target Book",
-                        'plan' => '—',
+                        'plan' => 'Seat - Yearly',
                         'amount' => $amount,
                         'status' => 'Completed',
                         'payment_method' => 'stripe',

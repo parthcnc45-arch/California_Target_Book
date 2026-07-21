@@ -46,11 +46,11 @@
                     <thead>
                         <tr>
                             <th class="portal-col-w-120">Status</th>
-                            <th class="portal-col-w-120">Shipment NO#</th>
+                            <th class="portal-col-w-120">Shipment No.</th>
                             <th class="portal-col-w-240">Contact Name</th>
                             <th class="portal-col-w-240">Item Name</th>
                             <th class="portal-col-w-120">Carrier</th>
-                            <th class="portal-col-w-120">Tracking NO#</th>
+                            <th class="portal-col-w-120">Tracking No.</th>
                             <th class="portal-col-w-120">Ship Date</th>
                             <th class="portal-col-w-120">Est. Delivery</th>
                         </tr>

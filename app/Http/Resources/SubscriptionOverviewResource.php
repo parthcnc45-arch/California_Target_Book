@@ -23,7 +23,9 @@ class SubscriptionOverviewResource extends JsonResource
             }
         }
 
-        $hasPrint = $this->book_subscriptions()->count() > 0;
+        $hasPrint = $this->book_subscriptions()
+            ->whereIn('item_name', ['California Target Book', '-'])
+            ->count() > 0;
         $formatString = $hasPrint ? 'Online Access & Print' : 'Online Access Only';
         
         if ((int)$this->frequency === 12) {

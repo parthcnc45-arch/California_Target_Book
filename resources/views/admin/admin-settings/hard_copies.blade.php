@@ -177,24 +177,24 @@
     <!-- Stats Row -->
     <div style="display: flex; gap: 24px; margin-bottom: 24px;">
         <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #0d9488;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Total Shipments</div>
+            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Total</div>
             <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-total">-</div>
+        </div>
+        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #f59e0b;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Active</div>
+            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-active">-</div>
+        </div>
+        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #ef4444;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">InActive</div>
+            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-inactive">-</div>
         </div>
         <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #3b82f6;">
             <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Shipped</div>
             <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-shipped">-</div>
         </div>
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #f59e0b;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">In transit</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-intransit">-</div>
-        </div>
         <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #16a34a;">
             <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Delivered</div>
             <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-delivered">-</div>
-        </div>
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #ef4444;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Delayed</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-delayed">-</div>
         </div>
     </div>
 
@@ -215,6 +215,8 @@
                     <span style="font-size: 12.5px; font-weight: 600; color: #475569;">Status</span>
                     <select class="form-input-style" id="filter-status" style="width: 150px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
                         <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
                         <option value="pending">Pending</option>
                         <option value="shipped">Shipped</option>
                         <option value="in transit">In Transit</option>
@@ -236,14 +238,15 @@
             <table class="portal-grid-table" id="hard-copies-table" style="table-layout: fixed; width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 100px; min-width: 100px; white-space: nowrap;">Status</th>
-                        <th style="width: 120px; min-width: 120px; white-space: nowrap;">Shipment NO#</th>
+                        <th style="width: 100px; min-width: 100px; white-space: nowrap;">Subscription</th>
+                        <th style="width: 120px; min-width: 120px; white-space: nowrap;">Shipment No.</th>
                         <th style="width: 200px; min-width: 150px; white-space: nowrap;">Contact Name</th>
                         <th style="width: 220px; min-width: 150px; white-space: nowrap;">Item Name</th>
                         <th style="width: 100px; min-width: 100px; white-space: nowrap;">Carrier</th>
-                        <th style="width: 120px; min-width: 120px; white-space: nowrap;">Tracking NO#</th>
+                        <th style="width: 120px; min-width: 120px; white-space: nowrap;">Tracking No.</th>
                         <th style="width: 110px; min-width: 110px; white-space: nowrap;">Ship Date</th>
                         <th style="width: 110px; min-width: 110px; white-space: nowrap;">Est. Delivery</th>
+                        <th style="width: 130px; min-width: 120px; white-space: nowrap;">Shipment</th>
                         <th style="width: 130px; min-width: 130px; text-align: center; white-space: nowrap;">Action</th>
                     </tr>
                 </thead>
@@ -607,19 +610,14 @@
 
             function updateStats(items) {
                 const total = items.length;
+                const active = items.filter(item => item.subscription && item.subscription.isActive).length;
+                const inactive = items.filter(item => !item.subscription || !item.subscription.isActive).length;
                 const shipped = items.filter(item => (item.status || '').toLowerCase() === 'shipped').length;
-                const inTransit = items.filter(item => (item.status || '').toLowerCase() === 'in transit').length;
-                const delivered = items.filter(item => (item.status || '').toLowerCase() === 'delivered').length;
-                const delayed = items.filter(item => {
-                    const status = (item.status || '').toLowerCase();
-                    return status.includes('delay') || status.includes('exception');
-                }).length;
 
                 $('#stat-total').text(total);
+                $('#stat-active').text(active);
+                $('#stat-inactive').text(inactive);
                 $('#stat-shipped').text(shipped);
-                $('#stat-intransit').text(inTransit);
-                $('#stat-delivered').text(delivered);
-                $('#stat-delayed').text(delayed);
             }
 
             function filterAndPaginate() {
@@ -654,6 +652,10 @@
                     let matchesStatus = false;
                     if (statusVal === 'all') {
                         matchesStatus = true;
+                    } else if (statusVal === 'active') {
+                        matchesStatus = sub.isActive === true;
+                    } else if (statusVal === 'inactive') {
+                        matchesStatus = !sub.isActive;
                     } else {
                         matchesStatus = itemStatus === statusVal;
                     }
@@ -681,15 +683,24 @@
                         const sub = item.subscription || {};
                         const addr = item.address || {};
                         
-                        const statusStyle = sub.isActive ? '' : 'background-color: #fef2f2; color: #ef4444;';
                         const contactName = sub.baseAccount ? sub.baseAccount.name : 'Not Specified';
                         const specialInstructions = addr.special_instructions || '';
                         
                         const shipmentStatus = item.status ? (item.status.charAt(0).toUpperCase() + item.status.slice(1)) : 'Processing';
 
+                        let pillColor = 'background-color: #f1f5f9; color: #475569;'; // default processing/pending
+                        const statusLower = (item.status || 'pending').toLowerCase();
+                        if (statusLower === 'delivered') {
+                            pillColor = 'background-color: #dcfce7; color: #16a34a;';
+                        } else if (statusLower === 'shipped' || statusLower === 'in transit' || statusLower === 'out for delivery') {
+                            pillColor = 'background-color: #dbeafe; color: #2563eb;';
+                        } else if (statusLower.includes('delay') || statusLower.includes('exception') || statusLower === 'returned to sender') {
+                            pillColor = 'background-color: #fee2e2; color: #ef4444;';
+                        }
+
                         const rowHtml = `
                             <tr>
-                                <td><span class="status-pill-completed" style="${statusStyle}">${shipmentStatus}</span></td>
+                                <td style="vertical-align: middle;"><span style="display: inline-block; padding: 4px 12px; font-size: 12.5px; font-weight: 600; border-radius: 9999px; ${sub.isActive ? 'background-color: #e6f4ea; color: #137333;' : 'background-color: #fce8e6; color: #c5221f;'}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
                                 <td class="fw-semibold" style="color: #0f172a !important;">SH-${item.id}</td>
                                 <td style="color: #0f172a !important; font-weight: 500;">${contactName}</td>
                                 <td style="color: #0f172a !important;">${item.item_name || ''}</td>
@@ -697,6 +708,7 @@
                                 <td style="color: #475569;">${item.tracking_url ? `<a href="${item.tracking_url}" target="_blank" style="color: #2563eb; text-decoration: underline;">${item.tracking_id || 'Link'}</a>` : (item.tracking_id || '-')}</td>
                                 <td style="color: #475569;">${item.ship_date ? new Date(item.ship_date).toLocaleDateString() : '-'}</td>
                                 <td style="color: #475569;">${item.estimated_delivery ? new Date(item.estimated_delivery).toLocaleDateString() : '-'}</td>
+                                <td><span style="display: inline-block; padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 9999px; ${pillColor}">${shipmentStatus}</span></td>
                                 <td class="action-column-cell">
                                     <div class="action-column-container">
                                         <a href="javascript:void(0)" onclick="openViewModal(${item.id})" class="table-action-edit" title="View">
@@ -880,6 +892,7 @@
                     'Accept': 'application/json'
                 },
                 success: function(res) {
+                    console.log(res);
                     allHardCopies = res.data || res;
                     updateStats(allHardCopies);
                     filterAndPaginate();

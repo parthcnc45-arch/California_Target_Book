@@ -28,7 +28,7 @@
                             <tr>
                                 <th class="th-w-18">Date</th>
                                 <th class="th-w-37">Items</th>
-                                <th class="th-w-12">Plan</th>
+                                <th class="th-w-12">Type</th>
                                 <th class="th-w-13">Amount</th>
                                 <th class="th-w-12">Status</th>
                                 <th class="text-center th-w-8">Invoice</th>

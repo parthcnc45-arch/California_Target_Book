@@ -742,9 +742,9 @@ trait CreatesUser {
 
             $planName = '—';
             if ($subscription->frequency === 12) {
-                $planName = 'One-Year';
+                $planName = 'Subscription - 1 Year';
             } elseif ($subscription->frequency === 24) {
-                $planName = 'Two-Year';
+                $planName = 'Subscription - 2 Year';
             }
 
             $isCompleted = ($invoice->status === 'paid' || !empty($invoice->paid));
@@ -1164,4 +1164,4 @@ trait CreatesUser {
   }
 
 }
-//  14/07/2026
+//  20/07/2026

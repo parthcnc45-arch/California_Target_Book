@@ -173,7 +173,6 @@
             font-weight: 600;
             padding: 3px 8px;
             border-radius: 9999px;
-            text-transform: uppercase;
             display: inline-block;
         }
         .badge-role.subscriber {
@@ -1192,7 +1191,7 @@
                                     ? ((user.first_name || '').substring(0, 1) + (user.last_name || '').substring(0, 1)).toUpperCase() 
                                     : user.email.substring(0, 2).toUpperCase();
                                 const avatarClass = role === 'subscriber' ? 'subscriber' : 'addon';
-                                const roleText = role === 'subscriber' ? 'Subscriber' : 'Addon';
+                                const roleText = role === 'subscriber' ? 'Subscriber' : 'Add-On';
                                 const badgeClass = role === 'subscriber' ? 'subscriber' : 'addon';
                                 
                                 const removeButton = role === 'addon'

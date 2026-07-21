@@ -155,7 +155,7 @@
                 <div class="subscriber-tag">Subscriber</div>
                 <h1 class="subscriber-name">{{ $contact->name() }}</h1>
             </div>
-            <a href="/ctb-admin/new/contacts" class="btn-export-csv" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px; padding: 8px 16px;">
+            <a href="javascript:history.back()" class="btn-export-csv" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px; padding: 8px 16px;">
                 <i class="bi bi-arrow-left"></i> BACK TO LIST
             </a>
         </div>

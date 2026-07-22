@@ -169,7 +169,7 @@
 @section('portal_content')
     <div class="section-header" style="justify-content: space-between; display: flex; align-items: center; margin-bottom: 24px;">
         <div class="header-title-container">
-            <h1 class="header-title">Classifieds</h1>
+            <h1 class="header-title">Classifieds Manager</h1>
         </div>
         <button type="button" id="btn-add-classified" class="btn-add-subscription" style="border: none; outline: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
             <i class="bi bi-plus-lg"></i> ADD
@@ -263,10 +263,16 @@
                 <div>
                     <select class="form-input-style" id="filter-category" style="width: 140px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
                         <option value="all">All Categories</option>
-                        <option value="Jobs">Jobs</option>
-                        <option value="Office Space">Office Space</option>
-                        <option value="Consulting">Consulting</option>
-                        <option value="Other">Other</option>
+                        @if(isset($categories) && count($categories) > 0)
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->name }}">{{ $cat->name }}</option>
+                            @endforeach
+                        @else
+                            <option value="Jobs">Jobs</option>
+                            <option value="Office Space">Office Space</option>
+                            <option value="Consulting">Consulting</option>
+                            <option value="Other">Other</option>
+                        @endif
                     </select>
                 </div>
 
@@ -294,15 +300,15 @@
             <table class="portal-grid-table" id="classifieds-table" style="margin-bottom: 0;">
                 <thead>
                     <tr>
-                        <th>Ad</th>
-                        <th style="width: 110px;">Category</th>
-                        <th style="width: 170px;">Advertiser</th>
-                        <th style="width: 120px;">Start Date</th>
-                        <th style="width: 135px;">End Date</th>
-                        <th style="width: 100px;">Status</th>
-                        <th style="width: 130px;">Payment Status</th>
-                        <th style="width: 100px;">Rate</th>
-                        <th style="width: 60px; text-align: center; padding-right: 16px;"></th>
+                        <th style="width: 26%;">Ad</th>
+                        <th style="width: 12%;">Category</th>
+                        <th style="width: 18%;">Advertiser</th>
+                        <th style="width: 10%;">Start Date</th>
+                        <th style="width: 10%;">End Date</th>
+                        <th style="width: 8%;">Status</th>
+                        <th style="width: 10%;">Payment Status</th>
+                        <th style="width: 8%;">Rate</th>
+                        <th style="width: 50px; text-align: center; padding-right: 16px;"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -318,6 +324,34 @@
             </div>
             <div style="display: flex; gap: 8px; align-items: center;" id="pagination-buttons">
                 <!-- Pagination buttons -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Delete Modal -->
+    <div id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s ease-in-out;">
+        <div class="portal-card" style="width: 100%; max-width: 400px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border-radius: 12px; background: #ffffff; text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background-color: #fef2f2; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                <i class="bi bi-exclamation-triangle" style="font-size: 24px; color: #ef4444;"></i>
+            </div>
+            <h3 style="margin: 0 0 8px; font-size: 18px; font-weight: 700; color: #0f172a;">Delete Classified Ad?</h3>
+            <p style="margin: 0 0 24px; font-size: 14px; color: #64748b;">Are you sure you want to permanently delete this classified ad? This action cannot be undone.</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button type="button" id="btn-cancel-delete" style="background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; flex: 1;">Cancel</button>
+                <button type="button" id="btn-confirm-delete" style="background-color: #ef4444; border: none; color: #ffffff; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; flex: 1;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Modal -->
+    <div id="view-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s ease-in-out;">
+        <div class="portal-card" style="width: 100%; max-width: 650px; max-height: calc(100vh - 48px); overflow-y: auto; padding: 0; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border-radius: 12px; background: #ffffff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">Classified Ad Details</h3>
+                <button type="button" id="btn-close-view-modal" style="background: transparent; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div id="view-modal-content" style="padding: 24px; font-size: 14px; color: #334155;">
+                <!-- Content will be injected here -->
             </div>
         </div>
     </div>
@@ -338,15 +372,50 @@
             <form id="classified-form" novalidate style="padding: 24px; display: flex; flex-direction: column; gap: 18px; margin: 0;">
                 <input type="hidden" id="classified_id">
 
+                <!-- Contact Information -->
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <label class="form-label-style">First Name *</label>
+                        <input type="text" id="first_name" class="form-input-style" placeholder="e.g. John" required>
+                    </div>
+                    <div style="flex: 1; min-width: 180px;">
+                        <label class="form-label-style">Last Name *</label>
+                        <input type="text" id="last_name" class="form-input-style" placeholder="e.g. Doe" required>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <label class="form-label-style">Phone Number *</label>
+                        <input type="text" id="phone_number" class="form-input-style" placeholder="e.g. (555) 123-4567" required>
+                    </div>
+                    <div style="flex: 1; min-width: 180px;">
+                        <label class="form-label-style">Advertiser Email *</label>
+                        <input type="email" id="advertiser_email" class="form-input-style" placeholder="contact@org.com" required>
+                    </div>
+                </div>
+
+                <!-- Organization Name -->
+                <div>
+                    <label class="form-label-style">Organization Name *</label>
+                    <input type="text" id="organization_name" class="form-input-style" placeholder="e.g. Department of Finance" required>
+                </div>
+
                 <!-- Status & Category Select dropdowns -->
                 <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 200px;">
                         <label class="form-label-style">Category *</label>
                         <select class="form-input-style" id="category" required>
-                            <option value="Jobs" selected>Jobs</option>
-                            <option value="Office Space">Office Space</option>
-                            <option value="Consulting">Consulting</option>
-                            <option value="Other">Other</option>
+                            @if(isset($categories) && count($categories) > 0)
+                                @foreach($categories as $index => $cat)
+                                    <option value="{{ $cat->name }}" {{ $index === 0 ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                @endforeach
+                            @else
+                                <option value="Jobs" selected>Jobs</option>
+                                <option value="Office Space">Office Space</option>
+                                <option value="Consulting">Consulting</option>
+                                <option value="Other">Other</option>
+                            @endif
                         </select>
                     </div>
                     <div style="flex: 1; min-width: 200px;">
@@ -357,12 +426,6 @@
                             <option value="Inactive">Inactive</option>
                         </select>
                     </div>
-                </div>
-
-                <!-- Organization Name -->
-                <div>
-                    <label class="form-label-style">Organization Name *</label>
-                    <input type="text" id="organization_name" class="form-input-style" placeholder="e.g. Department of Finance" required>
                 </div>
 
                 <!-- Ad Headline / Title -->
@@ -386,6 +449,46 @@
                     <label class="form-label-style">Link URL</label>
                     <input type="text" id="link_url" class="form-input-style" placeholder="https://...">
                 </div>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <label class="form-label-style">Payment Status *</label>
+                        <select class="form-input-style" id="payment_status" required>
+                            <option value="Paid (via GHL)" selected>Paid (via GHL)</option>
+                            <option value="Pending Payment">Pending Payment</option>
+                            <option value="Invoiced">Invoiced</option>
+                            <option value="Complimentary">Complimentary</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Ad Duration & Rate ($) -->
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <label class="form-label-style">Ad Duration *</label>
+                        <select class="form-input-style" id="rate_type" required>
+                            @if(isset($rates) && count($rates) > 0)
+                                @foreach($rates as $index => $rate)
+                                    @php
+                                        $rateTitle = $rate->title ?? $rate->name;
+                                        $rateAmt = $rate->rate_amount ? round($rate->rate_amount) : '';
+                                        $rateDays = $rate->days ?? '';
+                                        $details = '';
+                                        if ($rateAmt && $rateDays) {
+                                            $details = " (\${$rateAmt} / {$rateDays} Days)";
+                                        } elseif ($rateAmt) {
+                                            $details = " (\${$rateAmt})";
+                                        }
+                                    @endphp
+                                    <option value="{{ $rate->id }}" data-amount="{{ $rateAmt }}" data-days="{{ $rateDays }}" {{ $index === 0 ? 'selected' : '' }}>{{ $rateTitle }}{{ $details }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 180px;">
+                        <label class="form-label-style">Rate ($) *</label>
+                        <input type="number" id="ad_rate_amount" class="form-input-style" placeholder="e.g. 165" min="0" step="0.01" required>
+                    </div>
+                </div>
 
                 <!-- Start Date & End Date -->
                 <div style="display: flex; gap: 20px; flex-wrap: wrap;">
@@ -399,47 +502,6 @@
                     </div>
                 </div>
 
-                <!-- Advertiser Email & Payment Status & Rate -->
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 180px;">
-                        <label class="form-label-style">Advertiser Email *</label>
-                        <input type="email" id="advertiser_email" class="form-input-style" placeholder="contact@org.com" required>
-                    </div>
-                    <div style="flex: 1; min-width: 180px;">
-                        <label class="form-label-style">Payment Status *</label>
-                        <select class="form-input-style" id="payment_status" required>
-                            <option value="Paid (via GHL)" selected>Paid (via GHL)</option>
-                            <option value="Pending Payment">Pending Payment</option>
-                            <option value="Invoiced">Invoiced</option>
-                            <option value="Complimentary">Complimentary</option>
-                        </select>
-                    </div>
-                    <div style="flex: 1; min-width: 180px;">
-                        <label class="form-label-style">Rate Options *</label>
-                        <select class="form-input-style" id="rate_type" required>
-                            <option value="weekly" selected>$165/week</option>
-                            <option value="monthly">$585/month</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Custom Rate Input Row (hidden by default) -->
-                <div id="custom-rate-row" style="display: none; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 200px;">
-                        <label class="form-label-style" id="custom_rate_amount_label">Weekly Rate ($) *</label>
-                        <input type="number" id="custom_rate_amount" class="form-input-style" placeholder="e.g. 250.00" min="0" step="0.01">
-                    </div>
-                    <div style="flex: 1; min-width: 200px;">
-                        <label class="form-label-style">Custom Rate Type *</label>
-                        <select class="form-input-style" id="custom_rate_type">
-                            <option value="weekly" selected>Weekly</option>
-                            <option value="monthly">Monthly</option>
-                        </select>
-                    </div>
-
-                </div>
-
                 <!-- Admin Notes -->
                 <div>
                     <label class="form-label-style">Admin Notes</label>
@@ -448,9 +510,7 @@
 
                 <!-- Actions Button Row -->
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 8px;">
-                    <button type="button" id="btn-delete-classified" style="display: none; background-color: #fef2f2; border: 1px solid #fca5a5; color: #ef4444; padding: 10px 16px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.15s ease-in-out; align-items: center; gap: 6px;">
-                        <i class="bi bi-trash"></i> Delete
-                    </button>
+
                     <div style="display: flex; gap: 12px; margin-left: auto;">
                         <button type="button" id="btn-cancel-modal" style="background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.15s ease-in-out;">Cancel</button>
                         <button type="submit" id="btn-save-classified" style="background-color: #4f46e5; border: none; color: #ffffff; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.15s ease-in-out;">Save</button>
@@ -482,7 +542,7 @@
 
             function loadRateOptions(callback) {
                 $.ajax({
-                    url: '/api/classifieds/rates/options',
+                    url: '/ctb-admin/new/classifieds/rates',
                     method: 'GET',
                     headers: {
                         'Authorization': 'Bearer ' + apiToken,
@@ -493,22 +553,21 @@
                         const $select = $('#rate_type');
                         $select.empty();
                         rateOptions.forEach(r => {
-                            $select.append(`<option value="${r.id}">${r.name}</option>`);
+                            const title = r.title || r.name || 'Rate Option';
+                            const amount = r.rate_amount ? Math.round(r.rate_amount) : '';
+                            const days = r.days || '';
+                            let details = '';
+                            if (amount && days) {
+                                details = ` ($${amount} / ${days} Days)`;
+                            } else if (amount) {
+                                details = ` ($${amount})`;
+                            }
+                            $select.append(`<option value="${r.id}" data-amount="${amount}" data-days="${days}">${title}${details}</option>`);
                         });
-                        $select.append(`<option value="custom">Custom</option>`);
                         if (callback) callback();
                     },
                     error: function() {
-                        console.error('Failed to load rate options from DB. Falling back.');
-                        rateOptions = [
-                            { id: 1, name: '$165/week', rate: '$165/wk', rate_amount: 165.00, type: 'weekly' },
-                            { id: 2, name: '$585/month', rate: '$585/mo', rate_amount: 585.00, type: 'monthly' }
-                        ];
-                        const $select = $('#rate_type');
-                        $select.empty();
-                        $select.append(`<option value="1">$165/week</option>`);
-                        $select.append(`<option value="2">$585/month</option>`);
-                        $select.append(`<option value="custom">Custom</option>`);
+                        console.error('Failed to load rate options from DB.');
                         if (callback) callback();
                     }
                 });
@@ -623,8 +682,8 @@
                         badgeClass = 'status-pill status-pending';
                     }
 
-                    const displayStart = isPending ? '—' : formatDate(ad.starts_on);
-                    const displayEnd = isPending ? '—' : formatDate(ad.ends_on);
+                    const displayStart = formatDate(ad.starts_on) || '—';
+                    const displayEnd = formatDate(ad.ends_on) || '—';
                     
                     let paymentBadgeStyle = '';
                     const pStatus = ad.payment_status || 'Pending Payment';
@@ -638,9 +697,9 @@
                         paymentBadgeStyle = 'background-color: #fdf2f8; color: #be185d; border: 1px solid #fbcfe8; padding: 3px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; display: inline-block; white-space: nowrap;';
                     }
                     
-                    let startSubText = isPending ? '' : '<div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Start</div>';
+                    let startSubText = ad.starts_on ? '<div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Start</div>' : '';
                     let endSubText = '';
-                    if (!isPending && endsOnStr) {
+                    if (endsOnStr) {
                         if (isExpired) {
                             endSubText = '<div style="font-size: 11px; color: #ef4444; font-weight: 600; margin-top: 2px;">Expired</div>';
                         } else {
@@ -664,9 +723,7 @@
                     const rowHtml = `
                         <tr style="${rowStyle}" class="${rowClass}">
                             <td>
-                                <div style="font-size: 10px; font-weight: 700; color: #2E7D9A; text-transform: uppercase; margin-bottom: 2px;">${categoryTag}</div>
                                 <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.3;">${headline}</div>
-                                <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">${orgName}</div>
                             </td>
                             <td style="color: #475569; font-weight: 500; font-size: 13px;">${ad.category || 'Jobs'}</td>
                             <td>
@@ -682,11 +739,18 @@
                             </td>
                             <td><span class="${badgeClass}">${displayStatus}</span></td>
                             <td><span style="${paymentBadgeStyle}">${pStatus}</span></td>
-                            <td style="color: #0f172a; font-weight: 700; font-size: 13px;">${ad.rate_option ? ad.rate_option.rate : (ad.rate || '—')}</td>
-                            <td style="text-align: center; padding-right: 16px;">
-                                <button class="table-action-edit btn-edit-row" data-id="${ad.id}">
-                                    <i class="bi bi-three-dots"></i>
-                                </button>
+                            <td style="color: #0f172a; font-weight: 700; font-size: 13px;">${ad.rate_amount ? '$' + parseFloat(ad.rate_amount).toFixed(2) : '—'}</td>
+                            <td style="text-align: center; padding-right: 16px; position: relative;">
+                                <div class="dropdown">
+                                    <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" style="font-size: 14px; border: 1px solid #f1f5f9; border-radius: 8px; padding: 8px 0; min-width: 150px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
+                                        <li><a class="dropdown-item btn-edit-row" href="#" data-id="${ad.id}" style="padding: 10px 20px; color: #c52026; font-weight: 500; display: flex; align-items: center;"><i class="bi bi-pencil" style="margin-right: 12px; font-size: 15px;"></i> Edit</a></li>
+                                        <li><a class="dropdown-item btn-view-row" href="#" data-id="${ad.id}" style="padding: 10px 20px; color: #c52026; font-weight: 500; display: flex; align-items: center;"><i class="bi bi-eye" style="margin-right: 12px; font-size: 15px;"></i> View</a></li>
+                                        <li><a class="dropdown-item btn-delete-row" href="#" data-id="${ad.id}" style="padding: 10px 20px; color: #c52026; font-weight: 500; display: flex; align-items: center;"><i class="bi bi-trash" style="margin-right: 12px; font-size: 15px;"></i> Delete</a></li>
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -937,9 +1001,6 @@
             const $bodyTextarea = $('#body');
             const $wordCountBadge = $('#word-count-badge');
             const $rateType = $('#rate_type');
-            const $customRateRow = $('#custom-rate-row');
-            const $customRateText = $('#custom_rate_text');
-            const $customRateAmount = $('#custom_rate_amount');
             const $btnDelete = $('#btn-delete-classified');
             const $btnSave = $('#btn-save-classified');
 
@@ -961,14 +1022,13 @@
             function resetForm() {
                 $form[0].reset();
                 $('#classified_id').val('');
-                $('#category').val('Jobs');
+                const firstCatVal = $('#category option:first').val();
+                $('#category').val(firstCatVal || '');
+                const firstRateVal = $('#rate_type option:first').val();
+                $rateType.val(firstRateVal || '').trigger('change');
+                $('#ad_rate_amount').val('');
                 $('#payment_status').val('Pending Payment');
                 $modalErrorBanner.hide().html('');
-                $customRateRow.hide();
-                $customRateAmount.val('');
-                $('#custom_rate_type').val('weekly');
-                $('#custom_rate_amount_label').text('Weekly Rate ($) *');
-                $('#custom_rate_amount').attr('placeholder', 'e.g. 250.00');
                 $btnDelete.hide();
                 $('.error-msg').remove();
                 $('input, select, textarea').css('border-color', '#cbd5e1');
@@ -993,28 +1053,34 @@
 
             $bodyTextarea.on('input keyup', updateWordCount);
 
-            // Toggle custom rate details
-            $rateType.on('change', function() {
-                if ($(this).val() === 'custom') {
-                    $customRateRow.css('display', 'flex');
-                    $('#custom_rate_type').trigger('change');
-                } else {
-                    $customRateRow.hide();
-                    $customRateText.val('');
-                    $customRateAmount.val('');
+            function calculateExpiration() {
+                const selectedOpt = $rateType.find('option:selected');
+                const days = parseInt(selectedOpt.attr('data-days')) || 0;
+                const startVal = $('#starts_on').val();
+
+                if (startVal && days > 0) {
+                    const startDate = new Date(startVal + 'T00:00:00');
+                    if (!isNaN(startDate.getTime())) {
+                        startDate.setDate(startDate.getDate() + days - 1);
+                        const year = startDate.getFullYear();
+                        const month = String(startDate.getMonth() + 1).padStart(2, '0');
+                        const day = String(startDate.getDate()).padStart(2, '0');
+                        $('#ends_on').val(`${year}-${month}-${day}`);
+                    }
                 }
+            }
+
+            // Auto-fill Rate ($) & calculate End Date on Ad Duration change
+            $rateType.on('change', function() {
+                const selectedOpt = $(this).find('option:selected');
+                const amt = selectedOpt.attr('data-amount');
+                if (amt !== undefined && amt !== null && amt !== '') {
+                    $('#ad_rate_amount').val(amt);
+                }
+                calculateExpiration();
             });
 
-            // Toggle label based on custom rate type
-            $('#custom_rate_type').on('change', function() {
-                if ($(this).val() === 'weekly') {
-                    $('#custom_rate_amount_label').text('Weekly Rate ($) *');
-                    $('#custom_rate_amount').attr('placeholder', 'e.g. 250.00');
-                } else {
-                    $('#custom_rate_amount_label').text('Monthly Rate ($) *');
-                    $('#custom_rate_amount').attr('placeholder', 'e.g. 500.00');
-                }
-            });
+            $('#starts_on').on('change input', calculateExpiration);
 
             $('#btn-add-classified').on('click', () => {
                 resetForm();
@@ -1023,9 +1089,6 @@
             });
 
             $('#btn-close-modal, #btn-cancel-modal').on('click', closeModal);
-            $modal.on('click', function(e) {
-                if (e.target === this) closeModal();
-            });
 
             $tbody.on('click', '.btn-edit-row', function() {
                 const adId = $(this).data('id');
@@ -1046,7 +1109,7 @@
                         $btnSave.prop('disabled', false).text('Save');
                         $('#classified_id').val(ad.id);
                         $('#status').val(ad.status);
-                        $('#category').val(ad.category || 'Jobs');
+                        $('#category').val(ad.category || $('#category option:first').val());
                         $('#organization_name').val(ad.organization_name);
                         $('#title').val(ad.title);
                         $bodyTextarea.val(ad.body);
@@ -1060,43 +1123,20 @@
                         $('#starts_on').val(startsOn);
                         $('#ends_on').val(endsOn);
                         $('#advertiser_email').val(ad.advertiser_email);
+                        $('#first_name').val(ad.first_name || '');
+                        $('#last_name').val(ad.last_name || '');
+                        $('#phone_number').val(ad.phone_number || '');
                         $('#payment_status').val(ad.payment_status || 'Pending Payment');
                         $('#admin_notes').val(ad.admin_notes || '');
 
                         // Sync Rates
                         const rateId = ad.classified_rate_id;
-                        const rate = ad.rate;
-                        const rateAmount = ad.rate_amount || 0;
-                        const standardIds = [1, 2];
+                        const rateAmount = ad.rate_amount !== undefined && ad.rate_amount !== null ? ad.rate_amount : 0;
 
-                        if (rateId && standardIds.includes(rateId)) {
+                        if (rateId && $('#rate_type option[value="' + rateId + '"]').length > 0) {
                             $rateType.val(rateId);
-                            $customRateRow.hide();
-                        } else {
-                            // Custom or legacy matching
-                            $rateType.val('custom');
-                            $customRateAmount.val(rateAmount || '');
-                            
-                            // Determine type based on rateOption or ad rate text
-                            let cType = 'weekly';
-                            if (ad.rate_option) {
-                                cType = ad.rate_option.type;
-                            } else {
-                                const isWeekly = rate && (rate.includes('/wk') || rate.toLowerCase().includes('week'));
-                                cType = isWeekly ? 'weekly' : 'monthly';
-                            }
-                            
-                            $('#custom_rate_type').val(cType);
-                            if (cType === 'weekly') {
-                                $('#custom_rate_amount_label').text('Weekly Rate ($) *');
-                                $('#custom_rate_amount').attr('placeholder', 'e.g. 250.00');
-                            } else {
-                                $('#custom_rate_amount_label').text('Monthly Rate ($) *');
-                                $('#custom_rate_amount').attr('placeholder', 'e.g. 500.00');
-                            }
-
-                            $customRateRow.css('display', 'flex');
                         }
+                        $('#ad_rate_amount').val(rateAmount);
 
                         $btnDelete.show();
                         updateWordCount();
@@ -1118,6 +1158,9 @@
 
                 let isValid = true;
                 const requiredFields = [
+                    { id: 'first_name', label: 'First Name' },
+                    { id: 'last_name', label: 'Last Name' },
+                    { id: 'phone_number', label: 'Phone Number' },
                     { id: 'status', label: 'Status' },
                     { id: 'category', label: 'Category' },
                     { id: 'organization_name', label: 'Organization Name' },
@@ -1125,7 +1168,8 @@
                     { id: 'body', label: 'Ad Body Text', type: 'body' },
                     { id: 'starts_on', label: 'Start Date' },
                     { id: 'ends_on', label: 'End Date' },
-                    { id: 'advertiser_email', label: 'Advertiser Email', type: 'email' }
+                    { id: 'advertiser_email', label: 'Advertiser Email', type: 'email' },
+                    { id: 'ad_rate_amount', label: 'Rate ($)' }
                 ];
 
                 requiredFields.forEach(f => {
@@ -1159,35 +1203,12 @@
                     isValid = false;
                 }
 
-                // Custom Rate validations
-                if ($rateType.val() === 'custom') {
-                    const custAmt = $customRateAmount.val().trim();
-                    if (!custAmt) {
-                        showError($customRateAmount, 'This field is required.');
-                        isValid = false;
-                    }
-                }
-
                 if (!isValid) {
                     showModalError('Please fix the highlighted errors below.');
                     return;
                 }
 
-                // Compute rates
-                let rateAmountVal = 0.00;
-                let rateIdVal = null;
-                const rType = $rateType.val();
-                
-                if (rType === 'custom') {
-                    rateAmountVal = parseFloat($customRateAmount.val()) || 0.00;
-                    rateIdVal = 'custom';
-                } else {
-                    const matchedOption = rateOptions.find(o => String(o.id) === String(rType));
-                    if (matchedOption) {
-                        rateIdVal = matchedOption.id;
-                    }
-                }
-
+                const rateAmountVal = parseFloat($('#ad_rate_amount').val()) || 0.00;
                 const adId = $('#classified_id').val();
                 const payload = {
                     status: $('#status').val(),
@@ -1199,10 +1220,12 @@
                     starts_on: startVal,
                     ends_on: endVal,
                     advertiser_email: $('#advertiser_email').val().trim(),
+                    first_name: $('#first_name').val().trim() || null,
+                    last_name: $('#last_name').val().trim() || null,
+                    phone_number: $('#phone_number').val().trim() || null,
                     payment_status: $('#payment_status').val(),
-                    classified_rate_id: rateIdVal,
-                    custom_rate_amount: rType === 'custom' ? rateAmountVal : null,
-                    custom_rate_type: rType === 'custom' ? $('#custom_rate_type').val() : null,
+                    classified_rate_id: $('#rate_type').val(),
+                    rate_amount: rateAmountVal,
                     admin_notes: $('#admin_notes').val().trim() || null
                 };
 
@@ -1273,6 +1296,119 @@
                         }
                     });
                 }
+            });
+
+            let adIdToDelete = null;
+
+            $tbody.on('click', '.btn-delete-row', function(e) {
+                e.preventDefault();
+                adIdToDelete = $(this).data('id');
+                const $cModal = $('#confirm-modal');
+                $cModal.css('display', 'flex');
+                setTimeout(() => $cModal.css('opacity', '1'), 10);
+            });
+
+            $('#btn-cancel-delete').on('click', function() {
+                const $cModal = $('#confirm-modal');
+                $cModal.css('opacity', '0');
+                setTimeout(() => $cModal.css('display', 'none'), 200);
+                adIdToDelete = null;
+            });
+
+            $('#btn-confirm-delete').on('click', function() {
+                if (!adIdToDelete) return;
+                const $btn = $(this);
+                $btn.prop('disabled', true).text('Deleting...');
+                
+                $.ajax({
+                    url: '/api/classifieds/' + adIdToDelete,
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiToken,
+                        'Accept': 'application/json'
+                    },
+                    success: function() {
+                        $('#btn-cancel-delete').click();
+                        $btn.prop('disabled', false).text('Delete');
+                        loadClassifieds();
+                    },
+                    error: function() {
+                        $('#btn-cancel-delete').click();
+                        $btn.prop('disabled', false).text('Delete');
+                        alert('Failed to delete classified ad.');
+                    }
+                });
+            });
+
+            // View row logic
+            $tbody.on('click', '.btn-view-row', function(e) {
+                e.preventDefault();
+                const adId = $(this).data('id');
+                const $vModal = $('#view-modal');
+                $('#view-modal-content').html('<div style="text-align: center; padding: 20px;">Loading...</div>');
+                $vModal.css('display', 'flex');
+                setTimeout(() => $vModal.css('opacity', '1'), 10);
+
+                $.ajax({
+                    url: '/api/classifieds/' + adId,
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + apiToken, 'Accept': 'application/json' },
+                    success: function(ad) {
+                        const fields = [
+                            // Advertiser Info
+                            { key: 'first_name', label: 'First Name' },
+                            { key: 'last_name', label: 'Last Name' },
+                            { key: 'organization_name', label: 'Organization Name' },
+                            { key: 'advertiser_email', label: 'Advertiser Email' },
+                            { key: 'phone_number', label: 'Phone Number' },
+                            { key: 'link_url', label: 'Link URL' },
+
+                            // Ad Info
+                            { key: 'title', label: 'Headline / Title' },
+                            { key: 'category', label: 'Category' },
+                            { key: 'status', label: 'Ad Status' },
+                            { key: 'payment_status', label: 'Payment Status' },
+                            { key: 'starts_on', label: 'Start Date' },
+                            { key: 'ends_on', label: 'End Date' },
+                            { key: 'rate_amount', label: 'Rate Amount ($)' },
+                            
+                            // Timestamps
+                            { key: 'created_at', label: 'Created At' },
+                            { key: 'updated_at', label: 'Updated At' },
+
+                            // Full width content at the bottom
+                            { key: 'body', label: 'Ad Body Text' },
+                            { key: 'admin_notes', label: 'Admin Notes' }
+                        ];
+
+                        let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">';
+                        fields.forEach((f) => {
+                            let val = ad[f.key];
+                            if (val === null || val === undefined || val === '') val = '<span style="color: #94a3b8; font-style: italic;">-</span>';
+                            
+                            // Make body and notes full width
+                            const isFullWidth = (f.key === 'body' || f.key === 'admin_notes');
+                            const gridCol = isFullWidth ? 'grid-column: span 2;' : '';
+
+                            html += `
+                            <div style="display: flex; flex-direction: column; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; ${gridCol}">
+                                <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">${f.label}</div>
+                                <div style="font-size: 14.5px; color: #0f172a; font-weight: 500; white-space: pre-wrap; line-height: 1.4;">${val}</div>
+                            </div>`;
+                        });
+                        html += '</div>';
+                        $('#view-modal-content').html(html);
+                    },
+                    error: function() {
+                        $('#view-modal-content').html('<div style="color: red; text-align: center;">Failed to load details.</div>');
+                    }
+                });
+            });
+
+            $('#btn-close-view-modal').on('click', function() {
+                const $vModal = $('#view-modal');
+                $vModal.css('opacity', '0');
+                setTimeout(() => $vModal.css('display', 'none'), 200);
             });
 
             function showError($el, msg) {

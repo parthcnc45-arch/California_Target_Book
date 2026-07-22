@@ -11,6 +11,7 @@
         <li><a href="/book">Book</a></li>
       @endif
       <li><a href="/classifieds">Classifieds</a></li>
+      <li><a href="/advertise">Advertise</a></li>
       <li><a href="#contact">Contact</a></li>
       @guest
         <li><a href="/login">Sign In</a></li>

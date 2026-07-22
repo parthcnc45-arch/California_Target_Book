@@ -387,7 +387,7 @@
                 @if(isset($rates) && count($rates) > 0)
                     @foreach($rates as $rateOption)
                         <div class="rate-item">
-                            <span style="font-weight: 500;">{{ $rateOption->type === 'weekly' ? 'Weekly' : 'Monthly' }}</span>
+                            <span style="font-weight: 500;">{{ $rateOption->title ?? $rateOption->name }}</span>
                             <span class="rate-price">${{ round($rateOption->rate_amount) }}</span>
                         </div>
                     @endforeach
@@ -414,22 +414,31 @@
                         <span>All Categories</span>
                         <span class="category-count" id="count-all">{{ $classifieds->count() }}</span>
                     </li>
-                    <li class="category-item" data-category="Jobs">
-                        <span>Jobs</span>
-                        <span class="category-count" id="count-jobs">{{ $classifieds->where('category', 'Jobs')->count() }}</span>
-                    </li>
-                    <li class="category-item" data-category="Office Space">
-                        <span>Office Space</span>
-                        <span class="category-count" id="count-office">{{ $classifieds->where('category', 'Office Space')->count() }}</span>
-                    </li>
-                    <li class="category-item" data-category="Consulting">
-                        <span>Consulting</span>
-                        <span class="category-count" id="count-consulting">{{ $classifieds->where('category', 'Consulting')->count() }}</span>
-                    </li>
-                    <li class="category-item" data-category="Other">
-                        <span>Other</span>
-                        <span class="category-count" id="count-other">{{ $classifieds->where('category', 'Other')->count() }}</span>
-                    </li>
+                    @if(isset($categories) && count($categories) > 0)
+                        @foreach($categories as $category)
+                            <li class="category-item" data-category="{{ $category->name }}">
+                                <span>{{ $category->name }}</span>
+                                <span class="category-count">{{ $classifieds->filter(function($c) use ($category) { return strtolower($c->category) === strtolower($category->name); })->count() }}</span>
+                            </li>
+                        @endforeach
+                    @else
+                        <li class="category-item" data-category="Jobs">
+                            <span>Jobs</span>
+                            <span class="category-count">{{ $classifieds->where('category', 'jobs')->count() }}</span>
+                        </li>
+                        <li class="category-item" data-category="Office Space">
+                            <span>Office Space</span>
+                            <span class="category-count">{{ $classifieds->where('category', 'office space')->count() }}</span>
+                        </li>
+                        <li class="category-item" data-category="Consulting">
+                            <span>Consulting</span>
+                            <span class="category-count">{{ $classifieds->where('category', 'consulting')->count() }}</span>
+                        </li>
+                        <li class="category-item" data-category="Other">
+                            <span>Other</span>
+                            <span class="category-count">{{ $classifieds->where('category', 'other')->count() }}</span>
+                        </li>
+                    @endif
                 </ul>
             </div>
 

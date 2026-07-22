@@ -878,6 +878,9 @@ Route::group(['prefix' => 'ctb-legacy'], function() {
         ->where('path', '(.*)');
 });
 
+Route::get('/advertise', 'AdvertiseController@index')->name('advertise');
+Route::get('/classifieds/submit', 'AdvertiseController@showSubmitForm')->name('classifieds.submit');
+Route::post('/classifieds/submit', 'AdvertiseController@processSubmit')->name('classifieds.process_submit');
 
 Route::get('/classifieds', function() {
     $today = date('Y-m-d');
@@ -888,9 +891,10 @@ Route::get('/classifieds', function() {
         ->get();
         
     // $rates = \App\ClassifiedRate::whereIn('id', [1, 2])->orderBy('id', 'asc')->get();
-    $rates = \App\ClassifiedRate::orderBy('id', 'asc')->get();
+    $rates = \App\Models\ClassifiedRate::where('status', 'Show')->orderBy('id', 'asc')->get();
+    $categories = \App\Models\ClassifiedCategory::where('status', 'Show')->orderBy('name', 'asc')->get();
         
-    return view('classifieds.index', compact('classifieds', 'rates'));
+    return view('classifieds.index', compact('classifieds', 'rates', 'categories'));
 })->name('classifieds.index');
 
 Route::get('/ctb-admin/new/classifieds', function() { 
@@ -900,8 +904,33 @@ Route::get('/ctb-admin/new/classifieds', function() {
     $sub = ['status' => '', 'role' => ''];
     $pending_bank = null;
     $invoice = null;
-    return view('admin.admin-settings.classifieds', compact('user', 'sub', 'pending_bank', 'invoice')); 
+    $categories = \App\Models\ClassifiedCategory::where('status', 'Show')->orderBy('name', 'asc')->get();
+    $rates = \App\Models\ClassifiedRate::where('status', 'Show')->orderBy('created_at', 'asc')->get();
+    return view('admin.admin-settings.classifieds', compact('user', 'sub', 'pending_bank', 'invoice', 'categories', 'rates')); 
 });
+Route::get('/ctb-admin/new/classifieds/settings', function() { 
+    $user = auth()->user();
+    if (!$user) return redirect('/login');
+    if (!$user->isAdmin()) return abort(403);
+    
+    $categories = \App\Models\ClassifiedCategory::orderBy('created_at', 'asc')->paginate(5, ['*'], 'cat_page');
+    $rates = \App\Models\ClassifiedRate::orderBy('created_at', 'asc')->paginate(5, ['*'], 'rate_page');
+    
+    $sub = ['status' => '', 'role' => ''];
+    $pending_bank = null;
+    $invoice = null;
+    return view('admin.admin-settings.classifieds_settings', compact('user', 'sub', 'pending_bank', 'invoice', 'categories', 'rates')); 
+});
+
+Route::get('/ctb-admin/new/classifieds/categories', 'Admin\ClassifiedsController@getCategories');
+Route::post('/ctb-admin/new/classifieds/categories', 'Admin\ClassifiedsController@createCategory');
+Route::put('/ctb-admin/new/classifieds/categories/{id}', 'Admin\ClassifiedsController@updateCategory');
+Route::delete('/ctb-admin/new/classifieds/categories/{id}', 'Admin\ClassifiedsController@deleteCategory');
+
+Route::get('/ctb-admin/new/classifieds/rates', 'Admin\ClassifiedsController@getAllRates');
+Route::post('/ctb-admin/new/classifieds/rates', 'Admin\ClassifiedsController@createRate');
+Route::put('/ctb-admin/new/classifieds/rates/{id}', 'Admin\ClassifiedsController@updateRate');
+Route::delete('/ctb-admin/new/classifieds/rates/{id}', 'Admin\ClassifiedsController@deleteRate');
 Route::get('/ctb-admin/new/subscriptions', function() { 
     $user = auth()->user();
     if (!$user) return redirect('/login');

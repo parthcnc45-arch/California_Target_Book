@@ -290,25 +290,10 @@ class ClassifiedsController extends Controller
         $data = $request->all();
         $this->validator($data)->validate();
 
-        if ($data['classified_rate_id'] === 'custom') {
-            $amount = floatval($data['custom_rate_amount']);
-            $type = $data['custom_rate_type'];
-            $suffix = ($type === 'weekly') ? '/week' : '/month';
-            $rateSuffix = ($type === 'weekly') ? '/wk' : '/mo';
-            $formattedName = '$' . round($amount) . $suffix;
-            $formattedRate = '$' . round($amount) . $rateSuffix;
-
-            $rate = \App\ClassifiedRate::firstOrCreate([
-                'name' => $formattedName,
-                'rate' => $formattedRate,
-                'rate_amount' => $amount,
-                'type' => $type
-            ]);
-            $data['classified_rate_id'] = $rate->id;
-        }
-
         unset($data['rate']);
-        unset($data['rate_amount']);
+        if (isset($data['rate_amount'])) {
+            $data['rate_amount'] = floatval($data['rate_amount']);
+        }
 
         $classified = Classified::create($data);
 
@@ -329,25 +314,10 @@ class ClassifiedsController extends Controller
         $data = $request->all();
         $this->validator($data)->validate();
 
-        if ($data['classified_rate_id'] === 'custom') {
-            $amount = floatval($data['custom_rate_amount']);
-            $type = $data['custom_rate_type'];
-            $suffix = ($type === 'weekly') ? '/week' : '/month';
-            $rateSuffix = ($type === 'weekly') ? '/wk' : '/mo';
-            $formattedName = '$' . round($amount) . $suffix;
-            $formattedRate = '$' . round($amount) . $rateSuffix;
-
-            $rate = \App\ClassifiedRate::firstOrCreate([
-                'name' => $formattedName,
-                'rate' => $formattedRate,
-                'rate_amount' => $amount,
-                'type' => $type
-            ]);
-            $data['classified_rate_id'] = $rate->id;
-        }
-
         unset($data['rate']);
-        unset($data['rate_amount']);
+        if (isset($data['rate_amount'])) {
+            $data['rate_amount'] = floatval($data['rate_amount']);
+        }
 
         $classified->update($data);
 
@@ -378,7 +348,7 @@ class ClassifiedsController extends Controller
     {
         $validator = Validator::make($data, [
             'status' => 'required|string|in:Pending,Active,Inactive',
-            'category' => 'required|string|in:Jobs,Office Space,Consulting,Other',
+            'category' => 'required|string',
             'organization_name' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'body' => 'required|string',
@@ -386,19 +356,17 @@ class ClassifiedsController extends Controller
             'starts_on' => 'required|date',
             'ends_on' => 'required|date|after_or_equal:starts_on',
             'advertiser_email' => 'required|email|max:255',
-            'classified_rate_id' => 'required',
-            'custom_rate_amount' => 'required_if:classified_rate_id,custom|nullable|numeric|min:0',
-            'custom_rate_type' => 'required_if:classified_rate_id,custom|nullable|string|in:weekly,monthly',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:255',
+            'classified_rate_id' => 'nullable|integer|exists:classified_rates,id',
+            'rate_amount' => 'nullable|numeric|min:0',
             'admin_notes' => 'nullable|string',
             'payment_status' => 'required|string|in:Paid (via GHL),Pending Payment,Invoiced,Complimentary',
         ], [
             'link_url.url' => 'Please enter a valid URL (including http:// or https://).',
             'ends_on.after_or_equal' => 'The end date must be on or after the start date.',
         ]);
-
-        $validator->sometimes('classified_rate_id', 'integer|exists:classified_rates,id', function ($input) {
-            return $input->classified_rate_id !== 'custom';
-        });
 
         $validator->after(function ($validator) use ($data) {
             $body = $data['body'] ?? '';
@@ -419,7 +387,170 @@ class ClassifiedsController extends Controller
      */
     public function getRates()
     {
-        $rates = \App\ClassifiedRate::whereIn('id', [1, 2])->orderBy('id', 'asc')->get();
+        $rates = \App\Models\ClassifiedRate::where('status', 'Show')->orderBy('created_at', 'asc')->get();
         return response()->json($rates);
+    }
+
+    /**
+     * Retrieve all classified categories.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getCategories()
+    {
+        $categories = \App\Models\ClassifiedCategory::orderBy('created_at', 'desc')->get();
+        return response()->json($categories);
+    }
+
+    /**
+     * Store a newly created classified category.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function createCategory(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|unique:classified_categories,name|max:255',
+            'status' => 'nullable|string|in:Show,Hide'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $category = \App\Models\ClassifiedCategory::create([
+            'name' => $request->name,
+            'status' => $request->status ?? 'Show'
+        ]);
+
+        return response()->json($category, 201);
+    }
+
+    /**
+     * Update the specified classified category.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateCategory(Request $request, $id)
+    {
+        $category = \App\Models\ClassifiedCategory::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:classified_categories,name,' . $id,
+            'status' => 'nullable|string|in:Show,Hide'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $category->update($request->all());
+
+        return response()->json($category);
+    }
+
+    /**
+     * Remove the specified classified category.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteCategory($id)
+    {
+        $category = \App\Models\ClassifiedCategory::findOrFail($id);
+        $category->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Retrieve all classified rates.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAllRates()
+    {
+        $rates = \App\Models\ClassifiedRate::orderBy('created_at', 'asc')->get();
+        return response()->json($rates);
+    }
+
+    /**
+     * Store a newly created classified rate.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function createRate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'amount' => 'nullable|numeric|min:0',
+            'days' => 'nullable|integer|min:1',
+            'status' => 'nullable|string|in:Show,Hide'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $amount = $request->amount !== null ? floatval($request->amount) : 0;
+        $rate = \App\Models\ClassifiedRate::create([
+            'title' => $request->title,
+            'rate_amount' => $amount,
+            'days' => $request->days ? intval($request->days) : null,
+            'status' => $request->status ?? 'Show'
+        ]);
+
+        return response()->json($rate, 201);
+    }
+
+    /**
+     * Update the specified classified rate.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateRate(Request $request, $id)
+    {
+        $rate = \App\Models\ClassifiedRate::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'amount' => 'nullable|numeric|min:0',
+            'days' => 'nullable|integer|min:1',
+            'status' => 'nullable|string|in:Show,Hide'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $amount = $request->amount !== null ? floatval($request->amount) : 0;
+        $rate->update([
+            'title' => $request->title,
+            'rate_amount' => $amount,
+            'days' => $request->days ? intval($request->days) : null,
+            'status' => $request->status ?? 'Show'
+        ]);
+
+        return response()->json($rate);
+    }
+
+    /**
+     * Remove the specified classified rate.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteRate($id)
+    {
+        $rate = \App\Models\ClassifiedRate::findOrFail($id);
+        $rate->delete();
+
+        return response()->json(['success' => true]);
     }
 }

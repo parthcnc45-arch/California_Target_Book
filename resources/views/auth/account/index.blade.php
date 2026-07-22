@@ -489,6 +489,8 @@
                     <a href="/ctb-admin/new/subscriptions" class="nav-link {{ Request::is('ctb-admin/new/subscriptions*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Subscriptions</a>
                     <a href="/ctb-admin/new/hard-copy-subscriptions" class="nav-link {{ Request::is('ctb-admin/new/hard-copy-subscriptions') ? 'active' : '' }}"><i class="bi bi-book"></i> Hard Copies</a>
                     <a href="/ctb-admin/new/contacts" class="nav-link {{ Request::is('ctb-admin/new/contacts') ? 'active' : '' }}"><i class="bi bi-people"></i> Contacts</a>
+                    <a href="/ctb-admin/new/classifieds" class="nav-link {{ Request::is('ctb-admin/new/classifieds') ? 'active' : '' }}"><i class="bi bi-megaphone"></i> Classifieds</a>
+                    <a href="/ctb-admin/new/classifieds/settings" class="nav-link {{ Request::is('ctb-admin/new/classifieds/settings') ? 'active' : '' }}"><i class="bi bi-sliders"></i> Classifieds Settings</a>
 
                 </div>
             @endif

@@ -162,7 +162,7 @@
 
         <div class="footer">
            <p class="text-center m-n">
-                ©2017 California Target Book. All Rights Reserved. |
+                &copy;{{ date('Y') }} California Target Book. All Rights Reserved. |
                 <a href="{{url('/copyright')}}">Copyright</a>
             </p>
         </div>

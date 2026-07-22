@@ -28,6 +28,9 @@ class Classified extends Model
         'starts_on',
         'ends_on',
         'advertiser_email',
+        'first_name',
+        'last_name',
+        'phone_number',
         'rate',
         'rate_amount',
         'classified_rate_id',
@@ -52,6 +55,6 @@ class Classified extends Model
      */
     public function rateOption()
     {
-        return $this->belongsTo(ClassifiedRate::class, 'classified_rate_id');
+        return $this->belongsTo(\App\Models\ClassifiedRate::class, 'classified_rate_id');
     }
 }

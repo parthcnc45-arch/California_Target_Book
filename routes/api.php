@@ -102,6 +102,11 @@ Route::group([
 ], function() {
     Route::get('/', 'Admin\ClassifiedsController@index');
     Route::get('/rates/options', 'Admin\ClassifiedsController@getRates');
+    Route::get('/categories', 'Admin\ClassifiedsController@getCategories');
+    Route::post('/categories', 'Admin\ClassifiedsController@createCategory');
+    Route::put('/categories/{id}', 'Admin\ClassifiedsController@updateCategory');
+    Route::delete('/categories/{id}', 'Admin\ClassifiedsController@deleteCategory');
+    
     Route::post('/', 'Admin\ClassifiedsController@create');
     Route::get('/{id}', 'Admin\ClassifiedsController@get');
     Route::put('/{id}', 'Admin\ClassifiedsController@update');

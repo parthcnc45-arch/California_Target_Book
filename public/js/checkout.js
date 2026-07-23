@@ -260,7 +260,7 @@ $(document).ready(function () {
             let val = $(this).val();
             let priceStr = val.split('_')[0];
             let price = parseInt(priceStr) || 300;
-            let title = $(this).siblings('.deck-radio-content').find('.deck-radio-title').text().replace(/\s*\$\d+$/, '').trim();
+            let title = $(this).siblings('.deck-radio-content').find('.deck-radio-title').text().replace(/\s*\$[0-9,]+$/, '').trim();
             selectedAddons.push({
                 id: val,
                 price: price,
@@ -299,11 +299,9 @@ $(document).ready(function () {
         let hasBook = $('input[name="deck_types[]"][value="300_book"]').is(':checked');
         if (hasBook) {
             $('#deck-qty-wrapper').css('display', 'flex');
-            $('#label-printed-book .addon-price-span').hide();
             $('#deck-shipping-addresses-container').show();
         } else {
             $('#deck-qty-wrapper').hide();
-            $('#label-printed-book .addon-price-span').show();
             $('#deck-shipping-addresses-container').hide();
             bookQty = 1;
             $('#addon-deck-qty').val(bookQty);

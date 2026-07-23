@@ -64,7 +64,7 @@
                     <a href="/ctb-admin/new/digital-addon-orders" class="nav-link {{ Request::is('ctb-admin/new/digital-addon-orders') ? 'active' : '' }}"><i class="bi bi-cloud-arrow-down"></i> Digital Orders</a>
                     <a href="/ctb-admin/new/contacts" class="nav-link {{ Request::is('ctb-admin/new/contacts') ? 'active' : '' }}"><i class="bi bi-people"></i> Contacts</a>
                     <a href="/ctb-admin/new/classifieds" class="nav-link {{ Request::is('ctb-admin/new/classifieds') ? 'active' : '' }}"><i class="bi bi-megaphone"></i> Classifieds</a>
-                    <a href="/ctb-admin/new/classifieds/settings" class="nav-link {{ Request::is('ctb-admin/new/classifieds/settings') ? 'active' : '' }}"><i class="bi bi-sliders"></i> Classifieds Settings</a>
+                    <!-- <a href="/ctb-admin/new/classifieds/settings" class="nav-link {{ Request::is('ctb-admin/new/classifieds/settings') ? 'active' : '' }}"><i class="bi bi-sliders"></i> Classifieds Settings</a> -->
 
 
                 </div>

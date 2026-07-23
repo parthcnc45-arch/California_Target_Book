@@ -151,14 +151,14 @@
                         <option value="presentation">Post-Election Presentation</option>
                     </select>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 6px;">
+                <!-- <div style="display: flex; flex-direction: column; gap: 6px;">
                     <span style="font-size: 12.5px; font-weight: 600; color: #475569;">Payment Status</span>
                     <select class="form-input-style" id="filter-payment" style="width: 150px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
                         <option value="all">All Statuses</option>
                         <option value="paid">Paid</option>
                         <option value="refunded">Refunded</option>
                     </select>
-                </div>
+                </div> -->
                 <!-- Clear Filters Button -->
                 <div style="padding-bottom: 2px;">
                     <button id="btn-clear-filters" onmouseenter="this.style.backgroundColor='#e2e8f0'" onmouseleave="this.style.backgroundColor='#f1f5f9'" style="display: none; height: 36px; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; align-items: center; gap: 6px; transition: all 0.15s ease-in-out;">
@@ -281,7 +281,7 @@
             function filterAndPaginate() {
                 const searchVal = $searchInput.val().toLowerCase().trim();
                 const itemVal = $itemFilter.val().toLowerCase();
-                const paymentVal = $paymentFilter.val().toLowerCase();
+                const paymentVal = ($paymentFilter.length && $paymentFilter.val()) ? $paymentFilter.val().toLowerCase() : 'all';
 
                 const isFiltered = searchVal !== '' || itemVal !== 'all' || paymentVal !== 'all';
                 $clearFiltersBtn.css('display', isFiltered ? 'inline-flex' : 'none');
@@ -355,9 +355,6 @@
                                     <div style="display: inline-flex; gap: 8px;">
                                         <button onclick="resendEmail(${order.id})" class="table-action-btn btn-resend" title="Resend Delivery Email" ${resendDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                                             <i class="bi bi-envelope-at"></i> Resend
-                                        </button>
-                                        <button onclick="openRefundModal(${order.id}, ${order.amount})" class="table-action-btn btn-refund" title="Refund Add-on Payment" ${refundDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
-                                            <i class="bi bi-arrow-left-right"></i> Refund
                                         </button>
                                     </div>
                                 </td>
@@ -498,14 +495,18 @@
                 currentPage = 1;
                 filterAndPaginate();
             });
-            $paymentFilter.on('change', () => {
-                currentPage = 1;
-                filterAndPaginate();
-            });
+            if ($paymentFilter.length) {
+                $paymentFilter.on('change', () => {
+                    currentPage = 1;
+                    filterAndPaginate();
+                });
+            }
             $clearFiltersBtn.on('click', () => {
                 $searchInput.val('');
                 $itemFilter.val('all');
-                $paymentFilter.val('all');
+                if ($paymentFilter.length) {
+                    $paymentFilter.val('all');
+                }
                 currentPage = 1;
                 filterAndPaginate();
             });
@@ -515,3 +516,8 @@
         });
     </script>
 @endsection
+
+
+<!-- // <button onclick="openRefundModal(${order.id}, ${order.amount})" class="table-action-btn btn-refund" title="Refund Add-on Payment" ${refundDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+//     <i class="bi bi-arrow-left-right"></i> Refund
+// </button> -->

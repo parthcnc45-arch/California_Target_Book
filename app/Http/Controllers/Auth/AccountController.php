@@ -1140,17 +1140,6 @@ class AccountController extends Controller
         }
     }
 
-    public function purchaseSeats()
-    {
-        $data = $this->getAccountData();
-        if ($data === null) {
-            return redirect()->route('register');
-        }
-        if ($data === 'renew') {
-            return redirect()->route('auth.account.renew');
-        }
-        return view('auth.account.purchase_seats', $data);
-    }
 
     public function purchaseSeatsPost(Request $request)
     {

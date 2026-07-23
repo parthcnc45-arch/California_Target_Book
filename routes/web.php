@@ -187,10 +187,6 @@ Route::group([
         'as' => 'auth.account.subscriptions',
     ]);
 
-    Route::get('/subscriptions/seats', [
-        'uses' => 'Auth\AccountController@purchaseSeats',
-        'as' => 'auth.account.subscriptions.seats',
-    ]);
 
     Route::post('/subscriptions/seats/purchase', [
         'uses' => 'Auth\AccountController@purchaseSeatsPost',
@@ -891,8 +887,10 @@ Route::get('/classifieds', function() {
         ->get();
         
     // $rates = \App\ClassifiedRate::whereIn('id', [1, 2])->orderBy('id', 'asc')->get();
-    $rates = \App\Models\ClassifiedRate::where('status', 'Show')->orderBy('id', 'asc')->get();
-    $categories = \App\Models\ClassifiedCategory::where('status', 'Show')->orderBy('name', 'asc')->get();
+    // $rates = \App\Models\ClassifiedRate::where('status', 'Show')->orderBy('id', 'asc')->get();
+    $rates = collect();
+    // $categories = \App\Models\ClassifiedCategory::where('status', 'Show')->orderBy('name', 'asc')->get();
+    $categories = collect();
         
     return view('classifieds.index', compact('classifieds', 'rates', 'categories'));
 })->name('classifieds.index');
@@ -904,8 +902,10 @@ Route::get('/ctb-admin/new/classifieds', function() {
     $sub = ['status' => '', 'role' => ''];
     $pending_bank = null;
     $invoice = null;
-    $categories = \App\Models\ClassifiedCategory::where('status', 'Show')->orderBy('name', 'asc')->get();
-    $rates = \App\Models\ClassifiedRate::where('status', 'Show')->orderBy('created_at', 'asc')->get();
+    // $categories = \App\Models\ClassifiedCategory::where('status', 'Show')->orderBy('name', 'asc')->get();
+    $categories = collect();
+    // $rates = \App\Models\ClassifiedRate::where('status', 'Show')->orderBy('created_at', 'asc')->get();
+    $rates = collect();
     return view('admin.admin-settings.classifieds', compact('user', 'sub', 'pending_bank', 'invoice', 'categories', 'rates')); 
 });
 Route::get('/ctb-admin/new/classifieds/settings', function() { 
@@ -913,8 +913,10 @@ Route::get('/ctb-admin/new/classifieds/settings', function() {
     if (!$user) return redirect('/login');
     if (!$user->isAdmin()) return abort(403);
     
-    $categories = \App\Models\ClassifiedCategory::orderBy('created_at', 'asc')->paginate(5, ['*'], 'cat_page');
-    $rates = \App\Models\ClassifiedRate::orderBy('created_at', 'asc')->paginate(5, ['*'], 'rate_page');
+    // $categories = \App\Models\ClassifiedCategory::orderBy('created_at', 'asc')->paginate(5, ['*'], 'cat_page');
+    $categories = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 5);
+    // $rates = \App\Models\ClassifiedRate::orderBy('created_at', 'asc')->paginate(5, ['*'], 'rate_page');
+    $rates = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 5);
     
     $sub = ['status' => '', 'role' => ''];
     $pending_bank = null;
@@ -965,6 +967,15 @@ Route::get('/ctb-admin/new/hard-copy-subscriptions', function() {
     $pending_bank = null;
     $invoice = null;
     return view('admin.admin-settings.hard_copies', compact('user', 'sub', 'pending_bank', 'invoice')); 
+});
+Route::get('/ctb-admin/new/digital-addon-orders', function() { 
+    $user = auth()->user();
+    if (!$user) return redirect('/login');
+    if (!$user->isAdmin()) return abort(403);
+    $sub = ['status' => '', 'role' => ''];
+    $pending_bank = null;
+    $invoice = null;
+    return view('admin.admin-settings.digital_addon_orders', compact('user', 'sub', 'pending_bank', 'invoice')); 
 });
 Route::get('/ctb-admin/new/contacts', function() { 
     $user = auth()->user();

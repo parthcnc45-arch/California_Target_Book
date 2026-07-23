@@ -92,7 +92,7 @@ trait CreatesUser {
         'deck_addresses.*.special_instructions' => 'nullable|string|max:255',
 
         'addons.*' => 'required|distinct|different:email|email|max:255',
-        'deck_type' => 'nullable|numeric',
+        'deck_types' => 'nullable|array',
         'deck_title' => 'nullable|string|max:255',
       ], $override_rules),
       /**
@@ -489,32 +489,50 @@ trait CreatesUser {
                 $interval_count = 7; // Trial
             }
 
-            // Step 1: Create a pending Stripe Invoice Item for the Post-Election Deck if requested
-            $deck_qty = (int) ($data['deck_qty'] ?? 0);
-            if ($deck_qty > 0) {
-                $deck_type = (int) ($data['deck_type'] ?? 300);
-                $deck_title = $data['deck_title'] ?? "Post-Election Deck Only (Subscriber)";
-
-                $deckProductId = ($deck_type === 200) ? 'prod_deck_presentation' : 'prod_deck_only';
-                try {
-                    \Stripe\Product::retrieve($deckProductId);
-                } catch (\Exception $e) {
-                    \Stripe\Product::create([
-                        'id' => $deckProductId,
-                        'name' => $deck_title,
-                        'type' => 'good',
+            // Step 1: Create pending Stripe Invoice Items for any requested optional add-ons
+            $deck_types = $data['deck_types'] ?? [];
+            if (!empty($deck_types) && is_array($deck_types)) {
+                $deck_qty = (int) ($data['deck_qty'] ?? 1);
+                if ($deck_qty < 1) {
+                    $deck_qty = 1;
+                }
+                foreach ($deck_types as $type) {
+                    if ($type == '1000') {
+                        $baseUser->addInvoiceItem([
+                            'unit_amount_decimal' => '100000', // $1,000 in cents
+                            'quantity' => 1,
+                            'description' => "Post-Election Deck Only (Subscriber)",
+                        ]);
+                    } elseif ($type == '200_presentation') {
+                        $baseUser->addInvoiceItem([
+                            'unit_amount_decimal' => '20000', // $200 in cents
+                            'quantity' => 1,
+                            'description' => "Post-Election Presentation (Subscriber)",
+                        ]);
+                    } elseif ($type == '300_book') {
+                        $baseUser->addInvoiceItem([
+                            'unit_amount_decimal' => '30000', // $300 in cents
+                            'quantity' => $deck_qty,
+                            'description' => "Additional Printed Book (Subscriber)",
+                        ]);
+                    }
+                }
+            } else {
+                // Fallback for older/other endpoints that pass a single deck_type and deck_qty
+                $deck_qty = (int) ($data['deck_qty'] ?? 0);
+                if ($deck_qty > 0 && !empty($data['deck_type'])) {
+                    $deck_type = (int) $data['deck_type'];
+                    $deck_title = $data['deck_title'] ?? "Post-Election Deck Only (Subscriber)";
+                    $baseUser->addInvoiceItem([
+                        'unit_amount_decimal' => (string) ($deck_type * 100),
+                        'quantity' => $deck_qty,
+                        'description' => $deck_title,
                     ]);
                 }
-
-                $baseUser->addInvoiceItem([
-                    'unit_amount_decimal' => (string) ($deck_type * 100),
-                    'quantity' => $deck_qty,
-                    'description' => $deck_title,
-                ]);
             }
 
             // Generate Dynamic Product Name and ID for the base subscription
-            $hasPrint = $book_subs->count() > 0;
+            $hasPrint = count($bookAddresses) > 0;
             $formatString = $hasPrint ? 'Online Access & Print' : 'Online Access Only';
             
             if ($frequency === 12) {
@@ -749,7 +767,7 @@ trait CreatesUser {
 
             $isCompleted = ($invoice->status === 'paid' || !empty($invoice->paid));
 
-            \App\Transaction::create([
+            $txObj = \App\Transaction::create([
                 'user_id' => $baseUser->id,
                 'subscription_id' => $subscription->id,
                 'stripe_charge_id' => $chargeId,
@@ -763,6 +781,32 @@ trait CreatesUser {
                 'raw_stripe_data' => $invoice->jsonSerialize(),
                 'transaction_date' => \Carbon\Carbon::createFromTimestamp($invoice->created),
             ]);
+
+            // Create DigitalAddonOrder records for purely digital add-ons
+            $deck_types = $data['deck_types'] ?? [];
+            if (!empty($deck_types) && is_array($deck_types)) {
+                foreach ($deck_types as $type) {
+                    if ($type == '1000') {
+                        \App\DigitalAddonOrder::create([
+                            'user_id' => $baseUser->id,
+                            'transaction_id' => $txObj ? $txObj->id : null,
+                            'item_name' => 'Post-Election Deck Only (Subscriber)',
+                            'amount' => 100000,
+                            'payment_status' => 'Paid',
+                            'delivery_status' => 'Sent',
+                        ]);
+                    } elseif ($type == '200_presentation') {
+                        \App\DigitalAddonOrder::create([
+                            'user_id' => $baseUser->id,
+                            'transaction_id' => $txObj ? $txObj->id : null,
+                            'item_name' => 'Post-Election Presentation (Subscriber)',
+                            'amount' => 20000,
+                            'payment_status' => 'Paid',
+                            'delivery_status' => 'Sent',
+                        ]);
+                    }
+                }
+            }
         } catch (\Exception $txEx) {
             \Illuminate\Support\Facades\Log::error("Failed to save transaction record in createUser: " . $txEx->getMessage());
         }
@@ -976,6 +1020,18 @@ trait CreatesUser {
         if (array_key_exists('is_paid_for',$data) && $data['is_paid_for']) {
           $cycle->activate();
         }
+
+        // Save organization address as a book subscription if it is a print subscription (Access & Print)
+        if (isset($nameToCheck) && (stripos($nameToCheck, 'Print') !== false || stripos($nameToCheck, 'Access & Print') !== false)) {
+            if (!empty($data['company']['address'])) {
+                $address = Address::create($data['company']['address']);
+                $subscription->book_subscriptions()->create([
+                    'user_id' => $baseUser->id,
+                    'address_id' => $address->id,
+                    'item_name' => 'California Target Book'
+                ]);
+            }
+        }
     } catch (\Exception $e) {
         throw $e;
     }
@@ -1164,4 +1220,4 @@ trait CreatesUser {
   }
 
 }
-//  20/07/2026
+//  23/07/2026

@@ -82,41 +82,53 @@
 
 
 
-        <div class="addon-card" id="addon-deck-card">
-            <div class="addon-deck-header-row">
-                <label class="custom-checkbox checkout-mt8">
-                    <input type="checkbox" id="addon-deck">
-                    <span class="checkmark"></span>
-                    Post-Election Deck
-                </label>
-                <div class="deck-qty-wrapper">
-                    <span class="addon-price-muted checkout-text-italic">One-time charge</span>
-                    <div class="qty-selector" id="deck-qty-selector" style="display: none;">
-                        <button type="button" class="qty-btn" id="deck-qty-minus"><i class="bi bi-dash"></i></button>
-                        <input type="text" class="qty-input" id="addon-deck-qty" value="1" readonly>
-                        <button type="button" class="qty-btn" id="deck-qty-plus"><i class="bi bi-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-            <div class="deck-options" style="display: none;">
+                <div class="addon-card" id="addon-deck-card" style="padding: 0; border: none; background: transparent;">
+            <div class="deck-options" style="display: flex; margin-top: 0;">
 
-                
-                <label class="deck-radio-label selected">
-                    <input type="radio" name="deck_type" value="1000" checked>
+                <label class="deck-radio-label">
+                    <input type="checkbox" name="deck_types[]" value="1000" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
                     <div class="deck-radio-content">
                         <div class="deck-radio-title">Post-Election Deck Only <span>$1,000</span></div>
-                        <div class="deck-radio-desc">Post-election deck presentation file</div>
+                        <div class="deck-radio-desc" style="margin-top: 5px;">The full post-election data deck, delivered as a digital file to your account email.<br><br>
+                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #e0f2fe; color: #0284c7; margin-right: 5px;">DIGITAL FILE</span>
+                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span>
+                        <div class="deck-confirmation-msg" style="display: none; margin-top: 10px;">Sent to your account after the document is confirmed. No shipping needed.</div></div>
                     </div>
                 </label>
+                
                 <label class="deck-radio-label">
-                    <input type="radio" name="deck_type" value="300">
+                    <input type="checkbox" name="deck_types[]" value="200_presentation" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
                     <div class="deck-radio-content">
-                        <div class="deck-radio-title">Post-Election Deck + Presentation <span>$300</span></div>
-                        <div class="deck-radio-desc">Post-election deck with live or recorded presentation add-on</div>
+                        <div class="deck-radio-title">Post-Election Presentation <span>$200</span></div>
+                        <div class="deck-radio-desc" style="margin-top: 5px;">The presentation companion to the deck, delivered as a digital file to your account email.<br><br>
+                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #e0f2fe; color: #0284c7; margin-right: 5px;">DIGITAL FILE</span>
+                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span>
+                        <div class="deck-confirmation-msg" style="display: none; margin-top: 10px;">Sent to your account after the document is confirmed. No shipping needed.</div></div>
                     </div>
                 </label>
 
-                <div id="deck-shipping-addresses-container" style="width: 100%; margin-top: 15px;"></div>
+                <div class="deck-radio-label" id="wrapper-printed-book" style="display: block; cursor: default;">
+                    <label id="label-printed-book" style="display: flex; align-items: flex-start; gap: 16px; cursor: pointer; width: 100%; margin: 0;">
+                        <input type="checkbox" name="deck_types[]" value="300_book" class="custom-addon-check" id="check-printed-book" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
+                        <div class="deck-radio-content" style="flex: 1;">
+                            <div class="deck-radio-title" style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: #0d2a45;">Additional Printed Book <span class="addon-price-span">$300</span></div>
+                            <div class="deck-radio-desc" style="margin-top: 5px; font-size: 13px; color: #475569;">A printed edition mailed to a physical address &mdash; 3 printed editions across the year, one per mailing.<br><br>
+                            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fee2e2; color: #dc2626; margin-right: 5px;">PHYSICAL + MAILED</span>
+                            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
+                        </div>
+                    </label>
+
+                    <div id="deck-qty-wrapper" style="display: none; justify-content: flex-end; align-items: center; margin-top: 15px; margin-bottom: 5px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                        <span style="font-weight: 600; font-size: 14px; color: #0d2a45; margin-right: 15px;">Number of Books:</span>
+                        <div class="qty-selector-inline" id="deck-qty-selector" style="display: flex;">
+                            <button type="button" class="qty-btn" id="deck-qty-minus"><i class="bi bi-dash"></i></button>
+                            <input type="text" class="qty-input" id="addon-deck-qty" name="deck_qty" value="1" readonly>
+                            <button type="button" class="qty-btn" id="deck-qty-plus"><i class="bi bi-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <div id="deck-shipping-addresses-container" style="width: 100%; margin-top: 15px; display: none;"></div>
+                </div>
             </div>
         </div>
 
@@ -231,12 +243,8 @@
                     <div class="summary-item-price" id="summary-user-price">$100</div>
                 </div>
 
-                <div class="summary-item" id="summary-addon-deck" style="display: none;">
-                    <div>
-                        <div class="summary-item-title"><span id="summary-deck-title">Post-Election Deck Only (Subscriber)</span> <span id="summary-deck-qty" style="font-weight: 400; color: var(--text-muted); display: none;">x 1</span></div>
-                        <div class="summary-item-desc">One-time charge</div>
-                    </div>
-                    <div class="summary-item-price" id="summary-deck-price">$300</div>
+                <div id="summary-addon-deck" style="display: none;">
+                    <!-- Items will be injected here by JS -->
                 </div>
             </div>
 

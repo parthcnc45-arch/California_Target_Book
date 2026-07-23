@@ -118,6 +118,9 @@ class User extends Authenticatable
     public function company() {
         return $this->belongsTo('App\Company');
     }
+    public function digitalAddonOrders() {
+        return $this->hasMany('App\DigitalAddonOrder');
+    }
 
     // Get active or pending subscription
     public function latestSubscription() {

@@ -353,6 +353,11 @@ class RegisterController extends Controller
 
         $user = $this->createUser($data);
 
+        // Log in the user if guest checks out
+        if (!Auth::check()) {
+            Auth::login($user);
+        }
+
         try {
             $invoice = \Stripe\Invoice::retrieve(
                 $user->latestSubscription()->cycles()->first()->invoice_id
@@ -591,6 +596,7 @@ class RegisterController extends Controller
             'deck_addresses.*.zip_code' => 'required|string|max:255',
             'deck_addresses.*.special_instructions' => 'nullable|string|max:255',
             'deck_title' => 'nullable|string|max:255',
+            'deck_types' => 'nullable|array',
         ]);
 
         $email = $validated['email'];
@@ -613,7 +619,6 @@ class RegisterController extends Controller
                 $company->address_id = $address->id;
                 $company->save();
             }
-
             $user = User::create([
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
@@ -665,7 +670,7 @@ class RegisterController extends Controller
                     'payment_method' => $validated['stripe_token'],
                     'confirm' => 'true',
                     'off_session' => 'true',
-                    'description' => "Post-Election Deck/Book Purchase - California Target Book",
+                    'description' => ($validated['deck_title'] ?? 'Post-Election Deck/Book Purchase') . " - California Target Book",
                 ]);
 
                 $resData = $response->json();
@@ -686,7 +691,7 @@ class RegisterController extends Controller
                     'amount' => $amount,
                     'currency' => 'usd',
                     'customer' => $cust->id,
-                    'description' => "Post-Election Deck/Book Purchase - California Target Book",
+                    'description' => ($validated['deck_title'] ?? 'Post-Election Deck/Book Purchase') . " - California Target Book",
                 ]);
 
                 if (!$charge->paid) {
@@ -744,7 +749,7 @@ class RegisterController extends Controller
                 }
             }
 
-            \App\Transaction::create([
+            $txObj = \App\Transaction::create([
                 'user_id' => $user->id,
                 'subscription_id' => $subscriptionId,
                 'stripe_charge_id' => $chargeId,
@@ -758,6 +763,32 @@ class RegisterController extends Controller
                 'raw_stripe_data' => $txRaw,
                 'transaction_date' => now(),
             ]);
+
+            // Create DigitalAddonOrder records for purely digital add-ons
+            $deck_types = $validated['deck_types'] ?? [];
+            if (!empty($deck_types) && is_array($deck_types)) {
+                foreach ($deck_types as $type) {
+                    if ($type == '1000') {
+                        \App\DigitalAddonOrder::create([
+                            'user_id' => $user->id,
+                            'transaction_id' => $txObj ? $txObj->id : null,
+                            'item_name' => 'Post-Election Deck Only (Subscriber)',
+                            'amount' => 100000,
+                            'payment_status' => 'Paid',
+                            'delivery_status' => 'Sent',
+                        ]);
+                    } elseif ($type == '200_presentation') {
+                        \App\DigitalAddonOrder::create([
+                            'user_id' => $user->id,
+                            'transaction_id' => $txObj ? $txObj->id : null,
+                            'item_name' => 'Post-Election Presentation (Subscriber)',
+                            'amount' => 20000,
+                            'payment_status' => 'Paid',
+                            'delivery_status' => 'Sent',
+                        ]);
+                    }
+                }
+            }
         } catch (\Exception $txEx) {
             Log::error("Failed to save transaction record in purchaseBookOnly: " . $txEx->getMessage());
         }
@@ -778,7 +809,7 @@ class RegisterController extends Controller
                 'subscription_id' => $subscriptionId,
                 'user_id' => $user->id,
                 'address_id' => $address->id,
-                'item_name' => $validated['deck_title'] ?? '-'
+                'item_name' => 'Additional Printed Book'
             ]);
         }
 

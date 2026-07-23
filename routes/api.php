@@ -70,6 +70,10 @@ Route::group([
     Route::get('/', 'Admin\SubscriptionsController@index');
     Route::get('/hard-copies', 'Admin\SubscriptionsController@indexHardCopies');
 
+    Route::get('/digital-orders', 'Admin\DigitalAddonOrdersController@index');
+    Route::post('/digital-orders/{id}/resend', 'Admin\DigitalAddonOrdersController@resendEmail');
+    Route::post('/digital-orders/{id}/refund', 'Admin\DigitalAddonOrdersController@refund');
+
     Route::get('/{id}', 'Admin\SubscriptionsController@get');
     Route::post('/{id}/addons', 'Admin\SubscriptionsController@createAddon');
     Route::post('/{id}/cycles', 'Admin\SubscriptionsController@createCycle');

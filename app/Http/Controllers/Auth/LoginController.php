@@ -119,13 +119,7 @@ class LoginController extends Controller
 
         return $request->wantsJson()
                     ? new JsonResponse(['success'=>true], 200)
-                    : redirect()
-                    ->route('home')
-                    ->with('message', 'Logged out successfully.');
-
-        // return redirect()
-        //     ->route('home')
-        //     ->with('message', 'Logged out successfully.');
+                    : view('auth.logout_clear');
     }
 
 }

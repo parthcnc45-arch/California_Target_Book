@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     let stripe, elements, paymentElement;
 
     // Retrieve configuration or fallback to defaults
@@ -34,11 +34,11 @@ $(document).ready(function() {
     let hasUserAddon = false;
     let userQty = 1;
     let userPrice = 100;
-    let hasDeckAddon = false;
+    let hasDeckAddons = false;
     let isDeckVerified = $('.deck-verification-row').is(':visible') ? false : true;
-    let deckPrice = 300;
-    let deckQty = 1;
-    let deckTitle = "Post-Election Deck Only (Subscriber)";
+    let bookQty = 1;
+    let shipToSameAddress = true;
+    let selectedAddons = [];
     let currentTotal = basePrice;
 
     console.log(currentTotal);
@@ -46,9 +46,9 @@ $(document).ready(function() {
     function updateSummary() {
         let currentBasePrice = basePrice;
         let total = currentBasePrice;
-        
+
         // Base Plan
-        if(isPrint) {
+        if (isPrint) {
             $('#summary-format-text').text(formatTextPrint);
             $('#note-print').show();
         } else {
@@ -56,12 +56,12 @@ $(document).ready(function() {
             $('#note-print').hide();
         }
         $('#summary-base-price').text('$' + currentBasePrice.toLocaleString());
-        
+
         // Update header price if it exists
         $('.price-amount').text('$' + currentBasePrice.toLocaleString());
 
         // User Addon
-        if(hasUserAddon) {
+        if (hasUserAddon) {
             let currentTotalUser = userQty * userPrice;
             total += currentTotalUser;
             $('#summary-user-qty').text('x ' + userQty);
@@ -73,17 +73,30 @@ $(document).ready(function() {
             $('#note-user').hide();
         }
 
-        // Deck Addon
-        if(hasDeckAddon) {
-            let currentTotalDeck = deckQty * deckPrice;
-            total += currentTotalDeck;
-            $('#summary-deck-title').text(deckTitle);
-            if (deckQty > 1) {
-                $('#summary-deck-qty').text('x ' + deckQty).show();
-            } else {
-                $('#summary-deck-qty').hide();
-            }
-            $('#summary-deck-price').text('$' + currentTotalDeck.toLocaleString());
+        // Multiple Addons
+        $('#summary-addon-deck').empty();
+        let hasAnyAddon = false;
+        selectedAddons.forEach(function (addon) {
+            hasAnyAddon = true;
+            let qty = addon.id === '300_book' ? bookQty : 1;
+            let addonTotal = qty * addon.price;
+            total += addonTotal;
+
+            let qtyHtml = qty > 1 ? `<span style="font-weight: 400; color: var(--text-muted);">x ${qty}</span>` : '';
+
+            let html = `
+                <div>
+                    <div class="summary-item-title"><span>${addon.title}</span> ${qtyHtml}</div>
+                    <div class="summary-item-desc">One-time charge</div>
+                </div>
+                <div class="summary-item-price">$${addonTotal.toLocaleString()}</div>
+            `;
+
+            let wrapper = $('<div class="summary-item"></div>').html(html);
+            $('#summary-addon-deck').append(wrapper);
+        });
+
+        if (hasAnyAddon) {
             $('#summary-addon-deck').show();
             $('#note-deck').show();
         } else {
@@ -108,17 +121,17 @@ $(document).ready(function() {
         }
         let container = $('#addon-user-emails-container');
         let existingValues = [];
-        $('.addon-email-input').each(function() {
+        $('.addon-email-input').each(function () {
             existingValues.push($(this).val());
         });
-        
+
         container.empty().show();
-        for(let i=0; i<userQty; i++) {
+        for (let i = 0; i < userQty; i++) {
             let val = existingValues[i] ? existingValues[i] : '';
             container.append(`
                 <div class="form-group checkout-mb12">
-                    <label class="form-label checkout-fs12">Additional User ${i+1} Email <span class="required">*</span></label>
-                    <input type="email" class="form-control addon-email-input" placeholder="user${i+1}@example.com" value="${val}" required>
+                    <label class="form-label checkout-fs12">Additional User ${i + 1} Email <span class="required">*</span></label>
+                    <input type="email" class="form-control addon-email-input" placeholder="user${i + 1}@example.com" value="${val}" required>
                     <div class="invalid-feedback">Required</div>
                 </div>
             `);
@@ -129,7 +142,7 @@ $(document).ready(function() {
         let deckContainer = $('#deck-shipping-addresses-container');
 
         let existingDeck = [];
-        deckContainer.find('.shipping-address-item').each(function(index) {
+        deckContainer.find('.shipping-address-item').each(function (index) {
             existingDeck.push({
                 line1: $(this).find('input[name*="[line1]"]').val() || '',
                 line2: $(this).find('input[name*="[line2]"]').val() || '',
@@ -143,10 +156,34 @@ $(document).ready(function() {
 
         let AddressBlockClass = Vue.extend(Vue.component('ctb-address-block'));
 
-        if (hasDeckAddon) {
-            for (let i = 0; i < deckQty; i++) {
+        let hasBook = selectedAddons.some(a => a.id === '300_book');
+        if (hasBook) {
+            if (bookQty > 1) {
+                let checkboxDiv = $(`
+                    <div style="margin-bottom: 15px; padding: 10px; background-color: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <label class="custom-checkbox" style="font-size: 13px; font-weight: 500; margin-bottom: 0; display: flex; align-items: center; padding-left: 0; gap: 10px;">
+                            <input type="checkbox" id="same-address-checkbox" ${shipToSameAddress ? 'checked' : ''}>
+                            <span class="checkmark" style="position: relative; top: 0; left: 0; margin-top: 0; flex-shrink: 0;"></span>
+                            Ship all ${bookQty} copies to the same address
+                        </label>
+                    </div>
+                `);
+                deckContainer.append(checkboxDiv);
+                
+                checkboxDiv.find('#same-address-checkbox').on('change', function() {
+                    shipToSameAddress = $(this).is(':checked');
+                    renderShippingAddresses();
+                });
+            }
+
+            let formsToRender = (bookQty > 1 && shipToSameAddress) ? 1 : bookQty;
+
+            for (let i = 0; i < formsToRender; i++) {
                 let data = existingDeck[i] || { line1: '', line2: '', city: '', state: 'CA', zip_code: '' };
-                let itemTitle = deckQty > 1 ? `Shipping Address ${i + 1}` : 'Shipping Address';
+                let itemTitle = 'Shipping Address';
+                if (bookQty > 1) {
+                    itemTitle = shipToSameAddress ? `Shipping Address &mdash; all ${bookQty} copies` : `Shipping Address ${i + 1}`;
+                }
                 let itemDiv = $(`
                     <div class="shipping-address-item${i > 0 ? ' shipping-address-item-divider' : ''}">
                         <h4 class="shipping-address-item-title" style="margin-bottom: 10px; font-size: 14px; font-weight: 600;">${itemTitle}</h4>
@@ -168,11 +205,11 @@ $(document).ready(function() {
     }
 
     // Plan Selection
-    $('.format-card').on('click', function() {
+    $('.format-card').on('click', function () {
         $('.format-card').removeClass('selected');
         $(this).addClass('selected');
-        
-        if($(this).attr('id') === 'format-print') {
+
+        if ($(this).attr('id') === 'format-print') {
             isPrint = true;
         } else {
             isPrint = false;
@@ -182,9 +219,9 @@ $(document).ready(function() {
     });
 
     // Additional User Checkbox
-    $('#addon-user').on('change', function() {
+    $('#addon-user').on('change', function () {
         hasUserAddon = $(this).is(':checked');
-        if(hasUserAddon) {
+        if (hasUserAddon) {
             $('#addon-user-card').addClass('selected');
             $('#addon-user-card .qty-selector').css('display', 'flex');
         } else {
@@ -198,7 +235,7 @@ $(document).ready(function() {
     });
 
     // User Qty Buttons
-    $('#qty-plus').on('click', function(e) {
+    $('#qty-plus').on('click', function (e) {
         e.preventDefault();
         userQty++;
         $('#addon-user-qty').val(userQty);
@@ -207,9 +244,9 @@ $(document).ready(function() {
     });
 
     // User Qty Buttons
-    $('#qty-minus').on('click', function(e) {
+    $('#qty-minus').on('click', function (e) {
         e.preventDefault();
-        if(userQty > 1) {
+        if (userQty > 1) {
             userQty--;
             $('#addon-user-qty').val(userQty);
             updateSummary();
@@ -217,68 +254,83 @@ $(document).ready(function() {
         }
     });
 
-    // Post-Election Deck Checkbox
-    $('#addon-deck').on('change', function() {
-        hasDeckAddon = $(this).is(':checked');
-        if(hasDeckAddon) {
-            $('#addon-deck-card').addClass('selected');
-            $('.deck-options').css('display', 'flex');
-            $('#deck-qty-selector').css('display', 'flex');
-            
-            // set selected deck option
-            let selectedOption = $('input[name="deck_type"]:checked');
-            deckPrice = parseInt(selectedOption.val());
-            deckTitle = selectedOption.siblings('.deck-radio-content').find('.deck-radio-title').text().replace(/\s*\$\d+$/, '').trim();
-        } else {
-            $('#addon-deck-card').removeClass('selected');
-            $('.deck-options').hide();
-            $('#deck-qty-selector').hide();
-            deckQty = 1;
-            $('#addon-deck-qty').val(deckQty);
-        }
+    function parseSelectedAddons() {
+        selectedAddons = [];
+        $('input[name="deck_types[]"]:checked').each(function () {
+            let val = $(this).val();
+            let priceStr = val.split('_')[0];
+            let price = parseInt(priceStr) || 300;
+            let title = $(this).siblings('.deck-radio-content').find('.deck-radio-title').text().replace(/\s*\$\d+$/, '').trim();
+            selectedAddons.push({
+                id: val,
+                price: price,
+                title: title
+            });
+        });
+    }
+
+    // Deck Qty Buttons (only for Book)
+    $('#deck-qty-plus').on('click', function (e) {
+        e.preventDefault();
+        bookQty++;
+        $('#addon-deck-qty').val(bookQty);
         updateSummary();
         renderShippingAddresses();
     });
 
-    // Deck Qty Buttons
-    $('#deck-qty-plus').on('click', function(e) {
+    $('#deck-qty-minus').on('click', function (e) {
         e.preventDefault();
-        deckQty++;
-        $('#addon-deck-qty').val(deckQty);
-        updateSummary();
-        renderShippingAddresses();
-    });
-
-    $('#deck-qty-minus').on('click', function(e) {
-        e.preventDefault();
-        if(deckQty > 1) {
-            deckQty--;
-            $('#addon-deck-qty').val(deckQty);
+        if (bookQty > 1) {
+            bookQty--;
+            $('#addon-deck-qty').val(bookQty);
             updateSummary();
             renderShippingAddresses();
         }
     });
 
-    // Deck Radio Options
-    $('input[name="deck_type"]').on('change', function() {
-        $('.deck-radio-label').removeClass('selected');
-        $(this).closest('.deck-radio-label').addClass('selected');
-        
-        deckPrice = parseInt($(this).val());
-        deckTitle = $(this).siblings('.deck-radio-content').find('.deck-radio-title').text().replace(/\s*\$\d+$/, '').trim();
+    // Custom Addon Checkboxes
+    $('input[name="deck_types[]"]').on('change', function () {
+        if ($(this).is(':checked')) {
+            $(this).closest('.deck-radio-label').addClass('selected');
+        } else {
+            $(this).closest('.deck-radio-label').removeClass('selected');
+        }
+
+        let hasBook = $('input[name="deck_types[]"][value="300_book"]').is(':checked');
+        if (hasBook) {
+            $('#deck-qty-wrapper').css('display', 'flex');
+            $('#label-printed-book .addon-price-span').hide();
+            $('#deck-shipping-addresses-container').show();
+        } else {
+            $('#deck-qty-wrapper').hide();
+            $('#label-printed-book .addon-price-span').show();
+            $('#deck-shipping-addresses-container').hide();
+            bookQty = 1;
+            $('#addon-deck-qty').val(bookQty);
+        }
+
+        $('input[name="deck_types[]"]').each(function() {
+            let msg = $(this).closest('.deck-radio-label').find('.deck-confirmation-msg');
+            if ($(this).is(':checked')) {
+                msg.show();
+            } else {
+                msg.hide();
+            }
+        });
+
+        parseSelectedAddons();
         updateSummary();
+        renderShippingAddresses();
     });
 
 
     // Shipping Address Toggle
 
-    
-    if ($('#addon-deck').length) {
-        $('#addon-deck').trigger('change');
-    }
+
+
 
     // Real-time password validation
-    $(document).on('input keyup', 'input[name="password"], input[name="password_confirmation"]', function() {
+    $(document).on('input keyup', 'input[name="password"], input[name="password_confirmation"]', function () {
         let passwordInput = $('input[name="password"]');
         let confirmInput = $('input[name="password_confirmation"]');
         let passwordVal = passwordInput.val();
@@ -315,14 +367,14 @@ $(document).ready(function() {
         }
     });
 
-        // Form Validation on Submit
-    $('#payment-form').on('submit', async function(e) {
+    // Form Validation on Submit
+    $('#payment-form').on('submit', async function (e) {
         e.preventDefault();
         let isValid = true;
 
         // Input fields
-        $('.form-group .form-control[required]').each(function() {
-            if(!$(this).val()) {
+        $('.form-group .form-control[required]').each(function () {
+            if (!$(this).val()) {
                 $(this).addClass('is-invalid');
                 $(this).siblings('.form-label, .control-label').addClass('is-invalid');
                 isValid = false;
@@ -359,14 +411,14 @@ $(document).ready(function() {
         }
 
         // Terms Checkbox
-        if(!$('#terms').is(':checked')) {
+        if (!$('#terms').is(':checked')) {
             $('#terms').closest('.checkbox-group').addClass('is-invalid');
             isValid = false;
         } else {
             $('#terms').closest('.checkbox-group').removeClass('is-invalid');
         }
 
-        if(isValid) {
+        if (isValid) {
             // Disable button
             let $btn = $('.btn-submit');
             let originalText = $btn.text();
@@ -374,7 +426,7 @@ $(document).ready(function() {
 
             try {
                 // Trigger form validation and client-side completion in Stripe elements
-                const {error: submitError} = await elements.submit();
+                const { error: submitError } = await elements.submit();
                 if (submitError) {
                     $('#payment-message').text(submitError.message).show();
                     $btn.prop('disabled', false).text(originalText);
@@ -382,7 +434,7 @@ $(document).ready(function() {
                 }
 
                 // Create PaymentMethod
-                const {error, paymentMethod} = await stripe.createPaymentMethod({
+                const { error, paymentMethod } = await stripe.createPaymentMethod({
                     elements: elements
                 });
 
@@ -393,27 +445,37 @@ $(document).ready(function() {
                 }
 
                 let bookAddresses = [];
-                // Print subscription itself no longer creates a book_subscriptions record.
-                // It is only created for optional physical add-ons (like decks).
+                if (isPrint) {
+                    bookAddresses.push({
+                        line1: $('input[name="billing[line1]"]').val(),
+                        line2: $('input[name="billing[line2]"]').val(),
+                        city: $('input[name="billing[city]"]').val(),
+                        state: $('select[name="billing[state]"]').val(),
+                        zip_code: $('input[name="billing[zip_code]"]').val(),
+                        special_instructions: $('input[name="billing[special_instructions]"]').val() || null
+                    });
+                }
 
                 let deckAddresses = [];
-                if (hasDeckAddon) {
-                    for (let i = 0; i < deckQty; i++) {
+                let hasBookToShip = selectedAddons.some(a => a.id === '300_book');
+                if (hasBookToShip) {
+                    for (let i = 0; i < bookQty; i++) {
+                        let targetIndex = (bookQty > 1 && shipToSameAddress) ? 0 : i;
                         deckAddresses.push({
-                            line1: $(`input[name="deck_shipping_${i}[line1]"]`).val(),
-                            line2: $(`input[name="deck_shipping_${i}[line2]"]`).val(),
-                            city: $(`input[name="deck_shipping_${i}[city]"]`).val(),
-                            state: $(`select[name="deck_shipping_${i}[state]"]`).val(),
-                            zip_code: $(`input[name="deck_shipping_${i}[zip_code]"]`).val(),
-                            special_instructions: $(`input[name="deck_shipping_${i}[special_instructions]"]`).val()
+                            line1: $(`input[name="deck_shipping_${targetIndex}[line1]"]`).val(),
+                            line2: $(`input[name="deck_shipping_${targetIndex}[line2]"]`).val(),
+                            city: $(`input[name="deck_shipping_${targetIndex}[city]"]`).val(),
+                            state: $(`select[name="deck_shipping_${targetIndex}[state]"]`).val(),
+                            zip_code: $(`input[name="deck_shipping_${targetIndex}[zip_code]"]`).val(),
+                            special_instructions: $(`input[name="deck_shipping_${targetIndex}[special_instructions]"]`).val()
                         });
                     }
                 }
 
                 let addons = [];
                 if (hasUserAddon) {
-                    $('.addon-email-input').each(function() {
-                        if($(this).val()) addons.push($(this).val());
+                    $('.addon-email-input').each(function () {
+                        if ($(this).val()) addons.push($(this).val());
                     });
                 }
 
@@ -443,9 +505,8 @@ $(document).ready(function() {
                     subscription_length: subscriptionLength,
                     is_paid_for: false,
                     send_invoice: false,
-                    deck_qty: hasDeckAddon ? deckQty : 0,
-                    deck_type: hasDeckAddon ? parseInt($('input[name="deck_type"]:checked').val()) : 0,
-                    deck_title: hasDeckAddon ? deckTitle : '',
+                    deck_qty: bookQty,
+                    deck_types: selectedAddons.map(a => a.id),
                     deck_addresses: deckAddresses,
                     subscription_cost: basePrice * 100,
                     custom_total_amount: currentTotal * 100
@@ -462,14 +523,14 @@ $(document).ready(function() {
                     },
                     contentType: 'application/json',
                     data: JSON.stringify(payload),
-                    success: function(res) {
-                        if(res.success) {
+                    success: function (res) {
+                        if (res.success) {
                             let firstName = $('input[name="first_name"]').val();
                             let email = $('input[name="email"]').val();
-                            
+
                             $('#success-first-name').text(firstName);
                             $('#success-email').text(email);
-                            
+
                             $('.checkout-container').hide();
                             $('.success-container').show();
                             $('html, body').animate({ scrollTop: 0 }, 300);
@@ -483,10 +544,10 @@ $(document).ready(function() {
                                 },
                                 contentType: 'application/json',
                                 data: JSON.stringify({}),
-                                success: function(emailRes) {
+                                success: function (emailRes) {
                                     console.log('Background emails processed:', emailRes);
                                 },
-                                error: function(emailErr) {
+                                error: function (emailErr) {
                                     console.error('Failed to trigger background emails:', emailErr);
                                 }
                             });
@@ -495,11 +556,11 @@ $(document).ready(function() {
                             $btn.prop('disabled', false).text(originalText);
                         }
                     },
-                    error: function(err) {
+                    error: function (err) {
                         console.error(err);
                         let msg = 'An error occurred. Please try again.';
-                        if(err.responseJSON && err.responseJSON.message) msg = err.responseJSON.message;
-                        if(err.responseJSON && err.responseJSON.errors) {
+                        if (err.responseJSON && err.responseJSON.message) msg = err.responseJSON.message;
+                        if (err.responseJSON && err.responseJSON.errors) {
                             let firstErrorKey = Object.keys(err.responseJSON.errors)[0];
                             msg = err.responseJSON.errors[firstErrorKey][0];
                         }
@@ -508,7 +569,7 @@ $(document).ready(function() {
                     }
                 });
 
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 alert('An unexpected error occurred. Please try again.');
                 $btn.prop('disabled', false).text(originalText);
@@ -522,8 +583,22 @@ $(document).ready(function() {
         }
     });
 
-    // Initial update
+    // Sync initially checked options
+    $('input[name="deck_types[]"]').each(function() {
+        if ($(this).is(':checked')) {
+            $(this).closest('.deck-radio-label').addClass('selected');
+            $(this).closest('.deck-radio-label').find('.deck-confirmation-msg').show();
+            let hasBook = $(this).val() === '300_book';
+            if (hasBook) {
+                $('#deck-qty-wrapper').css('display', 'flex');
+                $('#label-printed-book .addon-price-span').hide();
+                $('#deck-shipping-addresses-container').show();
+            }
+        }
+    });
+    parseSelectedAddons();
     updateSummary();
+    renderShippingAddresses();
 
     // Initialize Stripe UI
     try {
@@ -551,7 +626,7 @@ $(document).ready(function() {
         elements = stripe.elements(options);
         paymentElement = elements.create('payment');
         paymentElement.mount('#payment-element');
-    } catch(e) {
+    } catch (e) {
         console.error("Stripe initialization error:", e);
         $('#payment-element').html('<div style="color:#df1b41; padding:20px;">Could not load payment options. Please check your Stripe configuration.</div>');
     }

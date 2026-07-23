@@ -130,11 +130,11 @@
         </div>
         <div class="addon-banner">
             <div class="addon-banner-content">
-                <h4>Looking for Printed Books Only?</h4>
+                <h4>Looking for Printed Books?</h4>
                 <p>You can purchase additional printed books without an active subscription.</p>
             </div>
             <a href="/subscriptions/book-only" class="btn-addon-banner">
-                Purchase Books <i class="bi bi-arrow-right"></i>
+                Purchase add-ons <i class="bi bi-arrow-right"></i>
             </a>
         </div>
     </div>

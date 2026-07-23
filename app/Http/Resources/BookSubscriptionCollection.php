@@ -17,6 +17,28 @@ class BookSubscriptionCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->map(function ($bookSub) {
+            $sub = Subscription::find($bookSub->subscription_id);
+            if ($sub) {
+                $subResource = new SubscriptionOverviewResource($sub);
+            } else {
+                $userObj = \App\User::find($bookSub->user_id);
+                $companyObj = $userObj ? $userObj->company()->first() : null;
+                $subResource = [
+                    'id' => null,
+                    'company' => $companyObj ? $companyObj->name : '',
+                    'baseAccount' => [
+                        'id' => $userObj ? $userObj->id : '',
+                        'email' => $userObj ? $userObj->email : '',
+                        'name' => $userObj ? $userObj->name() : 'Not Specified',
+                    ],
+                    'productName' => 'Post-Election Deck/Book Purchase',
+                    'isActive' => false,
+                    'frequency' => 0,
+                    'cycle' => null,
+                    'createdAt' => $bookSub->created_at ? $bookSub->created_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
+                ];
+            }
+
             return [
                 'id' => $bookSub->id,
                 'subscription_id' => $bookSub->subscription_id,
@@ -27,7 +49,7 @@ class BookSubscriptionCollection extends ResourceCollection
                 'status' => $bookSub->status,
                 'item_name' => $bookSub->item_name,
                 'address' => $bookSub->address()->first(),
-                'subscription' => new SubscriptionOverviewResource(Subscription::find($bookSub->subscription_id)),
+                'subscription' => $subResource,
             ];
         })
             ->toArray();

@@ -495,7 +495,7 @@
                 const item = allHardCopies.find(x => x.id == id);
                 if (!item) return;
 
-                const subId = item.subscription_id;
+                const subId = item.subscription_id || 0;
                 
                 const statusVal = $('#shipment-edit-status').val();
                 const carrierVal = $('#shipment-edit-carrier').val().trim();

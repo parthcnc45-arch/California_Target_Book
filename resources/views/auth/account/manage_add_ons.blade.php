@@ -143,7 +143,7 @@
                         </div>
                         <div>
                             <div class="addon-item-price-row">
-                                <span class="addon-item-price">$300</span>
+                                <span class="addon-item-price">$200</span>
                             </div>
                             <a href="{{ route('auth.account.addon_checkout', ['addon' => 'presentation']) }}" class="btn-addon-add" style="text-decoration: none;">
                                 <i class="bi bi-plus-lg"></i> Add

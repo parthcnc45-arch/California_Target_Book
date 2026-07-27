@@ -193,7 +193,7 @@ class AccountController extends Controller
         
         if ($addonType === 'presentation') {
             $data['addonTitle'] = 'Post-Election Deck Presentation';
-            $data['addonPrice'] = 300;
+            $data['addonPrice'] = 200;
         } else {
             $data['addonTitle'] = 'Post-Election Deck';
             $data['addonPrice'] = 1000;

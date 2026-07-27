@@ -20,7 +20,7 @@
             <div class="as-hardcopies-5" id="stat-active">-</div>
         </div>
         <div class="portal-card as-hardcopies-7">
-            <div class="as-hardcopies-4">InActive</div>
+            <div class="as-hardcopies-4">Inactive</div>
             <div class="as-hardcopies-5" id="stat-inactive">-</div>
         </div>
         <div class="portal-card as-hardcopies-8">

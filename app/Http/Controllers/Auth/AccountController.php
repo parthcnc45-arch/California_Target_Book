@@ -252,32 +252,11 @@ class AccountController extends Controller
 
             if ($charge->paid) {
                 $sub = $user->latestSubscription();
-                if ($sub) {
-                    $addresses = $request->input('addresses', []);
-                    foreach ($addresses as $addrData) {
-                        $address = \App\Address::create([
-                            'line1' => $addrData['line1'] ?? '',
-                            'line2' => $addrData['line2'] ?? null,
-                            'city' => $addrData['city'] ?? '',
-                            'state' => $addrData['state'] ?? '',
-                            'zip_code' => $addrData['zip_code'] ?? '',
-                            'special_instructions' => $addrData['special_instructions'] ?? null,
-                        ]);
-
-                        \App\BookSubscription::create([
-                            'subscription_id' => $sub->id,
-                            'user_id' => $user->id,
-                            'address_id' => $address->id,
-                            'item_name' => $request->input('addon_name')
-                        ]);
-                    }
-                }
-
-                \Log::info("User {$user->id} purchased {$qty}x " . $request->input('addon_name') . " for $" . ($amount/100));
-
-                // Save transaction to local database
+                
+                // Save transaction to local database first so we can link it
+                $txObj = null;
                 try {
-                    \App\Transaction::create([
+                    $txObj = \App\Transaction::create([
                         'user_id' => $user->id,
                         'subscription_id' => $sub ? $sub->id : null,
                         'stripe_charge_id' => $charge->id ?? null,
@@ -294,6 +273,42 @@ class AccountController extends Controller
                 } catch (\Exception $txEx) {
                     \Log::error("Failed to save transaction record in processAddonCheckout: " . $txEx->getMessage());
                 }
+
+                $addonName = $request->input('addon_name');
+                $isDigital = (stripos($addonName, 'Deck') !== false || stripos($addonName, 'Presentation') !== false);
+
+                if ($isDigital) {
+                    // Create DigitalAddonOrder
+                    \App\DigitalAddonOrder::create([
+                        'user_id' => $user->id,
+                        'transaction_id' => $txObj ? $txObj->id : null,
+                        'item_name' => $addonName,
+                        'amount' => $amount,
+                        'payment_status' => 'Paid',
+                        'delivery_status' => 'Sent',
+                    ]);
+                } elseif ($sub) {
+                    $addresses = $request->input('addresses', []);
+                    foreach ($addresses as $addrData) {
+                        $address = \App\Address::create([
+                            'line1' => $addrData['line1'] ?? '',
+                            'line2' => $addrData['line2'] ?? null,
+                            'city' => $addrData['city'] ?? '',
+                            'state' => $addrData['state'] ?? '',
+                            'zip_code' => $addrData['zip_code'] ?? '',
+                            'special_instructions' => $addrData['special_instructions'] ?? null,
+                        ]);
+
+                        \App\BookSubscription::create([
+                            'subscription_id' => $sub->id,
+                            'user_id' => $user->id,
+                            'address_id' => $address->id,
+                            'item_name' => $addonName
+                        ]);
+                    }
+                }
+
+                \Log::info("User {$user->id} purchased {$qty}x " . $request->input('addon_name') . " for $" . ($amount/100));
 
                 $request->session()->flash('message', 'Payment processed successfully!');
 

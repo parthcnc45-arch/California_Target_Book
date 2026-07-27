@@ -52,7 +52,7 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('register');
+        $this->middleware('guest')->only('showRegistrationForm');
     }
     public function testLog(Request $request){
         Log::info('Incoming Request [testLog]:', $request->all());
@@ -768,21 +768,21 @@ class RegisterController extends Controller
             $deck_types = $validated['deck_types'] ?? [];
             if (!empty($deck_types) && is_array($deck_types)) {
                 foreach ($deck_types as $type) {
-                    if ($type == '1000') {
+                    if ($type == config('subscriptions.deck_only')) {
                         \App\DigitalAddonOrder::create([
                             'user_id' => $user->id,
                             'transaction_id' => $txObj ? $txObj->id : null,
                             'item_name' => 'Post-Election Deck Only (Subscriber)',
-                            'amount' => 100000,
+                            'amount' => config('subscriptions.deck_only') * 100,
                             'payment_status' => 'Paid',
                             'delivery_status' => 'Sent',
                         ]);
-                    } elseif ($type == '200_presentation') {
+                    } elseif ($type == config('subscriptions.deck_presentation') . '_presentation') {
                         \App\DigitalAddonOrder::create([
                             'user_id' => $user->id,
                             'transaction_id' => $txObj ? $txObj->id : null,
                             'item_name' => 'Post-Election Presentation (Subscriber)',
-                            'amount' => 20000,
+                            'amount' => config('subscriptions.deck_presentation') * 100,
                             'payment_status' => 'Paid',
                             'delivery_status' => 'Sent',
                         ]);

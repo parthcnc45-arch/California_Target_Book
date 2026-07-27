@@ -138,6 +138,48 @@
             $displayTotalPrice.text('$' + total.toLocaleString());
         }
 
+        let activeVueInstances = [];
+        let stripe, cardElement;
+        const basePrice = {{ $addonPrice }};
+        const addonName = '{{ $addonTitle }}';
+        const addonType = '{{ $addonType }}';
+        const isDigital = addonType === 'deck' || addonType === 'presentation';
+
+        function initStripe() {
+            try {
+                const stripeKey = '{{ config('app.STRIPE_PUB_KEY') ?: 'pk_test_TYooMQauvdEDq54NiTphI7jx' }}';
+                stripe = Stripe(stripeKey);
+                const elements = stripe.elements();
+                
+                cardElement = elements.create('card', {
+                    style: {
+                        base: {
+                            fontSize: '15px',
+                            color: '#0f172a',
+                            fontFamily: 'Inter, system-ui, sans-serif',
+                            '::placeholder': {
+                                color: '#94a3b8',
+                            },
+                        },
+                        invalid: {
+                            color: '#df1b41',
+                        },
+                    }
+                });
+                cardElement.mount('#stripe-card-element');
+            } catch (e) {
+                console.error("Stripe initialization error:", e);
+                $('#stripe-card-element').html('<div style="color:#df1b41; font-size: 14px; padding: 16px;">Could not initialize payment options. Please check your Stripe settings.</div>');
+            }
+        }
+
+        function updateSubmitButtonText() {
+            let qty = parseInt($qtyInput.val()) || 1;
+            let total = basePrice * qty;
+            $submitBtn.text('Pay $' + total.toLocaleString());
+            $displayTotalPrice.text('$' + total.toLocaleString());
+        }
+
         function renderAddresses(qty) {
             // Destroy existing instances first to prevent memory leak
             activeVueInstances.forEach(instance => instance.$destroy());
@@ -145,6 +187,11 @@
 
             const $form = $('#checkout-form');
             $form.empty();
+
+            if (isDigital) {
+                $form.parent().hide();
+                return;
+            }
 
             const AddressBlockClass = Vue.extend(Vue.component('ctb-address-block'));
 
@@ -220,33 +267,35 @@
                 let addresses = [];
                 let qty = parseInt($qtyInput.val()) || 1;
                 
-                // First validate all addresses
-                for (let i = 0; i < qty; i++) {
-                    const line1 = $(`input[name="shipping_address_${i}[line1]"]`).val()?.trim();
-                    const city = $(`input[name="shipping_address_${i}[city]"]`).val()?.trim();
-                    const state = $(`select[name="shipping_address_${i}[state]"]`).val();
-                    const zip_code = $(`input[name="shipping_address_${i}[zip_code]"]`).val()?.trim();
-                    
-                    let missingFields = [];
-                    if (!line1) missingFields.push('Address Line 1');
-                    if (!city) missingFields.push('City');
-                    if (!state) missingFields.push('State');
-                    if (!zip_code) missingFields.push('ZIP Code');
-                    
-                    if (missingFields.length > 0) {
-                        $errorMessage.text(`Please fill out the following fields for Shipping Address ${i + 1}: ${missingFields.join(', ')}.`).show();
-                        $submitBtn.prop('disabled', false).text(originalText);
-                        return;
+                if (!isDigital) {
+                    // First validate all addresses
+                    for (let i = 0; i < qty; i++) {
+                        const line1 = $(`input[name="shipping_address_${i}[line1]"]`).val()?.trim();
+                        const city = $(`input[name="shipping_address_${i}[city]"]`).val()?.trim();
+                        const state = $(`select[name="shipping_address_${i}[state]"]`).val();
+                        const zip_code = $(`input[name="shipping_address_${i}[zip_code]"]`).val()?.trim();
+                        
+                        let missingFields = [];
+                        if (!line1) missingFields.push('Address Line 1');
+                        if (!city) missingFields.push('City');
+                        if (!state) missingFields.push('State');
+                        if (!zip_code) missingFields.push('ZIP Code');
+                        
+                        if (missingFields.length > 0) {
+                            $errorMessage.text(`Please fill out the following fields for Shipping Address ${i + 1}: ${missingFields.join(', ')}.`).show();
+                            $submitBtn.prop('disabled', false).text(originalText);
+                            return;
+                        }
+                        
+                        addresses.push({
+                            line1: line1,
+                            line2: $(`input[name="shipping_address_${i}[line2]"]`).val()?.trim() || null,
+                            city: city,
+                            state: state,
+                            zip_code: zip_code,
+                            special_instructions: $(`input[name="shipping_address_${i}[special_instructions]"]`).val()?.trim() || null
+                        });
                     }
-                    
-                    addresses.push({
-                        line1: line1,
-                        line2: $(`input[name="shipping_address_${i}[line2]"]`).val()?.trim() || null,
-                        city: city,
-                        state: state,
-                        zip_code: zip_code,
-                        special_instructions: $(`input[name="shipping_address_${i}[special_instructions]"]`).val()?.trim() || null
-                    });
                 }
 
                 const payload = {

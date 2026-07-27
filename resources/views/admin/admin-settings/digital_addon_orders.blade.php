@@ -19,10 +19,10 @@
             <div class="as-digital-4">Paid</div>
             <div class="as-digital-5" id="stat-paid">-</div>
         </div>
-        <div class="portal-card as-digital-7">
+        <!-- <div class="portal-card as-digital-7">
             <div class="as-digital-4">Refunded</div>
             <div class="as-digital-5" id="stat-refunded">-</div>
-        </div>
+        </div> -->
         <div class="portal-card as-digital-8">
             <div class="as-digital-4">Sent</div>
             <div class="as-digital-5" id="stat-sent">-</div>

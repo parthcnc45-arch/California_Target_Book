@@ -403,9 +403,11 @@ $(document).ready(function () {
         // Terms Checkbox
         if (!$('#terms').is(':checked')) {
             $('#terms').closest('.checkbox-group').addClass('is-invalid');
+            $('#terms-feedback').show();
             isValid = false;
         } else {
             $('#terms').closest('.checkbox-group').removeClass('is-invalid');
+            $('#terms-feedback').hide();
         }
 
         if (isValid) {
@@ -419,6 +421,9 @@ $(document).ready(function () {
                 const { error: submitError } = await elements.submit();
                 if (submitError) {
                     $('#payment-message').text(submitError.message).show();
+                    $('html, body').animate({
+                        scrollTop: $("#payment-element").offset().top - 100
+                    }, 500);
                     $btn.prop('disabled', false).text(originalText);
                     return;
                 }
@@ -430,6 +435,9 @@ $(document).ready(function () {
 
                 if (error) {
                     $('#payment-message').text(error.message).show();
+                    $('html, body').animate({
+                        scrollTop: $("#payment-element").offset().top - 100
+                    }, 500);
                     $btn.prop('disabled', false).text(originalText);
                     return;
                 }

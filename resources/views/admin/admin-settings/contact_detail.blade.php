@@ -240,9 +240,13 @@
                 $firstNameInput.focus();
             });
 
-            // ---------- Close Update Account Modal ----------
             function closeEditModal() {
                 $editModal.hide();
+                $firstNameInput.val('');
+                $lastNameInput.val('');
+                $emailInput.val('');
+                $phoneInput.val('');
+                $notesInput.val('');
                 $editErrorDiv.hide().text('');
                 $editSuccessDiv.hide().text('');
             }
@@ -462,6 +466,12 @@
                         $errorDiv.text(errorMsg).show();
                     }
                 });
+            });
+
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                }
             });
         });
     </script>

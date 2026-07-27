@@ -258,15 +258,15 @@
                 $('#categoryModalOverlay').css('display', 'flex');
             });
 
-            // Modal Cancel & Close actions
-            $('#btnModalClose, #btnModalCancel, #categoryModalOverlay').on('click', function(e) {
-                if (e.target === this) {
-                    $('#categoryModalOverlay').hide();
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
                 }
             });
 
-            $('.cat-modal').on('click', function(e) {
-                e.stopPropagation();
+            // Modal Cancel & Close actions
+            $('#btnModalClose, #btnModalCancel').on('click', function(e) {
+                $('#categoryModalOverlay').hide();
             });
 
             // Save/Update Category Action
@@ -347,10 +347,8 @@
             });
 
             // Close Custom Confirmation Modal
-            $('#btnConfirmClose, #btnConfirmCancel, #confirmModalOverlay').on('click', function(e) {
-                if (e.target === this) {
-                    $('#confirmModalOverlay').hide();
-                }
+            $('#btnConfirmClose, #btnConfirmCancel').on('click', function(e) {
+                $('#confirmModalOverlay').hide();
             });
 
             // Confirm Delete Yes action
@@ -408,10 +406,8 @@
                 $('#pricingModalOverlay').css('display', 'flex');
             });
 
-            $('#btnPriceModalClose, #btnPriceModalCancel, #pricingModalOverlay').on('click', function(e) {
-                if (e.target === this) {
-                    $('#pricingModalOverlay').hide();
-                }
+            $('#btnPriceModalClose, #btnPriceModalCancel').on('click', function(e) {
+                $('#pricingModalOverlay').hide();
             });
 
             $('#btnPriceModalSave').on('click', function() {

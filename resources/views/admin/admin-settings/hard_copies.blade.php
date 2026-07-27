@@ -279,6 +279,15 @@
 
             window.closeEditModal = function() {
                 $('#editShipmentModal').css('display', 'none');
+                $('#edit-shipment-id').val('');
+                $('#shipment-edit-item-name').val('');
+                $('#shipment-edit-status').val('Pending');
+                $('#shipment-edit-carrier').val('');
+                $('#shipment-edit-tracking').val('');
+                $('#shipment-edit-tracking-url').val('');
+                $('#shipment-edit-ship-date').val('');
+                $('#shipment-edit-est-delivery').val('');
+                $('#shipment-edit-error').hide().empty();
             };
 
             window.openViewModal = function(id) {
@@ -736,6 +745,12 @@
                 error: function(xhr, status, error) {
                     console.error('Error fetching hard copies:', error);
                     $tbody.html(`<tr><td class="as-hardcopies-60" colspan="6">Failed to load hard copy subscriptions. Please try again later.</td></tr>`);
+                }
+            });
+
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
                 }
             });
         });

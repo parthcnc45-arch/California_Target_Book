@@ -339,6 +339,12 @@
             $('#custom-toast').stop(true, true).fadeIn(300).delay(4000).fadeOut(300);
         }
 
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+            }
+        });
+
         // Purchase Seats Main Modal Toggles
         $('.btn-trigger-purchase-seats').on('click', function(e) {
             e.preventDefault();
@@ -348,11 +354,11 @@
         $('#btn-cancel-purchase-main').on('click', function(e) {
             e.preventDefault();
             $('#purchase-seats-main-modal').fadeOut(150);
-        });
-
-        $('#purchase-seats-main-modal').on('click', function(e) {
-            if ($(e.target).is('#purchase-seats-main-modal')) {
-                $('#purchase-seats-main-modal').fadeOut(150);
+            $('#purchase-seats-input').val(1).trigger('change');
+            $('#dynamic-emails-error').hide().empty();
+            $('#stripe-modal-error-message').hide().empty();
+            if (cardElement) {
+                cardElement.clear();
             }
         });
 
@@ -612,12 +618,6 @@
             $('#cancel-sub-modal').fadeOut(150);
         });
 
-        $('#cancel-sub-modal').on('click', function(e) {
-            if ($(e.target).is('#cancel-sub-modal')) {
-                $('#cancel-sub-modal').fadeOut(150);
-            }
-        });
-
         // Reassign modal event listeners
         var addonIdToReassign = null;
         var $rowToReassign = null;
@@ -638,12 +638,8 @@
         $('#btn-cancel-reassign, #btn-close-reassign-modal').on('click', function(e) {
             e.preventDefault();
             $('#reassign-modal').fadeOut(150);
-        });
-
-        $('#reassign-modal').on('click', function(e) {
-            if ($(e.target).is('#reassign-modal')) {
-                $('#reassign-modal').fadeOut(150);
-            }
+            $('#reassign-new-email').val('');
+            $('#reassign-message').hide().empty();
         });
 
         $('#btn-reassign-submit').on('click', function(e) {
@@ -743,12 +739,6 @@
         $('#btn-cancel-remove, #btn-close-remove-modal').on('click', function(e) {
             e.preventDefault();
             $('#remove-modal').fadeOut(150);
-        });
-
-        $('#remove-modal').on('click', function(e) {
-            if ($(e.target).is('#remove-modal')) {
-                $('#remove-modal').fadeOut(150);
-            }
         });
 
         $('#btn-remove-submit').on('click', function(e) {

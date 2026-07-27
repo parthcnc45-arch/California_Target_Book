@@ -147,10 +147,9 @@
             });
         });
 
-        // Close modal when clicking outside the card
-        $deleteModal.on('click', function(e) {
-            if (e.target === this) {
-                $deleteModal.fadeOut(200);
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape') {
+                e.preventDefault();
             }
         });
     });

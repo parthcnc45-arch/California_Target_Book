@@ -641,6 +641,18 @@
 
             $('#btn-cancel-edit-company').on('click', function() {
                 $('#edit-company-modal').hide();
+                $('#company-edit-name').val('');
+                $('#company-edit-stripe-id').val('');
+                $('#company-edit-phone').val('');
+                $('#company-edit-notes').val('');
+                $('#company-edit-line1').val('');
+                $('#company-edit-line2').val('');
+                $('#company-edit-city').val('');
+                $('#company-edit-state').val('CA');
+                $('#company-edit-zip').val('');
+                $('#company-edit-instructions').val('');
+                $('#company-edit-error').hide().text('');
+                $('#company-edit-success').hide().text('');
             });
 
             $('#edit-company-form').on('submit', function(e) {
@@ -706,6 +718,9 @@
 
             $('#btn-cancel-create-cycle').on('click', function() {
                 $('#create-cycle-modal').hide();
+                $('#cycle-create-starts').val('');
+                $('#cycle-create-error').hide().text('');
+                $('#cycle-create-success').hide().text('');
             });
 
             $('#create-cycle-form').on('submit', function(e) {
@@ -766,6 +781,11 @@
 
             $('#btn-cancel-edit-cycle').on('click', function() {
                 $('#edit-cycle-modal').hide();
+                $('#cycle-edit-id').val('');
+                $('#cycle-edit-starts').val('');
+                $('#cycle-edit-ends').val('');
+                $('#cycle-edit-error').hide().text('');
+                $('#cycle-edit-success').hide().text('');
             });
 
             $('#edit-cycle-form').on('submit', function(e) {
@@ -850,6 +870,11 @@
 
             $('#btn-cancel-create-addon').on('click', function() {
                 $('#create-addon-modal').hide();
+                $('#addon-create-first').val('');
+                $('#addon-create-last').val('');
+                $('#addon-create-email').val('');
+                $('#addon-create-error').hide().text('');
+                $('#addon-create-success').hide().text('');
             });
 
             $('#create-addon-form').on('submit', function(e) {
@@ -981,6 +1006,15 @@
 
             $('#btn-cancel-book-sub').on('click', function() {
                 $('#upsert-book-sub-modal').hide();
+                $('#book-sub-edit-id').val('');
+                $('#book-sub-line1').val('');
+                $('#book-sub-line2').val('');
+                $('#book-sub-city').val('');
+                $('#book-sub-state').val('CA');
+                $('#book-sub-zip').val('');
+                $('#book-sub-instructions').val('');
+                $('#book-sub-error').hide().text('');
+                $('#book-sub-success').hide().text('');
             });
 
             $('#upsert-book-sub-form').on('submit', function(e) {
@@ -1092,9 +1126,14 @@
                         $btn.prop('disabled', false).text('Remove');
                         let msg = 'Failed to remove book subscription.';
                         if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
-                        $('#remove-book-sub-error').text(msg).show();
                     }
                 });
+            });
+
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                }
             });
         });
     </script>

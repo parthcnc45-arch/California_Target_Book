@@ -707,6 +707,11 @@
 
             function closeEditModal() {
                 $editModal.hide();
+                $firstNameInput.val('');
+                $lastNameInput.val('');
+                $emailInput.val('');
+                $phoneInput.val('');
+                $notesInput.val('');
                 $editErrorDiv.hide().text('');
                 $editSuccessDiv.hide().text('');
             }
@@ -966,6 +971,12 @@
                 error: function(xhr, status, error) {
                     console.error('Error fetching contacts:', error);
                     $tbody.html(`<tr><td class="as-contacts-73" colspan="7">Failed to load contacts. Please try again later.</td></tr>`);
+                }
+            });
+
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
                 }
             });
         });

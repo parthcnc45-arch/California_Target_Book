@@ -352,6 +352,8 @@
 
             window.closeRefundModal = function () {
                 $('#refundConfirmModal').css('display', 'none');
+                $('#refund-order-id').val('');
+                $('#refund-amount-text').text('$0.00');
             };
 
             window.submitRefund = function () {
@@ -410,6 +412,12 @@
 
             // Initial load
             loadData();
+
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                }
+            });
         });
     </script>
 @endsection

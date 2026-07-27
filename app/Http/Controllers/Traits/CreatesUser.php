@@ -326,7 +326,7 @@ trait CreatesUser {
     $frequency = (int)($data['subscription_length'] ?? 0);
     $calculatedDate = now()->addMonths($frequency == 0 ? 0 : $frequency)->toDateString();
     if ($frequency == 0) {
-        $calculatedDate = now()->addDays(7)->toDateString();
+        $calculatedDate = now()->addDays(config('subscriptions.duration_trial'))->toDateString();
     }
 
     $subscription = Subscription::make([
@@ -354,12 +354,12 @@ trait CreatesUser {
     } else {
         $hasPrint = count($data['book_addresses'] ?? []) > 0;
         
-        if ($subscription->frequency === 12) {
+        if ($subscription->frequency === config('subscriptions.duration_one_year')) {
             $base_cost = $hasPrint ? (config('subscriptions.one_year_print') * Globals::STRIPE_MULTIPLIER) : (config('subscriptions.one_year_online') * Globals::STRIPE_MULTIPLIER);
-            $subTitle = "12 Month";
+            $subTitle = config('subscriptions.duration_one_year') . " Month";
         } else {
             $base_cost = $hasPrint ? (config('subscriptions.two_year_print') * Globals::STRIPE_MULTIPLIER) : (config('subscriptions.two_year_online') * Globals::STRIPE_MULTIPLIER);
-            $subTitle = "24 Month";
+            $subTitle = config('subscriptions.duration_two_year') . " Month";
         }
     }
     if (array_key_exists('subscription_cost',$data) && is_numeric($data['subscription_cost'])) {
@@ -477,16 +477,15 @@ trait CreatesUser {
         try {
             $frequency = (int)$subscription->frequency;
             $interval = 'month';
-            $interval_count = $frequency;
-            if ($frequency === 12) {
-                $interval = 'year';
-                $interval_count = 1;
-            } else if ($frequency === 24) {
-                $interval = 'year';
-                $interval_count = 2;
-            } else if ($frequency === 0) {
+            if ($frequency === 0) {
                 $interval = 'day';
-                $interval_count = 7; // Trial
+                $interval_count = config('subscriptions.duration_trial'); // Trial
+            } else if ($frequency % 12 === 0) {
+                $interval = 'year';
+                $interval_count = $frequency / 12;
+            } else {
+                $interval = 'month';
+                $interval_count = $frequency;
             }
 
             // Step 1: Create pending Stripe Invoice Items for any requested optional add-ons
@@ -535,10 +534,14 @@ trait CreatesUser {
             $hasPrint = count($bookAddresses) > 0;
             $formatString = $hasPrint ? 'Online Access & Print' : 'Online Access Only';
             
-            if ($frequency === 12) {
-                $productName = "CTB Online One-Year Subscription ($formatString)";
-            } elseif ($frequency === 24) {
-                $productName = "CTB Online Two-Year Subscription ($formatString)";
+            if ($frequency === config('subscriptions.duration_one_year')) {
+                $years = config('subscriptions.duration_one_year') / 12;
+                $label = $years >= 1 ? ($years . "-Year") : (config('subscriptions.duration_one_year') . "-Month");
+                $productName = "CTB Online " . $label . " Subscription ($formatString)";
+            } elseif ($frequency === config('subscriptions.duration_two_year')) {
+                $years = config('subscriptions.duration_two_year') / 12;
+                $label = $years >= 1 ? ($years . "-Year") : (config('subscriptions.duration_two_year') . "-Month");
+                $productName = "CTB Online " . $label . " Subscription ($formatString)";
             } else {
                 $productName = "CTB Online Trial Subscription";
             }
@@ -759,10 +762,12 @@ trait CreatesUser {
             }
 
             $planName = '—';
-            if ($subscription->frequency === 12) {
-                $planName = 'Subscription - 1 Year';
-            } elseif ($subscription->frequency === 24) {
-                $planName = 'Subscription - 2 Year';
+            if ($subscription->frequency === config('subscriptions.duration_one_year')) {
+                $years = config('subscriptions.duration_one_year') / 12;
+                $planName = 'Subscription - ' . ($years >= 1 ? ($years . ' Year') : (config('subscriptions.duration_one_year') . ' Month'));
+            } elseif ($subscription->frequency === config('subscriptions.duration_two_year')) {
+                $years = config('subscriptions.duration_two_year') / 12;
+                $planName = 'Subscription - ' . ($years >= 1 ? ($years . ' Year') : (config('subscriptions.duration_two_year') . ' Month'));
             }
 
             $isCompleted = ($invoice->status === 'paid' || !empty($invoice->paid));
@@ -1001,7 +1006,7 @@ trait CreatesUser {
     try {
         $frequency = (int)($data['subscription_length'] ?? 0);
         $date = now()->addMonths($frequency == 0 ? 0 : $frequency)->toDateString();
-        if ($frequency == 0) $date = now()->addDays(7)->toDateString();
+        if ($frequency == 0) $date = now()->addDays(config('subscriptions.duration_trial'))->toDateString();
         
         $subscription = Subscription::make([
             'account_id' => $baseUser->id,
@@ -1040,7 +1045,7 @@ trait CreatesUser {
      * For CTB One (12-month) subscriptions, fetch the GHL subscription ID
      * and link it to the Laravel subscription record.
      */
-    if ($frequency === 12 && !empty($data['contact_id'])) {
+    if ($frequency === config('subscriptions.duration_one_year') && !empty($data['contact_id'])) {
         try {
             $contactId  = $data['contact_id'];
             $ghlToken   = config('app.GHL_TOKEN') ?? 'pit-9edbcb56-3ea3-4e72-b633-a54a943ec8cf';

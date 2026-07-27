@@ -23,11 +23,7 @@ class GHLIntegrationController extends Controller
             foreach ($subscriptions as $sub) {
                 $subscriber = $sub->subscriber()->first();
                 
-                if ($sub->frequency === 12) {
-                    $frequencyText = '12 Month';
-                } elseif ($sub->frequency === 24) {
-                    $frequencyText = '24 Month';
-                }
+                $frequencyText = $sub->frequency . ' Month';
 
                 $cycle = $sub->cycles()->first();
                 $paymentMethod = $cycle ? $cycle->payment_method : 'stripe';

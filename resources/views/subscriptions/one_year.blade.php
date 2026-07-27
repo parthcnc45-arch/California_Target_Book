@@ -31,7 +31,7 @@
         <div class="price-header">
             <div>
                 <span class="price-amount">${{ number_format(config('subscriptions.one_year_online')) }}</span>
-                <span class="price-period">/ 1 year</span>
+                <span class="price-period">/ {{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . " year" : config('subscriptions.duration_one_year') . " months" }}</span>
             </div>
             <div class="price-meta">
                 Base subscription price — choose your format below
@@ -226,8 +226,8 @@
             <div class="summary-items">
                 <div class="summary-item">
                     <div>
-                        <div class="summary-item-title">One-Year Subscription</div>
-                        <div class="summary-item-desc" id="summary-format-text">Online Access Only — 1 Year</div>
+                        <div class="summary-item-title">{{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . "-Year" : config('subscriptions.duration_one_year') . "-Month" }} Subscription</div>
+                        <div class="summary-item-desc" id="summary-format-text">Online Access Only — {{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . " Year" : config('subscriptions.duration_one_year') . " Month" }}</div>
                     </div>
                     <div class="summary-item-price" id="summary-base-price">${{ number_format(config('subscriptions.one_year_online')) }}</div>
                 </div>
@@ -265,7 +265,7 @@
     </div>
     <h2 class="success-title">Subscription Request Submitted!</h2>
     <p class="success-text">
-        Thank you, <span id="success-first-name">Subscriber</span>. We've received your One-Year Subscription request. You'll receive a confirmation email at <strong id="success-email">your email</strong> shortly.
+        Thank you, <span id="success-first-name">Subscriber</span>. We've received your {{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . "-Year" : config('subscriptions.duration_one_year') . "-Month" }} Subscription request. You'll receive a confirmation email at <strong id="success-email">your email</strong> shortly.
     </p>
     <a href="{{ route('home') }}" class="btn-home">Return to Home</a>
 </div>
@@ -282,9 +282,9 @@
         registerEmailsUrl: '/register-emails',
         basePriceOnline: {{ config('subscriptions.one_year_online') }},
         basePricePrint: {{ config('subscriptions.one_year_print') }},
-        subscriptionLength: 12,
-        formatTextOnline: 'Online Access Only — 1 Year',
-        formatTextPrint: 'Online Access & Print — 1 Year',
+        subscriptionLength: {{ config('subscriptions.duration_one_year') }},
+        formatTextOnline: 'Online Access Only — {{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . " Year" : config('subscriptions.duration_one_year') . " Month" }}',
+        formatTextPrint: 'Online Access & Print — {{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . " Year" : config('subscriptions.duration_one_year') . " Month" }}',
         userPrice: {{ config('subscriptions.additional_seat') }}
     };
 </script>

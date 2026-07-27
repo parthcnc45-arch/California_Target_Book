@@ -16,10 +16,10 @@
         <div class="portal-flex-wrap-gap-24" style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
             <!-- Card 1: One-Year Subscription -->
             <div class="sub-option-card">
-                <h2 class="sub-option-title">One-Year Subscription</h2>
+                <h2 class="sub-option-title">{{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . "-Year" : config('subscriptions.duration_one_year') . "-Month" }} Subscription</h2>
                 <div class="sub-option-price-container">
                     <span class="sub-option-price">${{ number_format(config('subscriptions.one_year_online')) }}</span>
-                    <span class="sub-option-price-period">/ 1 year</span>
+                    <span class="sub-option-price-period">/ {{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . " year" : config('subscriptions.duration_one_year') . " months" }}</span>
                 </div>
                 <p class="sub-option-description">
                     Get online access, Hot Sheets email alerts, and optional printed editions delivered to your door.
@@ -72,10 +72,10 @@
 
             <!-- Card 2: Two-Year Subscription -->
             <div class="sub-option-card">
-                <h2 class="sub-option-title">Two-Year Subscription</h2>
+                <h2 class="sub-option-title">{{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . "-Year" : config('subscriptions.duration_two_year') . "-Month" }} Subscription</h2>
                 <div class="sub-option-price-container">
                     <span class="sub-option-price">${{ number_format(config('subscriptions.two_year_online')) }}</span>
-                    <span class="sub-option-price-period">/ 2 years</span>
+                    <span class="sub-option-price-period">/ {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . " years" : config('subscriptions.duration_two_year') . " months" }}</span>
                 </div>
                 <p class="sub-option-description">
                     Lock in two years of access, alerts, and optional print editions at a better value.
@@ -86,7 +86,7 @@
                     <h3 class="sub-tier-title">Two-Year Online Only</h3>
                     <ul class="sub-feature-list">
                         <li><i class="bi bi-check-lg feature-check"></i>1 online user account</li>
-                        <li><i class="bi bi-check-lg feature-check"></i>Full platform access for 2 years</li>
+                        <li><i class="bi bi-check-lg feature-check"></i>Full platform access for {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . " years" : config('subscriptions.duration_two_year') . " months" }}</li>
                         <li><i class="bi bi-check-lg feature-check"></i>Hot Sheets email alerts included</li>
                     </ul>
                     <a href="{{ route('subscriptions.two-year') }}" class="btn-select-tier select-addon-tier" data-plan="2yr_online">Select Two-Year Online Only</a>
@@ -97,9 +97,9 @@
                     <h3 class="sub-tier-title">Two-Year Online & Print</h3>
                     <ul class="sub-feature-list">
                         <li><i class="bi bi-check-lg feature-check"></i>1 online user account</li>
-                        <li><i class="bi bi-check-lg feature-check"></i>Full platform access for 2 years</li>
+                        <li><i class="bi bi-check-lg feature-check"></i>Full platform access for {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . " years" : config('subscriptions.duration_two_year') . " months" }}</li>
                         <li><i class="bi bi-check-lg feature-check"></i>Hot Sheets email alerts included</li>
-                        <li><i class="bi bi-check-lg feature-check"></i>6 printed book editions over 2 years</li>
+                        <li><i class="bi bi-check-lg feature-check"></i>6 printed book editions over {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . " years" : config('subscriptions.duration_two_year') . " months" }}</li>
                         <li><i class="bi bi-check-lg feature-check"></i>One book per mailing, three mailings per year</li>
                     </ul>
                     <a href="{{ route('subscriptions.two-year') }}" class="btn-select-tier select-addon-tier" data-plan="2yr_print">Select Two-Year Online & Print</a>

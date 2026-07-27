@@ -31,7 +31,7 @@
         <div class="price-header">
             <div>
                 <span class="price-amount">${{ number_format(config('subscriptions.two_year_online')) }}</span>
-                <span class="price-period">/ 2 years</span>
+                <span class="price-period">/ {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . " years" : config('subscriptions.duration_two_year') . " months" }}</span>
             </div>
             <div class="price-meta">
                 Base subscription price — choose your format below
@@ -227,8 +227,8 @@
             <div class="summary-items">
                 <div class="summary-item">
                     <div>
-                        <div class="summary-item-title">Two-Year Subscription</div>
-                        <div class="summary-item-desc" id="summary-format-text">Two-Year Online Only — 2 Years</div>
+                        <div class="summary-item-title">{{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . "-Year" : config('subscriptions.duration_two_year') . "-Month" }} Subscription</div>
+                        <div class="summary-item-desc" id="summary-format-text">Two-Year Online Only — {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . " Years" : config('subscriptions.duration_two_year') . " Months" }}</div>
                     </div>
                     <div class="summary-item-price" id="summary-base-price">${{ number_format(config('subscriptions.two_year_online')) }}</div>
                 </div>
@@ -252,7 +252,7 @@
             </div>
 
             <div class="summary-notes">
-                <div class="summary-note orange" id="note-print" style="display: none;"><i class="bi bi-book"></i> 6 printed books over 2 years — one per mailing, three mailings per year</div>
+                <div class="summary-note orange" id="note-print" style="display: none;"><i class="bi bi-book"></i> 6 printed books over {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . " years" : config('subscriptions.duration_two_year') . " months" }} — one per mailing, three mailings per year</div>
                 <div class="summary-note blue" id="note-user" style="display: none;"><i class="bi bi-person"></i> Additional Online Users are billed annually</div>
                 <div class="summary-note" id="note-deck" style="display: none;"><i class="bi bi-file-slides"></i> Post-Election deck add-on is a one-time charge at subscriber rate</div>
             </div>
@@ -266,7 +266,7 @@
     </div>
     <h2 class="success-title">Subscription Request Submitted!</h2>
     <p class="success-text">
-        Thank you, <span id="success-first-name">Subscriber</span>. We've received your Two-Year Subscription request. You'll receive a confirmation email at <strong id="success-email">your email</strong> shortly.
+        Thank you, <span id="success-first-name">Subscriber</span>. We've received your {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . "-Year" : config('subscriptions.duration_two_year') . "-Month" }} Subscription request. You'll receive a confirmation email at <strong id="success-email">your email</strong> shortly.
     </p>
     <a href="{{ route('home') }}" class="btn-home">Return to Home</a>
 </div>
@@ -283,9 +283,9 @@
         registerEmailsUrl: '/register-emails',
         basePriceOnline: {{ config('subscriptions.two_year_online') }},
         basePricePrint: {{ config('subscriptions.two_year_print') }},
-        subscriptionLength: 24,
-        formatTextOnline: 'Two-Year Online Only — 2 Years',
-        formatTextPrint: 'Two-Year Online & Print — 2 Years',
+        subscriptionLength: {{ config('subscriptions.duration_two_year') }},
+        formatTextOnline: 'Two-Year Online Only — {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . " Years" : config('subscriptions.duration_two_year') . " Months" }}',
+        formatTextPrint: 'Two-Year Online & Print — {{ config('subscriptions.duration_two_year') >= 12 ? (config('subscriptions.duration_two_year') / 12) . " Years" : config('subscriptions.duration_two_year') . " Months" }}',
         userPrice: {{ config('subscriptions.additional_seat') }}
     };
 </script>

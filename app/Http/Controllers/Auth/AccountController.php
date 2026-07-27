@@ -681,7 +681,7 @@ class AccountController extends Controller
             'starts_on' => $startsOn,
         ]);
 
-        if ($sub->frequency === 12) {
+        if ($sub->frequency === config('subscriptions.duration_one_year')) {
             $base_cost = config('subscriptions.one_year_online') * Globals::STRIPE_MULTIPLIER;
         } else {
             $base_cost = config('subscriptions.two_year_online') * Globals::STRIPE_MULTIPLIER;

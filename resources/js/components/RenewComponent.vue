@@ -13,20 +13,20 @@
 
     data: () => ({
       errors: {},
-      pricing: { // by subscription length (in years)
-        '12': {
+      pricing: {
+        [window.globals.DURATION_1YR]: {
           base: window.globals.SUBSCRIPTION_COST_1YR,
           addon: window.globals.ADDON_COST_1YR,
-          book: window.globals.getBookCountForSubscription(1) * window.globals.BOOK_COST,
+          book: window.globals.getBookCountForSubscription(window.globals.DURATION_1YR / 12) * window.globals.BOOK_COST,
         },
-        '24': {
+        [window.globals.DURATION_2YR]: {
           base: window.globals.SUBSCRIPTION_COST_2YR,
           addon: window.globals.ADDON_COST_2YR,
-          book: window.globals.getBookCountForSubscription(2) * window.globals.BOOK_COST,
+          book: window.globals.getBookCountForSubscription(window.globals.DURATION_2YR / 12) * window.globals.BOOK_COST,
         },
       },
 
-      subLength: '24', // subscription length in months
+      subLength: String(window.globals.DURATION_2YR), // subscription length in months
 
       bookAddresses: [],
       curBookSubscriptions: [],
@@ -72,7 +72,7 @@
 
     beforeMount() {
 
-      this.subLength = String(this.curSubscription.frequency || 24);
+      this.subLength = String(this.curSubscription.frequency || window.globals.DURATION_2YR);
 
       this.paymentMethod = this.curPaymentMethod || 'stripe';
       this.curBookSubscriptions = [].concat(this._curBookSubscriptions);

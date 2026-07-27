@@ -75,23 +75,23 @@
                                         <div class="select-options row">
 
                                             <div class="col-sm-12">
-                                                <label class="control-label" for="1yr" :class="{ selected: subLength === '12' }">
+                                                <label class="control-label" for="1yr" :class="{ selected: subLength === '{{ config('subscriptions.duration_one_year') }}' }">
                                                     <input class="pull-left" name="subscription_length" type="radio" id="1yr"
-                                                            value="12" v-model="subLength"/>
+                                                            value="{{ config('subscriptions.duration_one_year') }}" v-model="subLength"/>
 
                                                     <span class="pl-md">
-                                                12 Month Subscription
-                                                <span class="pull-right">$@{{ pricing['12'].base | currency }}</span>
+                                                {{ config('subscriptions.duration_one_year') }} Month Subscription
+                                                <span class="pull-right">$@{{ pricing['{{ config('subscriptions.duration_one_year') }}'].base | currency }}</span>
                                             </span>
                                                 </label>
                                             </div>
                                             <div class="col-sm-12">
-                                                <label class="control-label" for="2yr" :class="{ selected: subLength === '24' }">
+                                                <label class="control-label" for="2yr" :class="{ selected: subLength === '{{ config('subscriptions.duration_two_year') }}' }">
                                                     <input class="pull-left" name="subscription_length" type="radio" id="2yr"
-                                                            value="24" v-model="subLength"/>
+                                                            value="{{ config('subscriptions.duration_two_year') }}" v-model="subLength"/>
                                                     <span class="pl-md">
-                                                        24 Month Subscription
-                                                        <span class="pull-right"> $@{{ pricing['24'].base | currency }} </span>
+                                                        {{ config('subscriptions.duration_two_year') }} Month Subscription
+                                                        <span class="pull-right"> $@{{ pricing['{{ config('subscriptions.duration_two_year') }}'].base | currency }} </span>
                                                     </span>
                                                 </label>
                                             </div>

@@ -13,6 +13,8 @@
         ADDON_COST_1YR: {{ config('subscriptions.additional_seat') }},
         ADDON_COST_2YR: {{ config('subscriptions.additional_seat') }},
         BOOK_COST: {{ config('subscriptions.additional_seat') }},
+        DURATION_1YR: {{ config('subscriptions.duration_one_year') }},
+        DURATION_2YR: {{ config('subscriptions.duration_two_year') }},
 
         getBookCountForSubscription: function (yrCount) {
           var yr = (new Date()).getFullYear();

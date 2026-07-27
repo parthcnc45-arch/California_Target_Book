@@ -9,4 +9,7 @@ return [
     'deck_presentation' => env('PRICE_POST_ELECTION_PRESENTATION', 200),
     'additional_printed_book' => env('PRICE_ADDITIONAL_PRINTED_BOOK', 300),
     'additional_seat' => env('PRICE_ADDITIONAL_SEAT', 100),
+    'duration_one_year' => (int) env('DURATION_ONE_YEAR', 12),
+    'duration_two_year' => (int) env('DURATION_TWO_YEAR', 24),
+    'duration_trial' => (int) env('DURATION_TRIAL', 7),
 ];

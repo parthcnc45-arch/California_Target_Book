@@ -29,10 +29,14 @@ class SubscriptionResource extends JsonResource
         $hasPrint = $this->book_subscriptions()->count() > 0;
         $formatString = $hasPrint ? 'Online Access & Print' : 'Online Access Only';
         
-        if ((int)$this->frequency === 12) {
-            $productName = "CTB Online One-Year Subscription ($formatString)";
-        } elseif ((int)$this->frequency === 24) {
-            $productName = "CTB Online Two-Year Subscription ($formatString)";
+        if ((int)$this->frequency === config('subscriptions.duration_one_year')) {
+            $years = config('subscriptions.duration_one_year') / 12;
+            $label = $years >= 1 ? ($years . "-Year") : (config('subscriptions.duration_one_year') . "-Month");
+            $productName = "CTB Online " . $label . " Subscription ($formatString)";
+        } elseif ((int)$this->frequency === config('subscriptions.duration_two_year')) {
+            $years = config('subscriptions.duration_two_year') / 12;
+            $label = $years >= 1 ? ($years . "-Year") : (config('subscriptions.duration_two_year') . "-Month");
+            $productName = "CTB Online " . $label . " Subscription ($formatString)";
         } elseif ((int)$this->frequency === 0) {
             $productName = "CTB Online Trial Subscription";
         } else {

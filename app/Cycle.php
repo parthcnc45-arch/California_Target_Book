@@ -27,7 +27,7 @@ class Cycle extends Model
         }
 
         if ($sub->frequency === 0) { // is a trial
-            $this->ends_on = (new Carbon($this->starts_on))->addWeek();
+            $this->ends_on = (new Carbon($this->starts_on))->addDays(config('subscriptions.duration_trial'));
         } else {
             $this->ends_on = (new Carbon($this->starts_on))->addMonths($sub->frequency);
         }

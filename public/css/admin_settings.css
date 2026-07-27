@@ -4290,3 +4290,13 @@
     display: inline-block;
 }
 
+/* Remove hover/focus underline for all links and dropdown items in admin settings views */
+a:hover,
+a:focus,
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus,
+.dropdown-item:hover,
+.dropdown-item:focus {
+    text-decoration: none !important;
+}
+

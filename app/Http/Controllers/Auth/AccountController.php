@@ -25,6 +25,46 @@ class AccountController extends Controller
 {
     private function getAccountData() {
         $user = Auth::user();
+
+        // Fetch purchased add-ons (digital and physical)
+        $digitalAddons = \App\DigitalAddonOrder::where('user_id', $user->id)
+            ->get()
+            ->map(function($order) {
+                return [
+                    'name' => str_replace(' (Subscriber)', '', str_replace(' (Non-Subscriber)', '', $order->item_name)),
+                    'type' => 'Digital',
+                    'price' => '$' . number_format($order->amount / 100, 2),
+                    'date' => $order->created_at ? $order->created_at->format('M j, Y') : '-',
+                    'status' => $order->payment_status ?? 'Paid',
+                    'status_class' => 'badge-team-active'
+                ];
+            });
+
+        $bookAddons = \App\BookSubscription::where('user_id', $user->id)
+            ->where(function($query) {
+                $query->where('item_name', 'LIKE', '%Additional%Printed Book%')
+                      ->orWhere('item_name', 'LIKE', '%Additionaly%Printed Book%');
+            })
+            ->get()
+            ->map(function($book) {
+                $priceVal = config('subscriptions.additional_printed_book') ?? 150;
+                $status = strtolower($book->status ?? 'processing');
+                $statusClass = 'badge-team-pending';
+                if ($status === 'delivered') {
+                    $statusClass = 'badge-team-active';
+                }
+                return [
+                    'name' => str_replace(' (Subscriber)', '', str_replace(' (Non-Subscriber)', '', $book->item_name)),
+                    'type' => 'Physical',
+                    'price' => '$' . number_format($priceVal, 2),
+                    'date' => $book->created_at ? $book->created_at->format('M j, Y') : '-',
+                    'status' => ucfirst($book->status ?? 'Processing'),
+                    'status_class' => $statusClass
+                ];
+            });
+
+        $purchasedAddons = $digitalAddons->concat($bookAddons);
+
         $user->load('company.address');
         $sub = $user->latestSubscription();
 
@@ -36,6 +76,7 @@ class AccountController extends Controller
                     'user' => $user,
                     'pending_bank' => null,
                     'cycles' => collect(),
+                    'purchasedAddons' => $purchasedAddons,
                     'sub' => [
                         'cycle' => null,
                         'status' => 'None',
@@ -54,6 +95,7 @@ class AccountController extends Controller
                     'user' => $user,
                     'pending_bank' => null,
                     'cycles' => collect(),
+                    'purchasedAddons' => $purchasedAddons,
                     'sub' => [
                         'cycle' => null,
                         'status' => 'None',
@@ -127,6 +169,7 @@ class AccountController extends Controller
             'user' => $user,
             'pending_bank' => $ba,
             'cycles' => $cycles,
+            'purchasedAddons' => $purchasedAddons,
             'sub' => [
                 'cycle' => $currentCycle,
                 'status' => $sub->status(),

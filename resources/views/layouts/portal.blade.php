@@ -50,7 +50,7 @@
                 <!-- <a href="/classifieds" class="nav-link {{ Request::is('classifieds*') ? 'active' : '' }}"><i class="bi bi-megaphone"></i> Classifieds</a> -->
                 <a href="/account/account-info" class="nav-link {{ Request::is('account/account-info') ? 'active' : '' }}"><i class="bi bi-person"></i> Account info</a>
                 <a href="/account/subscriptions" class="nav-link {{ Request::is('account/subscriptions') ? 'active' : '' }}"><i class="bi bi-credit-card-2-front"></i> Subscriptions</a>
-                <a href="/account/manage-add-ons" class="nav-link {{ Request::is('account/manage-add-ons') || Request::is('account/addon-checkout') ? 'active' : '' }}"><i class="bi bi-gift"></i> Manage add-ons</a>
+                <!-- <a href="/account/manage-add-ons" class="nav-link {{ Request::is('account/manage-add-ons') || Request::is('account/addon-checkout') ? 'active' : '' }}"><i class="bi bi-gift"></i> Manage add-ons</a> -->
                 <a href="/account/transaction-history" class="nav-link {{ Request::is('account/transaction-history') ? 'active' : '' }}"><i class="bi bi-coin"></i> Transaction History</a>
                 <a href="/account/shipping-tracking" class="nav-link {{ Request::is('account/shipping-tracking') ? 'active' : '' }}"><i class="bi bi-truck"></i> Shipping & Tracking</a>
                 <a href="/account/notification-settings" class="nav-link {{ Request::is('account/notification-settings') ? 'active' : '' }}"><i class="bi bi-gear"></i> Notifications</a>

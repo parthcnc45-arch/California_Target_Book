@@ -180,6 +180,71 @@
                 </div>
             </div>
         </div>
+
+        <!-- Purchased Add-ons Card -->
+        <div class="subscription-card" style="margin-top: 24px;">
+            <div style="padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;">
+                    <div style="font-size: 15px; font-weight: 600; color: #1e293b;">
+                        Purchased add-ons
+                    </div>
+                    <div>
+                        <a href="{{ route('subscriptions.book-only') }}" class="btn-add-subscription">
+                            <i class="bi bi-cart-plus"></i> Purchase Add-ons
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    @if(count($purchasedAddons) > 0)
+                        <!-- Purchased Add-ons Table -->
+                        <div style="overflow-x: auto;">
+                            <table class="team-table" id="purchased-addons-table">
+                                <thead>
+                                    <tr>
+                                        <th class="th-w-37">Add-on Name</th>
+                                        <th class="th-w-30">Type</th>
+                                        <th class="th-w-13">Price</th>
+                                        <th class="th-w-20">Purchase Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($purchasedAddons as $addon)
+                                    <tr>
+                                        <td>
+                                            <span class="team-member-name" style="font-weight: 600; color: #0f172a;">
+                                                {{ $addon['name'] }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="team-member-email" style="color: #475569;">
+                                                {{ $addon['type'] }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="team-member-role" style="color: #475569; font-weight: 500;">
+                                                {{ $addon['price'] }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="team-member-email" style="color: #475569;">
+                                                {{ $addon['date'] }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div style="text-align: center; padding: 48px 0; color: #64748b; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                            <div style="font-size: 24px; color: #94a3b8; margin-bottom: 12px;"><i class="bi bi-gift"></i></div>
+                            <p style="margin: 0 0 8px 0; font-size: 15px; font-weight: 500; color: #475569;">You do not have any purchased add-ons.</p>
+                            <p style="margin: 0; font-size: 13.5px;">Purchase add-ons to enhance your subscription.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
         @else
         <div class="subscription-card subscription-card-empty">
             <p class="subscription-card-empty-text">You do not have an active subscription.</p>

@@ -86,7 +86,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="subscription-card-footer">
+            <!-- <div class="subscription-card-footer">
                 <div class="subscription-footer-left">
                     <a href="{{ route('auth.account.manage_billing') }}" class="btn-manage-billing">
                         <i class="bi bi-credit-card"></i> Manage Billing
@@ -97,7 +97,7 @@
                         Cancel
                     </button>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <!-- Team Members Card -->

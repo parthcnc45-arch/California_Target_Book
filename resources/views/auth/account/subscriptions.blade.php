@@ -467,6 +467,35 @@
                 $('#dynamic-emails-error').text(errorMsg).show();
                 return;
             }
+
+            // Check if any email already has an active subscription elsewhere
+            var checkPromises = emails.map(function(email) {
+                return $.ajax({
+                    url: '/api/check-subscriber',
+                    method: 'POST',
+                    data: {
+                        email: email,
+                        _token: '{{ csrf_token() }}'
+                    }
+                }).then(function(res) {
+                    if (res.success && res.has_subscription) {
+                        return email;
+                    }
+                    return null;
+                });
+            });
+
+            try {
+                var results = await Promise.all(checkPromises);
+                var activeEmails = results.filter(Boolean);
+                if (activeEmails.length > 0) {
+                    var conflictEmail = activeEmails[0];
+                    $('#dynamic-emails-error').text('Email "' + conflictEmail + '" already has an active subscription or is a member of another subscription.').show();
+                    return;
+                }
+            } catch (err) {
+                console.error('Failed to validate emails:', err);
+            }
             
             $('#dynamic-emails-error').hide();
             

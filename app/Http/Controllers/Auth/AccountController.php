@@ -1027,6 +1027,12 @@ class AccountController extends Controller
             return response()->json(['success' => false, 'message' => 'This user is already a member of your subscription.'], 400);
         }
 
+        // Check if user already has an active subscription or is a member of another subscription
+        $existingUser = User::where('email', $email)->first();
+        if ($existingUser && $existingUser->hasActiveSubscription()) {
+            return response()->json(['success' => false, 'message' => 'This email is already associated with an active subscription.'], 400);
+        }
+
         try {
             $addon = $sub->addUser($email, [
                 'first_name' => '',
@@ -1117,6 +1123,12 @@ class AccountController extends Controller
         $isAlreadyAddon = $sub->addons()->where('email', $email)->where('users.id', '!=', $addonId)->exists();
         if ($isAlreadyAddon) {
             return response()->json(['success' => false, 'message' => 'This user is already a member of your subscription.'], 400);
+        }
+
+        // Check if user already has an active subscription elsewhere
+        $existingUser = User::where('email', $email)->first();
+        if ($existingUser && $existingUser->id != $addonId && $existingUser->hasActiveSubscription()) {
+            return response()->json(['success' => false, 'message' => 'This email is already associated with an active subscription.'], 400);
         }
 
         // Parse Name into first_name and last_name

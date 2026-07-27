@@ -119,7 +119,7 @@
                             <span class="addon-badge-applied">
                                 <i class="bi bi-check-circle-fill"></i> One-time charge
                             </span>
-                            <h3 class="addon-item-title">Post-Election Deck Only</h3>
+                            <h3 class="addon-item-title">{{ config('subscriptions.names.deck_only', 'Post-Election Deck Only') }}</h3>
                             <p class="addon-item-desc">Post-election deck presentation file</p>
                         </div>
                         <div>
@@ -138,7 +138,7 @@
                             <span class="addon-badge-applied">
                                 <i class="bi bi-check-circle-fill"></i> One-time charge
                             </span>
-                            <h3 class="addon-item-title">Post-Election Deck Presentation</h3>
+                            <h3 class="addon-item-title">{{ config('subscriptions.names.deck_presentation', 'Post-Election Presentation') }}</h3>
                             <p class="addon-item-desc">Post-election deck with live or recorded presentation add-on</p>
                         </div>
                         <div>

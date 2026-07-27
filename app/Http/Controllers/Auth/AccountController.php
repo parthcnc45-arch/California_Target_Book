@@ -811,9 +811,12 @@ class AccountController extends Controller
         $addons = $sub->addons()->get();
         $addon_cost = config('subscriptions.additional_seat') * Globals::STRIPE_MULTIPLIER;
         $addons->each(function ($addon) use (&$user, &$sub, $subLength, $addon_cost) {
+            $descTemplate = config('subscriptions.names.addon_description', ':title Online Subscription Addon Account, for :email');
+            $subTitle = "$subLength Month";
+            $description = str_replace([':title', ':email'], [$subTitle, $addon->email], $descTemplate);
             $user->addInvoiceItem([
                 'amount' => $addon_cost,
-                'description' => "$subLength Month Online Subscription Addon Account, for $addon->email",
+                'description' => $description,
             ]);
         });
 

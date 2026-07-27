@@ -602,6 +602,22 @@ class RegisterController extends Controller
         $email = $validated['email'];
         $user = User::where('email', $email)->first();
 
+        // Dynamically build the transaction description based on chosen items
+        $selectedNames = [];
+        $deckTypes = $validated['deck_types'] ?? [];
+        if (!empty($deckTypes) && is_array($deckTypes)) {
+            foreach ($deckTypes as $type) {
+                if ($type == config('subscriptions.deck_only')) {
+                    $selectedNames[] = config('subscriptions.names.deck_only', 'Post-Election Deck Only');
+                } elseif ($type == config('subscriptions.deck_presentation') . '_presentation') {
+                    $selectedNames[] = config('subscriptions.names.deck_presentation', 'Post-Election Presentation');
+                } elseif ($type == config('subscriptions.additional_printed_book') . '_book') {
+                    $selectedNames[] = config('subscriptions.names.additional_printed_book', 'Additional Printed Book');
+                }
+            }
+        }
+        $txDesc = !empty($selectedNames) ? implode(', ', $selectedNames) : ($validated['deck_title'] ?? 'Post-Election Deck/Book Purchase');
+
         // 1. Create or Update User
         if (!$user) {
             $password = !empty($validated['password']) ? bcrypt($validated['password']) : bcrypt(\Illuminate\Support\Str::random(10));
@@ -670,7 +686,7 @@ class RegisterController extends Controller
                     'payment_method' => $validated['stripe_token'],
                     'confirm' => 'true',
                     'off_session' => 'true',
-                    'description' => ($validated['deck_title'] ?? 'Post-Election Deck/Book Purchase') . " - California Target Book",
+                    'description' => $txDesc . " - California Target Book",
                 ]);
 
                 $resData = $response->json();
@@ -691,7 +707,7 @@ class RegisterController extends Controller
                     'amount' => $amount,
                     'currency' => 'usd',
                     'customer' => $cust->id,
-                    'description' => ($validated['deck_title'] ?? 'Post-Election Deck/Book Purchase') . " - California Target Book",
+                    'description' => $txDesc . " - California Target Book",
                 ]);
 
                 if (!$charge->paid) {
@@ -732,7 +748,7 @@ class RegisterController extends Controller
         // Save transaction to local database
         try {
             $txAmount = $amount;
-            $txDesc = $validated['deck_title'] ?? "Post-Election Deck/Book Purchase - California Target Book";
+            // $txDesc is already defined at the top
             $txReceiptUrl = null;
             $txRaw = null;
 
@@ -772,7 +788,7 @@ class RegisterController extends Controller
                         \App\DigitalAddonOrder::create([
                             'user_id' => $user->id,
                             'transaction_id' => $txObj ? $txObj->id : null,
-                            'item_name' => 'Post-Election Deck Only (Subscriber)',
+                            'item_name' => config('subscriptions.names.deck_only', 'Post-Election Deck Only') . ' (Subscriber)',
                             'amount' => config('subscriptions.deck_only') * 100,
                             'payment_status' => 'Paid',
                             'delivery_status' => 'Sent',
@@ -781,7 +797,7 @@ class RegisterController extends Controller
                         \App\DigitalAddonOrder::create([
                             'user_id' => $user->id,
                             'transaction_id' => $txObj ? $txObj->id : null,
-                            'item_name' => 'Post-Election Presentation (Subscriber)',
+                            'item_name' => config('subscriptions.names.deck_presentation', 'Post-Election Presentation') . ' (Subscriber)',
                             'amount' => config('subscriptions.deck_presentation') * 100,
                             'payment_status' => 'Paid',
                             'delivery_status' => 'Sent',
@@ -809,7 +825,7 @@ class RegisterController extends Controller
                 'subscription_id' => $subscriptionId,
                 'user_id' => $user->id,
                 'address_id' => $address->id,
-                'item_name' => 'Additional Printed Book'
+                'item_name' => config('subscriptions.names.additional_printed_book', 'Additional Printed Book')
             ]);
         }
 

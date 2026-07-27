@@ -20,5 +20,10 @@ return [
         'trial' => env('STRIPE_PROD_NAME_TRIAL', 'CTB Online Trial Subscription'),
         'display_one_year' => env('STRIPE_DISPLAY_NAME_ONE_YEAR', 'One-Year Subscription'),
         'display_two_year' => env('STRIPE_DISPLAY_NAME_TWO_YEAR', 'Two-Year Subscription'),
+        'addon_product_name' => env('STRIPE_PROD_NAME_ADDON', 'Additional Online User'),
+        'addon_description' => env('STRIPE_ADDON_DESCRIPTION', ':title Online Subscription Addon Account, for :email'),
+        'deck_only' => env('STRIPE_PROD_NAME_DECK_ONLY', 'Post-Election Deck Only'),
+        'deck_presentation' => env('STRIPE_PROD_NAME_DECK_PRESENTATION', 'Post-Election Presentation'),
+        'additional_printed_book' => env('STRIPE_PROD_NAME_PRINTED_BOOK', 'Additional Printed Book'),
     ],
 ];

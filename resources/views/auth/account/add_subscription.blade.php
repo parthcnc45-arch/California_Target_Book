@@ -54,15 +54,15 @@
                     <div class="addons-header">AVAILABLE ADD-ONS</div>
                     <div class="addons-list">
                         <div class="addon-item">
-                            <span>Additional Online User</span>
+                            <span>{{ config('subscriptions.names.addon_product_name', 'Additional Online User') }}</span>
                             <span>${{ number_format(config('subscriptions.additional_seat')) }}/year</span>
                         </div>
                         <div class="addon-item">
-                            <span>Post-Election Deck Only (Subscriber)</span>
+                            <span>{{ config('subscriptions.names.deck_only', 'Post-Election Deck Only') }} (Subscriber)</span>
                             <span>${{ number_format(config('subscriptions.deck_only')) }}</span>
                         </div>
                         <div class="addon-item">
-                            <span>Post-Election Deck + Presentation (Subscriber)</span>
+                            <span>{{ config('subscriptions.names.deck_presentation', 'Post-Election Presentation') }} (Subscriber)</span>
                             <span>${{ number_format(config('subscriptions.deck_presentation')) }}</span>
                         </div>
                     </div>
@@ -110,15 +110,15 @@
                     <div class="addons-header">AVAILABLE ADD-ONS</div>
                     <div class="addons-list">
                         <div class="addon-item">
-                            <span>Additional Online User</span>
+                            <span>{{ config('subscriptions.names.addon_product_name', 'Additional Online User') }}</span>
                             <span>${{ number_format(config('subscriptions.additional_seat')) }}/year</span>
                         </div>
                         <div class="addon-item">
-                            <span>Post-Election Deck Only (Subscriber)</span>
+                            <span>{{ config('subscriptions.names.deck_only', 'Post-Election Deck Only') }} (Subscriber)</span>
                             <span>${{ number_format(config('subscriptions.deck_only')) }}</span>
                         </div>
                         <div class="addon-item">
-                            <span>Post-Election Deck + Presentation (Subscriber)</span>
+                            <span>{{ config('subscriptions.names.deck_presentation', 'Post-Election Presentation') }} (Subscriber)</span>
                             <span>${{ number_format(config('subscriptions.deck_presentation')) }}</span>
                         </div>
                     </div>

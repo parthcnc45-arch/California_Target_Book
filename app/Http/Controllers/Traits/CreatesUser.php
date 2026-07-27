@@ -452,9 +452,11 @@ trait CreatesUser {
     }
     if ($cycle->payment_method !== 'stripe') {
         $addons->each(function ($addon) use ($baseUser, $subscription, $subTitle, $addon_cost) {
+            $descTemplate = config('subscriptions.names.addon_description', ':title Online Subscription Addon Account, for :email');
+            $description = str_replace([':title', ':email'], [$subTitle, $addon->email], $descTemplate);
             $baseUser->addInvoiceItem([
                 'amount' => $addon_cost,
-                'description' => "$subTitle Online Subscription Addon Account, for $addon->email",
+                'description' => $description,
             ]);
         });
     }
@@ -500,19 +502,19 @@ trait CreatesUser {
                         $baseUser->addInvoiceItem([
                             'unit_amount_decimal' => (string) (config('subscriptions.deck_only') * 100),
                             'quantity' => 1,
-                            'description' => "Post-Election Deck Only (Subscriber)",
+                            'description' => config('subscriptions.names.deck_only', 'Post-Election Deck Only') . " (Subscriber)",
                         ]);
                     } elseif ($type == config('subscriptions.deck_presentation') . '_presentation') {
                         $baseUser->addInvoiceItem([
                             'unit_amount_decimal' => (string) (config('subscriptions.deck_presentation') * 100),
                             'quantity' => 1,
-                            'description' => "Post-Election Presentation (Subscriber)",
+                            'description' => config('subscriptions.names.deck_presentation', 'Post-Election Presentation') . " (Subscriber)",
                         ]);
                     } elseif ($type == config('subscriptions.additional_printed_book') . '_book') {
                         $baseUser->addInvoiceItem([
                             'unit_amount_decimal' => (string) (config('subscriptions.additional_printed_book') * 100),
                             'quantity' => $deck_qty,
-                            'description' => "Additional Printed Book (Subscriber)",
+                            'description' => config('subscriptions.names.additional_printed_book', 'Additional Printed Book') . " (Subscriber)",
                         ]);
                     }
                 }
@@ -521,7 +523,7 @@ trait CreatesUser {
                 $deck_qty = (int) ($data['deck_qty'] ?? 0);
                 if ($deck_qty > 0 && !empty($data['deck_type'])) {
                     $deck_type = (int) $data['deck_type'];
-                    $deck_title = $data['deck_title'] ?? "Post-Election Deck Only (Subscriber)";
+                    $deck_title = $data['deck_title'] ?? (config('subscriptions.names.deck_only', 'Post-Election Deck Only') . " (Subscriber)");
                     $baseUser->addInvoiceItem([
                         'unit_amount_decimal' => (string) ($deck_type * 100),
                         'quantity' => $deck_qty,
@@ -589,7 +591,7 @@ trait CreatesUser {
                         try {
                             \Stripe\Product::create([
                                 'id' => $addonProductId,
-                                'name' => 'Additional Online User',
+                                'name' => config('subscriptions.names.addon_product_name', 'Additional Online User'),
                                 'type' => 'service',
                             ]);
                         } catch (\Exception $ex) {}
@@ -783,7 +785,7 @@ trait CreatesUser {
                         \App\DigitalAddonOrder::create([
                             'user_id' => $baseUser->id,
                             'transaction_id' => $txObj ? $txObj->id : null,
-                            'item_name' => 'Post-Election Deck Only (Subscriber)',
+                            'item_name' => config('subscriptions.names.deck_only', 'Post-Election Deck Only') . ' (Subscriber)',
                             'amount' => config('subscriptions.deck_only') * 100,
                             'payment_status' => 'Paid',
                             'delivery_status' => 'Sent',
@@ -792,7 +794,7 @@ trait CreatesUser {
                         \App\DigitalAddonOrder::create([
                             'user_id' => $baseUser->id,
                             'transaction_id' => $txObj ? $txObj->id : null,
-                            'item_name' => 'Post-Election Presentation (Subscriber)',
+                            'item_name' => config('subscriptions.names.deck_presentation', 'Post-Election Presentation') . ' (Subscriber)',
                             'amount' => config('subscriptions.deck_presentation') * 100,
                             'payment_status' => 'Paid',
                             'delivery_status' => 'Sent',

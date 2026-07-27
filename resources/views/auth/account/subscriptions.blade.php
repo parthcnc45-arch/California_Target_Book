@@ -283,7 +283,7 @@
                             </div>
                             
                             <!-- Dynamic Email Inputs Container -->
-                            <div id="dynamic-emails-container" style="width: 100%; display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+                            <div id="dynamic-emails-container" style="width: 100%; display: flex; flex-direction: column; gap: 12px; margin-top: 8px; max-height: 250px; overflow-y: auto; padding-right: 8px;">
                                 <!-- Initially 1 input field -->
                                 <div class="flex-col-gap-6-w-full" style="width: 100%;">
                                     <label class="form-label-custom-gray" style="margin-bottom: 6px; font-size: 12.5px; font-weight: 500; color: #64748b; display: block;">Email for Seat 1</label>

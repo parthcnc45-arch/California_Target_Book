@@ -1,28 +1,9 @@
 @extends('layouts.portal')
 
-@section('portal_styles')
-    <style>
-        .table-action-edit {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            color: #0f172a;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: background-color 0.15s ease, color 0.15s ease;
-        }
-        .table-action-edit:hover {
-            background-color: #f1f5f9;
-            color: #b91c1c;
-        }
-    </style>
-@endsection
+
 
 @section('portal_content')
-    <div class="section-header" style="justify-content: space-between;">
+    <div class="section-header as-subscriptions-1">
         <div class="header-title-container">
             <h1 class="header-title">Subscriptions</h1>
         </div>
@@ -32,62 +13,62 @@
     </div>
 
     <!-- Stats Row -->
-    <div style="display: flex; gap: 24px; margin-bottom: 24px;">
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #0d9488;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Total Subscriptions</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-total">-</div>
+    <div class="as-subscriptions-2">
+        <div class="portal-card as-subscriptions-3">
+            <div class="as-subscriptions-4">Total Subscriptions</div>
+            <div class="as-subscriptions-5" id="stat-total">-</div>
         </div>
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #16a34a;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Active</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-active">-</div>
+        <div class="portal-card as-subscriptions-6">
+            <div class="as-subscriptions-4">Active</div>
+            <div class="as-subscriptions-5" id="stat-active">-</div>
         </div>
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #ef4444;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Inactive</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-inactive">-</div>
+        <div class="portal-card as-subscriptions-7">
+            <div class="as-subscriptions-4">Inactive</div>
+            <div class="as-subscriptions-5" id="stat-inactive">-</div>
         </div>
     </div>
 
     <!-- Data Table -->
-    <div class="portal-card" style="padding: 0;">
-        <div class="card-header-custom" style="display: flex; flex-direction: column; gap: 16px; padding: 20px 24px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; width: 100%;">
-                <h2 class="card-title-custom" style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">Subscribers List</h2>
-                <div style="position: relative;">
-                    <i class="bi bi-search" style="position: absolute; left: 12px; top: 10px; color: #94a3b8; font-size: 14px;"></i>
-                    <input type="text" class="form-input-style" id="search-subscribers" placeholder="Search companies or contacts..." style="padding-left: 36px; width: 300px; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px;">
+    <div class="portal-card as-subscriptions-8">
+        <div class="card-header-custom as-subscriptions-9">
+            <div class="as-subscriptions-10">
+                <h2 class="card-title-custom as-subscriptions-11">Subscribers List</h2>
+                <div class="as-subscriptions-12">
+                    <i class="bi bi-search as-subscriptions-13"></i>
+                    <input type="text" class="form-input-style as-subscriptions-14" id="search-subscribers" placeholder="Search companies or contacts...">
                 </div>
             </div>
             
             <!-- Filters Row -->
-            <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; width: 100%; border-top: 1px solid #f1f5f9; padding-top: 16px;">
-                <div style="display: flex; flex-direction: column; gap: 6px;">
-                    <span style="font-size: 12.5px; font-weight: 600; color: #475569;">Status</span>
-                    <select class="form-input-style" id="filter-status" style="width: 140px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
+            <div class="as-subscriptions-15">
+                <div class="as-subscriptions-16">
+                    <span class="as-subscriptions-17">Status</span>
+                    <select class="form-input-style as-subscriptions-18" id="filter-status">
                         <option value="all">All Statuses</option>
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
                     </select>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 6px;">
-                    <span style="font-size: 12.5px; font-weight: 600; color: #475569;">Term</span>
-                    <select class="form-input-style" id="filter-frequency" style="width: 140px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
+                <div class="as-subscriptions-16">
+                    <span class="as-subscriptions-17">Term</span>
+                    <select class="form-input-style as-subscriptions-18" id="filter-frequency">
                         <option value="all">All Terms</option>
                         <option value="0">Trial</option>
                         <option value="12">12 Months</option>
                         <option value="24">24 Months</option>
                     </select>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 6px;">
-                    <span style="font-size: 12.5px; font-weight: 600; color: #475569;">Starts On (From)</span>
-                    <input type="date" class="form-input-style" id="filter-starts-on" style="width: 150px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff; color: #475569;">
+                <div class="as-subscriptions-16">
+                    <span class="as-subscriptions-17">Starts On (From)</span>
+                    <input type="date" class="form-input-style as-subscriptions-19" id="filter-starts-on">
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 6px;">
-                    <span style="font-size: 12.5px; font-weight: 600; color: #475569;">Ends On (To)</span>
-                    <input type="date" class="form-input-style" id="filter-ends-on" style="width: 150px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff; color: #475569;">
+                <div class="as-subscriptions-16">
+                    <span class="as-subscriptions-17">Ends On (To)</span>
+                    <input type="date" class="form-input-style as-subscriptions-19" id="filter-ends-on">
                 </div>
                 <!-- Clear Filters Button -->
-                <div style="padding-bottom: 2px;">
-                    <button id="btn-clear-filters" onmouseenter="this.style.backgroundColor='#e2e8f0'" onmouseleave="this.style.backgroundColor='#f1f5f9'" style="display: none; height: 36px; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; align-items: center; gap: 6px; transition: all 0.15s ease-in-out;">
+                <div class="as-subscriptions-20">
+                    <button class="as-subscriptions-21" id="btn-clear-filters" onmouseenter="this.style.backgroundColor='#e2e8f0'" onmouseleave="this.style.backgroundColor='#f1f5f9'">
                         <i class="bi bi-x-circle"></i> Clear Filters
                     </button>
                 </div>
@@ -97,14 +78,14 @@
             <table class="portal-grid-table" id="subscribers-table">
                 <thead>
                     <tr>
-                        <th style="width: 100px;">Status</th>
-                        <th style="width: 18%;">Company</th>
-                        <th style="width: 15%;">Contact</th>
-                        <th style="width: 25%;">Product</th>
-                        <th style="width: 10%;">Term</th>
-                        <th style="width: 12%;">Starts On</th>
-                        <th style="width: 12%;">Ends On</th>
-                        <th style="width: 90px; text-align: center;">Action</th>
+                        <th class="as-subscriptions-22">Status</th>
+                        <th class="as-subscriptions-23">Company</th>
+                        <th class="as-subscriptions-24">Contact</th>
+                        <th class="as-subscriptions-25">Product</th>
+                        <th class="as-subscriptions-26">Term</th>
+                        <th class="as-subscriptions-27">Starts On</th>
+                        <th class="as-subscriptions-27">Ends On</th>
+                        <th class="as-subscriptions-28">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,11 +94,11 @@
             </table>
         </div>
         <!-- Pagination Footer -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-top: 1px solid #f1f5f9; background-color: #ffffff; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
-            <div style="font-size: 13.5px; color: #64748b;" id="pagination-info">
+        <div class="as-subscriptions-29">
+            <div class="as-subscriptions-30" id="pagination-info">
                 Showing 1 to 5 of 9 entries
             </div>
-            <div style="display: flex; gap: 8px; align-items: center;" id="pagination-buttons">
+            <div class="as-subscriptions-31" id="pagination-buttons">
                 <!-- Pagination buttons will be dynamically injected -->
             </div>
         </div>
@@ -231,7 +212,7 @@
                 // 3. Render only rows for current page
                 $tbody.empty();
                 if (totalEntries === 0) {
-                    $tbody.append(`<tr><td colspan="8" style="text-align: center; color: #64748b; padding: 24px;">No subscriptions found</td></tr>`);
+                    $tbody.append(`<tr><td class="as-subscriptions-32" colspan="8">No subscriptions found</td></tr>`);
                 } else {
                     const pageRows = filteredRows.slice(startIndex, endIndex);
                     pageRows.forEach(sub => {
@@ -242,16 +223,21 @@
                         const rowHtml = `
                             <tr>
                                 <td><span class="status-pill-completed" style="${statusStyle}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
-                                <td class="fw-semibold" style="color: #0f172a !important;">${sub.company || ''}</td>
-                                <td><a href="#" style="color: #0f172a !important; font-weight: 600;">${sub.baseAccount ? sub.baseAccount.name : 'N/A'}</a></td>
-                                <td style="color: #475569; font-weight: 500;">${sub.productName || '—'}</td>
-                                <td style="color: #475569;">${formatFrequency(sub.frequency)}</td>
-                                <td style="color: #475569;">${formatDate(startsOnStr)}</td>
-                                <td style="color: #475569;">${formatDate(endsOnStr)}</td>
-                                <td style="text-align: center;">
-                                    <a href="/ctb-admin/new/subscriptions/${sub.id}" class="table-action-edit">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </a>
+                                <td class="fw-semibold as-subscriptions-33">${sub.company || ''}</td>
+                                <td><a class="as-subscriptions-34" href="#">${sub.baseAccount ? sub.baseAccount.name : 'N/A'}</a></td>
+                                <td class="as-subscriptions-35">${sub.productName || '—'}</td>
+                                <td class="as-subscriptions-36">${formatFrequency(sub.frequency)}</td>
+                                <td class="as-subscriptions-36">${formatDate(startsOnStr)}</td>
+                                <td class="as-subscriptions-36">${formatDate(endsOnStr)}</td>
+                                <td class="as-classifieds-76">
+                                    <div class="dropdown table-dropdown-container">
+                                        <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end as-classifieds-77">
+                                            <li><a class="dropdown-item as-classifieds-78" href="/ctb-admin/new/subscriptions/${sub.id}"><i class="bi bi-pencil as-classifieds-79"></i> Edit</a></li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         `;
@@ -414,7 +400,7 @@
             }
 
             // Load data from API
-            $tbody.html(`<tr><td colspan="8" style="text-align: center; color: #64748b; padding: 24px;"><i class="bi bi-arrow-repeat spin" style="font-size: 20px; display: inline-block; animation: spin 1s linear infinite; margin-right: 8px;"></i> Loading subscriptions...</td></tr>`);
+            $tbody.html(`<tr><td class="as-subscriptions-32" colspan="8"><i class="bi bi-arrow-repeat spin as-subscriptions-38"></i> Loading subscriptions...</td></tr>`);
 
             $('<style>')
                 .prop('type', 'text/css')
@@ -440,7 +426,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching subscriptions:', error);
-                    $tbody.html(`<tr><td colspan="8" style="text-align: center; color: #ef4444; padding: 24px;">Failed to load subscriptions. Please try again later.</td></tr>`);
+                    $tbody.html(`<tr><td class="as-subscriptions-39" colspan="8">Failed to load subscriptions. Please try again later.</td></tr>`);
                 }
             });
         });

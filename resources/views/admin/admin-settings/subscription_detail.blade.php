@@ -1,673 +1,14 @@
 @extends('layouts.portal')
 
-@section('portal_styles')
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-        :root {
-            --brand-red: #b91c1c;
-            --brand-red-hover: #991b1b;
-            --brand-red-light: #fef2f2;
-            --slate-900: #0f172a;
-            --slate-700: #334155;
-            --slate-600: #475569;
-            --slate-500: #64748b;
-            --slate-200: #e2e8f0;
-            --slate-100: #f1f5f9;
-            --slate-50: #f8fafc;
-            --teal-600: #0d9488;
-            --teal-700: #0f766e;
-            --teal-50: #f0fdfa;
-            --indigo-600: #4f46e5;
-            --indigo-50: #e0e7ff;
-            --emerald-600: #059669;
-            --emerald-500: #10b981;
-            --emerald-50: #ecfdf5;
-            --amber-600: #d97706;
-            --amber-50: #fffbeb;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-            --radius-lg: 12px;
-            --radius-md: 8px;
-            --radius-sm: 6px;
-        }
-
-        .details-container {
-            font-family: 'Outfit', sans-serif;
-            color: var(--slate-900);
-            width: 100%;
-        }
-
-        /* Header typography */
-        .subscriber-tag {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--slate-500);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-        .subscriber-name {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--brand-red);
-            margin: 4px 0 16px 0;
-            letter-spacing: -0.5px;
-        }
-        .red-divider {
-            height: 3px;
-            width: 48px;
-            background-color: var(--brand-red);
-            margin-bottom: 28px;
-            border-radius: 2px;
-        }
-
-        /* Card upgrade */
-        .premium-card {
-            background: #ffffff;
-            border: 1px solid var(--slate-200);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 28px;
-            overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .premium-card:hover {
-            box-shadow: var(--shadow-md);
-        }
-        .premium-card-header {
-            padding: 20px 24px;
-            background: #ffffff;
-            border-bottom: 1px solid var(--slate-100);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .premium-card-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--slate-900);
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .premium-card-body {
-            padding: 24px;
-        }
-
-        /* Company Section layout */
-        .company-card-layout {
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
-        }
-        .company-avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: var(--radius-md);
-            background: var(--brand-red-light);
-            color: var(--brand-red);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            flex-shrink: 0;
-        }
-        .company-details-block {
-            flex: 1;
-        }
-
-        /* Cycles list styling */
-        .cycle-list {
-            display: flex;
-            flex-direction: column;
-        }
-        .cycle-card-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--slate-100);
-            gap: 16px;
-        }
-        .cycle-card-item:last-child {
-            border-bottom: none;
-        }
-        .cycle-status-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-        .cycle-status-icon.active {
-            background-color: var(--emerald-50);
-            color: var(--emerald-600);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-        .cycle-status-icon.upcoming {
-            background-color: var(--amber-50);
-            color: var(--amber-600);
-            border: 1px solid rgba(217, 119, 6, 0.2);
-        }
-        .cycle-status-icon.expired {
-            background-color: var(--brand-red-light);
-            color: var(--brand-red);
-            border: 1px solid rgba(185, 28, 28, 0.2);
-        }
-        .cycle-content {
-            flex: 1;
-        }
-        .cycle-actions-container {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        /* Badges */
-        .badge-role {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 9999px;
-            display: inline-block;
-        }
-        .badge-role.subscriber {
-            background: var(--indigo-50);
-            color: var(--indigo-600);
-        }
-        .badge-role.addon {
-            background: var(--slate-100);
-            color: var(--slate-600);
-        }
-        .premium-badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .premium-badge.active {
-            background-color: var(--emerald-50);
-            color: var(--emerald-600);
-        }
-        .premium-badge.upcoming {
-            background-color: var(--amber-50);
-            color: var(--amber-600);
-        }
-        .premium-badge.expired {
-            background-color: var(--brand-red-light);
-            color: var(--brand-red);
-        }
-
-        /* User Card/Row Styles */
-        .subscriber-list {
-            display: flex;
-            flex-direction: column;
-        }
-        .subscriber-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--slate-100);
-            transition: all 0.2s ease;
-        }
-        .subscriber-item:hover {
-            background-color: var(--slate-50);
-            transform: translateX(4px);
-        }
-        .subscriber-item:last-child {
-            border-bottom: none;
-        }
-        .user-profile-block {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-        }
-        .user-avatar.subscriber {
-            background-color: var(--indigo-50);
-            color: var(--indigo-600);
-        }
-        .user-avatar.addon {
-            background-color: var(--slate-100);
-            color: var(--slate-600);
-        }
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .user-name-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .user-email-link {
-            font-size: 13px;
-            color: var(--slate-500);
-            text-decoration: none;
-            transition: color 0.15s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 2px;
-        }
-        .user-email-link:hover {
-            color: var(--brand-red);
-        }
-
-        /* Book Subscriptions Grid styling */
-        .book-subs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 24px;
-        }
-        .book-sub-card {
-            background: var(--slate-50);
-            border: 1px solid var(--slate-200);
-            border-radius: 10px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: all 0.2s ease;
-            min-height: 180px;
-        }
-        .book-sub-card:hover {
-            background: #ffffff;
-            border-color: var(--slate-300);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-        .book-sub-card-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-        .book-sub-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-sm);
-            background: var(--teal-50);
-            color: var(--teal-600);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-        .book-sub-address-info {
-            font-size: 13px;
-            color: var(--slate-700);
-            line-height: 1.5;
-            flex: 1;
-        }
-        .book-sub-card-actions {
-            border-top: 1px solid var(--slate-200);
-            padding-top: 12px;
-            margin-top: 12px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-        .btn-text-delete {
-            background: none;
-            border: none;
-            color: var(--brand-red);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .btn-text-delete:hover {
-            text-decoration: underline;
-        }
-        .btn-text-edit {
-            background: none;
-            border: none;
-            color: var(--slate-700);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .btn-text-edit:hover {
-            color: var(--slate-900);
-            text-decoration: underline;
-        }
-
-        /* Premium Buttons Styling */
-        .btn-premium {
-            background: var(--brand-red);
-            color: #ffffff !important;
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 8px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.15s ease-in-out;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-premium:hover {
-            background: var(--brand-red-hover);
-            box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
-            transform: translateY(-1px);
-        }
-        .btn-premium:active {
-            transform: translateY(0);
-        }
-
-        .btn-premium-teal {
-            background: var(--teal-600);
-            color: #ffffff !important;
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 8px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.15s ease-in-out;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-premium-teal:hover {
-            background: var(--teal-700);
-            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
-            transform: translateY(-1px);
-        }
-
-        .btn-premium-secondary {
-            background: var(--slate-50);
-            color: var(--slate-700) !important;
-            border: 1px solid var(--slate-200);
-            border-radius: var(--radius-sm);
-            padding: 8px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.15s ease-in-out;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-premium-secondary:hover {
-            background: var(--slate-100);
-            color: var(--slate-900) !important;
-        }
-
-        /* Premium Invoice table styling */
-        .premium-invoice-table {
-            width: 100%;
-            font-size: 12px;
-            color: var(--slate-700);
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 12px;
-            background-color: var(--slate-50);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--slate-200);
-            overflow: hidden;
-        }
-        .premium-invoice-table td {
-            padding: 8px 14px;
-            border-bottom: 1px solid var(--slate-200);
-        }
-        .premium-invoice-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Custom modal overrides */
-        .ctb-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .ctb-modal-box {
-            background: #ffffff;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            max-width: 520px;
-            width: 100%;
-            overflow: hidden;
-            animation: modalFadeIn 0.2s ease-out;
-            margin: 16px;
-        }
-        .modal-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0f172a;
-            margin: 0 0 20px 0;
-        }
-        .modal-body {
-            padding: 24px;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        .form-row {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 18px;
-        }
-        .form-col {
-            flex: 1;
-        }
-        .form-label {
-            display: block;
-            font-size: 12.5px;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 6px;
-        }
-        .form-input {
-            width: 100%;
-            height: 38px;
-            border: 1px solid var(--slate-200);
-            border-radius: var(--radius-sm);
-            padding: 8px 12px;
-            box-sizing: border-box;
-            font-size: 14px;
-            color: #0f172a;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        .form-input:focus {
-            border-color: var(--brand-red) !important;
-            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
-            outline: none;
-        }
-        .form-select {
-            width: 100%;
-            height: 38px;
-            border: 1px solid var(--slate-200);
-            border-radius: var(--radius-sm);
-            padding: 8px 12px;
-            box-sizing: border-box;
-            font-size: 14px;
-            background-color: #ffffff;
-            color: #0f172a;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        .form-select:focus {
-            border-color: var(--brand-red) !important;
-            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
-            outline: none;
-        }
-        .form-textarea {
-            width: 100%;
-            border: 1px solid var(--slate-200);
-            border-radius: var(--radius-sm);
-            padding: 8px 12px;
-            box-sizing: border-box;
-            font-size: 14px;
-            resize: vertical;
-            font-family: inherit;
-            color: #0f172a;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        .form-textarea:focus {
-            border-color: var(--brand-red) !important;
-            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
-            outline: none;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            align-items: center;
-        }
-        .btn-modal-cancel {
-            background: none;
-            border: none;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 13px;
-            padding: 8px 16px;
-            cursor: pointer;
-            text-transform: uppercase;
-            border-radius: var(--radius-sm);
-            transition: background 0.15s;
-        }
-        .btn-modal-cancel:hover {
-            background: #f1f5f9;
-        }
-        .btn-modal-cancel-grey {
-            background: #e2e8f0;
-            color: #475569;
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 8px 20px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: background 0.15s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-modal-cancel-grey:hover {
-            background: #cbd5e1;
-        }
-        .btn-modal-submit {
-            background: var(--brand-red);
-            border: 1px solid var(--brand-red);
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 13px;
-            padding: 8px 20px;
-            cursor: pointer;
-            text-transform: uppercase;
-            border-radius: var(--radius-sm);
-            transition: opacity 0.15s;
-        }
-        .btn-modal-submit:hover {
-            background: var(--brand-red-hover);
-        }
-        .btn-modal-submit:disabled {
-            background: #cbd5e1;
-            border-color: #cbd5e1;
-            cursor: not-allowed;
-            opacity: 1;
-        }
-        .modal-error {
-            color: #ef4444;
-            font-size: 13px;
-            margin-bottom: 16px;
-            display: none;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            padding: 10px;
-            border-radius: 6px;
-        }
-        .modal-success {
-            color: #16a34a;
-            font-size: 13px;
-            margin-bottom: 16px;
-            display: none;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        /* Skeleton Styles */
-        .skeleton-line {
-            height: 16px;
-            background-color: #e2e8f0;
-            border-radius: 4px;
-            margin-bottom: 8px;
-            animation: skeleton-loading 1.5s infinite ease-in-out;
-        }
-        .skeleton-line.short {
-            width: 40%;
-        }
-        .skeleton-line.medium {
-            width: 70%;
-        }
-        @keyframes skeleton-loading {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-    </style>
-@endsection
 
 @section('portal_content')
     <div class="details-container">
         <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+        <div class="as-sub-detail-1">
             <div>
                 <div class="subscriber-tag">Subscription</div>
-                <h1 class="subscriber-name" id="page-subscriber-name"><div class="skeleton-line short" style="height: 26px;"></div></h1>
+                <h1 class="subscriber-name" id="page-subscriber-name"><div class="skeleton-line short as-sub-detail-2"></div></h1>
             </div>
             <a href="/ctb-admin/new/subscriptions" class="btn-premium-secondary">
                 <i class="bi bi-arrow-left"></i> BACK TO LIST
@@ -680,7 +21,7 @@
         <div class="premium-card">
             <div class="premium-card-header">
                 <h2 class="premium-card-title">
-                    <i class="bi bi-building text-brand-red" style="font-size: 18px; color: var(--brand-red);"></i> Organization Info
+                    <i class="bi bi-building text-brand-red as-sub-detail-3"></i> Organization Info
                 </h2>
                 <button type="button" class="btn-premium" id="btn-trigger-edit-company">EDIT</button>
             </div>
@@ -694,12 +35,12 @@
         <div class="premium-card">
             <div class="premium-card-header">
                 <h2 class="premium-card-title">
-                    <i class="bi bi-arrow-repeat text-brand-red" style="font-size: 18px; color: var(--brand-red);"></i> Subscription Cycles
+                    <i class="bi bi-arrow-repeat text-brand-red as-sub-detail-3"></i> Subscription Cycles
                 </h2>
                 <button type="button" class="btn-premium" id="btn-trigger-create-cycle">CREATE</button>
             </div>
             <div class="cycle-list" id="cycles-list-container">
-                <div style="padding: 24px;">
+                <div class="as-sub-detail-4">
                     <div class="skeleton-line medium"></div>
                     <div class="skeleton-line short"></div>
                 </div>
@@ -710,12 +51,12 @@
         <div class="premium-card">
             <div class="premium-card-header">
                 <h2 class="premium-card-title">
-                    <i class="bi bi-people text-brand-red" style="font-size: 18px; color: var(--brand-red);"></i> Subscribers
+                    <i class="bi bi-people text-brand-red as-sub-detail-3"></i> Subscribers
                 </h2>
                 <button type="button" class="btn-premium" id="btn-trigger-create-addon">CREATE</button>
             </div>
             <div class="subscriber-list" id="subscribers-list-container">
-                <div style="padding: 24px;">
+                <div class="as-sub-detail-4">
                     <div class="skeleton-line medium"></div>
                     <div class="skeleton-line short"></div>
                 </div>
@@ -726,14 +67,14 @@
         <div class="premium-card">
             <div class="premium-card-header">
                 <h2 class="premium-card-title">
-                    <i class="bi bi-book text-brand-red" style="font-size: 18px; color: var(--brand-red);"></i> Book Subscriptions
+                    <i class="bi bi-book text-brand-red as-sub-detail-3"></i> Book Subscriptions
                 </h2>
                 <button type="button" class="btn-premium" id="btn-trigger-create-book-sub">CREATE</button>
             </div>
             <div class="book-subs-grid" id="book-subs-list-container">
-                <div style="padding: 24px; width: 100%;">
-                    <div class="skeleton-line medium" style="width: 50%;"></div>
-                    <div class="skeleton-line short" style="width: 30%;"></div>
+                <div class="as-sub-detail-5">
+                    <div class="skeleton-line medium as-sub-detail-6"></div>
+                    <div class="skeleton-line short as-sub-detail-7"></div>
                 </div>
             </div>
         </div>
@@ -758,7 +99,7 @@
                         <input type="text" id="company-edit-line2" class="form-input" maxlength="255">
                     </div>
                     <div class="form-row">
-                        <div class="form-col" style="flex: 2;">
+                        <div class="form-col as-sub-detail-8">
                             <label class="form-label">City *</label>
                             <input type="text" id="company-edit-city" class="form-input" required maxlength="255">
                         </div>
@@ -785,7 +126,7 @@
                                 <option value="WY">WY</option>
                             </select>
                         </div>
-                        <div class="form-col" style="flex: 1.5;">
+                        <div class="form-col as-sub-detail-9">
                             <label class="form-label">Zip Code *</label>
                             <input type="text" id="company-edit-zip" class="form-input" required maxlength="15">
                         </div>
@@ -807,7 +148,7 @@
 
     <!-- Create Renewal/Cycle Modal -->
     <div id="create-cycle-modal" class="ctb-modal">
-        <div class="ctb-modal-box" style="max-width: 440px;">
+        <div class="ctb-modal-box as-sub-detail-10">
             <div class="modal-body">
                 <h3 class="modal-title">Create Renewal</h3>
                 <form id="create-cycle-form" novalidate>
@@ -835,7 +176,7 @@
 
     <!-- Edit Cycle Modal -->
     <div id="edit-cycle-modal" class="ctb-modal">
-        <div class="ctb-modal-box" style="max-width: 440px;">
+        <div class="ctb-modal-box as-sub-detail-10">
             <div class="modal-body">
                 <h3 class="modal-title">Change Subscription Expiration</h3>
                 <form id="edit-cycle-form" novalidate>
@@ -861,7 +202,7 @@
 
     <!-- Create Addon/Subscriber Modal -->
     <div id="create-addon-modal" class="ctb-modal">
-        <div class="ctb-modal-box" style="max-width: 440px;">
+        <div class="ctb-modal-box as-sub-detail-10">
             <div class="modal-body">
                 <h3 class="modal-title">Create Addon Account</h3>
                 <form id="create-addon-form" novalidate>
@@ -904,7 +245,7 @@
                         <input type="text" id="book-sub-line2" class="form-input" maxlength="255">
                     </div>
                     <div class="form-row">
-                        <div class="form-col" style="flex: 2;">
+                        <div class="form-col as-sub-detail-8">
                             <label class="form-label">City *</label>
                             <input type="text" id="book-sub-city" class="form-input" required maxlength="255">
                         </div>
@@ -931,7 +272,7 @@
                                 <option value="WY">WY</option>
                             </select>
                         </div>
-                        <div class="form-col" style="flex: 1.5;">
+                        <div class="form-col as-sub-detail-9">
                             <label class="form-label">Zip Code *</label>
                             <input type="text" id="book-sub-zip" class="form-input" required maxlength="15">
                         </div>
@@ -953,19 +294,19 @@
 
     <!-- Remove Book Subscription Modal -->
     <div id="remove-book-sub-modal" class="ctb-modal">
-        <div class="ctb-modal-box" style="max-width: 440px;">
+        <div class="ctb-modal-box as-sub-detail-10">
             <div class="modal-body">
                 <h3 class="modal-title">Remove Book Subscription</h3>
-                <p style="font-size: 14px; color: var(--slate-700); line-height: 1.5; margin-bottom: 16px;">
-                    Are you sure you want remove this hard copy subscription for <span id="remove-book-sub-company" style="font-weight: 700;"></span>?
+                <p class="as-sub-detail-11">
+                    Are you sure you want remove this hard copy subscription for <span class="as-sub-detail-12" id="remove-book-sub-company"></span>?
                 </p>
-                <div id="remove-book-sub-address" style="font-size: 13.5px; color: var(--slate-600); margin-bottom: 24px; padding: 12px; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); line-height: 1.5; white-space: pre-wrap;">
+                <div class="as-sub-detail-13" id="remove-book-sub-address">
                 </div>
                 <div id="remove-book-sub-error" class="modal-error"></div>
                 <div id="remove-book-sub-success" class="modal-success"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn-modal-cancel-grey" id="btn-cancel-remove-book-sub">Cancel</button>
-                    <button type="button" class="btn-modal-submit" id="btn-submit-remove-book-sub" style="background: var(--brand-red); border-color: var(--brand-red);">Remove</button>
+                    <button type="button" class="btn-modal-submit as-sub-detail-14" id="btn-submit-remove-book-sub">Remove</button>
                 </div>
             </div>
         </div>
@@ -973,17 +314,17 @@
 
     <!-- Remove Addon Modal -->
     <div id="remove-addon-modal" class="ctb-modal">
-        <div class="ctb-modal-box" style="max-width: 440px;">
+        <div class="ctb-modal-box as-sub-detail-10">
             <div class="modal-body">
                 <h3 class="modal-title">Remove Addon</h3>
-                <p style="font-size: 14px; color: var(--slate-700); line-height: 1.5; margin-bottom: 24px;">
-                    This will remove the addon from the <span id="remove-addon-company-name" style="font-weight: 700;"></span> subscription.
+                <p class="as-sub-detail-15">
+                    This will remove the addon from the <span class="as-sub-detail-12" id="remove-addon-company-name"></span> subscription.
                 </p>
                 <div id="remove-addon-error" class="modal-error"></div>
                 <div id="remove-addon-success" class="modal-success"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn-modal-cancel-grey" id="btn-cancel-remove-addon">Cancel</button>
-                    <button type="button" class="btn-modal-submit" id="btn-submit-remove-addon" style="background: var(--brand-red); border-color: var(--brand-red);">Remove</button>
+                    <button type="button" class="btn-modal-submit as-sub-detail-14" id="btn-submit-remove-addon">Remove</button>
                 </div>
             </div>
         </div>
@@ -1050,7 +391,7 @@
                         // Populate Subscription Header & Card
                         const companyName = currentCompany ? currentCompany.name : 'Subscription Details';
                         $('#page-subscriber-name').text(companyName);
-                        $('#card-company-name').html(`<i class="bi bi-building" style="color: var(--brand-red); font-size: 18px;"></i> ${companyName}`);
+                        $('#card-company-name').html(`<i class="bi bi-building as-sub-detail-16"></i> ${companyName}`);
 
                         let companyDetailsHtml = '';
                         if (currentCompany) {
@@ -1068,14 +409,14 @@
                                         <i class="bi bi-building-fill"></i>
                                     </div>
                                     <div class="company-details-block">
-                                        <div style="font-size: 16px; font-weight: 700; color: var(--slate-900);">${companyName}</div>
-                                        <div style="color: var(--slate-600); margin-top: 6px; font-size: 13.5px; line-height: 1.5;">
+                                        <div class="as-sub-detail-17">${companyName}</div>
+                                        <div class="as-sub-detail-18">
                                             ${line1 ? `<div>${line1}</div>` : ''}
                                             ${line2 ? `<div>${line2}</div>` : ''}
                                             ${(city || state || zip) ? `<div>${city}, ${state} ${zip}</div>` : ''}
                                             ${instructions ? `
-                                                <div style="margin-top: 10px; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 12px; color: var(--slate-600); max-width: 440px;">
-                                                    <b style="color: var(--slate-700);"><i class="bi bi-info-circle"></i> Instructions:</b> ${instructions}
+                                                <div class="as-sub-detail-19">
+                                                    <b class="as-sub-detail-20"><i class="bi bi-info-circle"></i> Instructions:</b> ${instructions}
                                                 </div>
                                             ` : ''}
                                         </div>
@@ -1083,7 +424,7 @@
                                 </div>
                             `;
                         } else {
-                            companyDetailsHtml = '<div style="color: var(--slate-500); padding: 8px 0;">No company details available.</div>';
+                            companyDetailsHtml = '<div class="as-sub-detail-21">No company details available.</div>';
                         }
                         $('#company-details-container').html(companyDetailsHtml);
 
@@ -1115,16 +456,16 @@
                                         const amt = (line.amount / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
                                         invoiceHtml += `
                                             <tr>
-                                                <td style="font-weight: 500;">${line.description || 'Line Item'}</td>
-                                                <td style="text-align: right; font-weight: 600;">${amt}</td>
+                                                <td class="as-sub-detail-22">${line.description || 'Line Item'}</td>
+                                                <td class="as-sub-detail-23">${amt}</td>
                                             </tr>
                                         `;
                                     });
                                     const totalDue = (cycle.invoice.amount_due / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
                                     invoiceHtml += `
-                                                <tr style="background: var(--slate-100);">
-                                                    <td style="font-weight: 700; color: var(--slate-900);">Total Amount</td>
-                                                    <td style="text-align: right; font-weight: 700; color: var(--slate-900);">${totalDue}</td>
+                                                <tr class="as-sub-detail-24">
+                                                    <td class="as-sub-detail-25">Total Amount</td>
+                                                    <td class="as-sub-detail-26">${totalDue}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -1135,12 +476,12 @@
                                         <table class="premium-invoice-table">
                                             <tbody>
                                                 <tr>
-                                                    <td style="font-weight: 500;">Subscription Base</td>
-                                                    <td style="text-align: right; font-weight: 600;">${amt}</td>
+                                                    <td class="as-sub-detail-22">Subscription Base</td>
+                                                    <td class="as-sub-detail-23">${amt}</td>
                                                 </tr>
-                                                <tr style="background: var(--slate-100);">
-                                                    <td style="font-weight: 700; color: var(--slate-900);">Total Amount</td>
-                                                    <td style="text-align: right; font-weight: 700; color: var(--slate-900);">${amt}</td>
+                                                <tr class="as-sub-detail-24">
+                                                    <td class="as-sub-detail-25">Total Amount</td>
+                                                    <td class="as-sub-detail-26">${amt}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -1148,7 +489,7 @@
                                 }
 
                                 const paymentInfo = cycle.payment_method 
-                                    ? `<div style="font-size: 12px; color: var(--slate-500); margin-top: 6px;"><i class="bi bi-credit-card-2-front"></i> Paid by <b>${cycle.payment_method}</b> on ${formatDate(cycle.created_at)}</div>`
+                                    ? `<div class="as-sub-detail-27"><i class="bi bi-credit-card-2-front"></i> Paid by <b>${cycle.payment_method}</b> on ${formatDate(cycle.created_at)}</div>`
                                     : '';
 
                                 const isPending = !cycle.starts_on && !cycle.ends_on;
@@ -1156,11 +497,11 @@
 
                                 cyclesHtml += `
                                     <div class="cycle-card-item">
-                                        <div style="display: flex; gap: 16px; align-items: flex-start; flex: 1;">
+                                        <div class="as-sub-detail-28">
                                             ${statusIcon}
                                             <div class="cycle-content">
-                                                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                                    <span style="font-size: 14.5px; font-weight: 600; color: var(--slate-900);">From <b>${formatDate(cycle.starts_on)}</b> to <b>${formatDate(cycle.ends_on)}</b></span>
+                                                <div class="as-sub-detail-29">
+                                                    <span class="as-sub-detail-30">From <b>${formatDate(cycle.starts_on)}</b> to <b>${formatDate(cycle.ends_on)}</b></span>
                                                     ${statusBadge}
                                                 </div>
                                                 ${paymentInfo}
@@ -1168,15 +509,15 @@
                                             </div>
                                         </div>
                                         <div class="cycle-actions-container">
-                                            ${cycle.invoice_id ? `<a href="https://dashboard.stripe.com/invoices/${cycle.invoice_id}" target="_blank" class="btn-premium-secondary" style="padding: 6px 12px; font-size: 11px; background-color: var(--indigo-50); border-color: rgba(79, 70, 229, 0.2); color: var(--indigo-600) !important;"><i class="bi bi-stripe"></i> STRIPE</a>` : ''}
-                                            <button type="button" class="btn-premium-secondary btn-edit-cycle" style="padding: 6px 12px; font-size: 11px;" data-id="${cycle.id}" data-starts="${cycle.starts_on || ''}" data-ends="${cycle.ends_on || ''}"><i class="bi bi-pencil"></i> EDIT</button>
-                                            ${showMarkPaid ? `<button type="button" class="btn-premium-teal btn-pay-cycle" style="padding: 6px 12px; font-size: 11px;" data-id="${cycle.id}"><i class="bi bi-check-circle"></i> MARK PAID</button>` : ''}
+                                            ${cycle.invoice_id ? `<a href="https://dashboard.stripe.com/invoices/${cycle.invoice_id}" target="_blank" class="btn-premium-secondary as-sub-detail-31"><i class="bi bi-stripe"></i> STRIPE</a>` : ''}
+                                            <button type="button" class="btn-premium-secondary btn-edit-cycle as-sub-detail-32" data-id="${cycle.id}" data-starts="${cycle.starts_on || ''}" data-ends="${cycle.ends_on || ''}"><i class="bi bi-pencil"></i> EDIT</button>
+                                            ${showMarkPaid ? `<button type="button" class="btn-premium-teal btn-pay-cycle as-sub-detail-32" data-id="${cycle.id}"><i class="bi bi-check-circle"></i> MARK PAID</button>` : ''}
                                         </div>
                                     </div>
                                 `;
                             });
                         } else {
-                            cyclesHtml = '<div style="padding: 32px; text-align: center; color: var(--slate-500);">No cycles found.</div>';
+                            cyclesHtml = '<div class="as-sub-detail-33">No cycles found.</div>';
                         }
                         $('#cycles-list-container').html(cyclesHtml);
 
@@ -1204,16 +545,16 @@
                                             <div class="user-avatar ${avatarClass}">${initials}</div>
                                             <div class="user-info">
                                                 <div class="user-name-wrapper">
-                                                    <span style="font-weight: 600; font-size: 14.5px; color: var(--slate-900);">${displayName}</span>
+                                                    <span class="as-sub-detail-34">${displayName}</span>
                                                     <span class="badge-role ${badgeClass}">${roleText}</span>
                                                 </div>
                                                 <a href="mailto:${user.email}" class="user-email-link">
-                                                    <i class="bi bi-envelope" style="font-size: 12px;"></i> ${user.email}
+                                                    <i class="bi bi-envelope as-sub-detail-35"></i> ${user.email}
                                                 </a>
                                             </div>
                                         </div>
-                                        <div style="display: flex; gap: 16px; align-items: center;">
-                                            <a href="/ctb-admin/new/contacts/${user.id}" class="btn-premium-secondary" style="padding: 6px 12px; font-size: 11px;" title="Go To Subscriber">
+                                        <div class="as-sub-detail-36">
+                                            <a href="/ctb-admin/new/contacts/${user.id}" class="btn-premium-secondary as-sub-detail-32" title="Go To Subscriber">
                                                 <i class="bi bi-link-45deg"></i> View Profile
                                             </a>
                                             ${removeButton}
@@ -1222,7 +563,7 @@
                                 `;
                             });
                         } else {
-                            subsHtml = '<div style="padding: 32px; text-align: center; color: var(--slate-500);">No subscribers found.</div>';
+                            subsHtml = '<div class="as-sub-detail-33">No subscribers found.</div>';
                         }
                         $('#subscribers-list-container').html(subsHtml);
 
@@ -1245,15 +586,15 @@
                                                     <div class="book-sub-avatar">
                                                         <i class="bi bi-box-seam"></i>
                                                     </div>
-                                                    <div style="font-weight: 700; font-size: 14.5px; color: var(--slate-900);">Book Recipient</div>
+                                                    <div class="as-sub-detail-37">Book Recipient</div>
                                                 </div>
                                                 <div class="book-sub-address-info">
                                                     ${line1 ? `<div>${line1}</div>` : ''}
                                                     ${line2 ? `<div>${line2}</div>` : ''}
                                                     ${(city || state || zip) ? `<div>${city}, ${state} ${zip}</div>` : ''}
                                                     ${addr.special_instructions ? `
-                                                        <div style="margin-top: 10px; background: #ffffff; border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 12px; color: var(--slate-600);">
-                                                            <b style="color: var(--slate-700);"><i class="bi bi-info-circle"></i> Instructions:</b> ${addr.special_instructions}
+                                                        <div class="as-sub-detail-38">
+                                                            <b class="as-sub-detail-20"><i class="bi bi-info-circle"></i> Instructions:</b> ${addr.special_instructions}
                                                         </div>
                                                     ` : ''}
                                                 </div>
@@ -1267,7 +608,7 @@
                                 }
                             });
                         } else {
-                            bookSubsHtml = '<div style="padding: 32px; grid-column: 1 / -1; text-align: center; color: var(--slate-500);">No book subscriptions found.</div>';
+                            bookSubsHtml = '<div class="as-sub-detail-39">No book subscriptions found.</div>';
                         }
                         $('#book-subs-list-container').html(bookSubsHtml);
                     },

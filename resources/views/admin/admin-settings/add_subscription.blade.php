@@ -1,35 +1,35 @@
 @extends('layouts.portal')
 
 @section('portal_content')
-    <div class="section-header" style="margin-bottom: 32px;">
+    <div class="section-header as-addsub-1">
         <div class="header-title-container">
             <h1 class="header-title">Add Subscriber</h1>
         </div>
     </div>
 
-    <div id="form-error-banner" style="display: none; background-color: #fef2f2; color: #ef4444; border: 1px solid #fca5a5; padding: 14px 20px; border-radius: 6px; margin-bottom: 24px; font-weight: 600; font-size: 13.5px; line-height: 1.5;"></div>
+    <div class="as-addsub-2" id="form-error-banner"></div>
 
     <form id="add-subscriber-form" novalidate>
         <!-- Account Info -->
-        <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">Account Info</h3>
-        <div class="portal-card" style="margin-bottom: 32px; padding: 24px;">
-            <div class="card-body-custom" style="padding: 0;">
-                <div style="display: flex; gap: 24px; margin-bottom: 16px;">
-                    <div style="flex: 1;">
+        <h3 class="as-addsub-3">Account Info</h3>
+        <div class="portal-card as-addsub-4">
+            <div class="card-body-custom as-addsub-5">
+                <div class="as-addsub-6">
+                    <div class="as-addsub-7">
                         <label class="form-label-style">First Name *</label>
                         <input type="text" id="first_name" class="form-input-style" required>
                     </div>
-                    <div style="flex: 1;">
+                    <div class="as-addsub-7">
                         <label class="form-label-style">Last Name *</label>
                         <input type="text" id="last_name" class="form-input-style" required>
                     </div>
                 </div>
-                <div style="display: flex; gap: 24px;">
-                    <div style="flex: 1;">
+                <div class="as-addsub-8">
+                    <div class="as-addsub-7">
                         <label class="form-label-style">Email *</label>
                         <input type="email" id="email" class="form-input-style" required>
                     </div>
-                    <div style="flex: 1;">
+                    <div class="as-addsub-7">
                         <label class="form-label-style">Phone Number *</label>
                         <input type="text" id="phone_number" class="form-input-style" placeholder="10-digit number" required>
                     </div>
@@ -38,31 +38,31 @@
         </div>
 
         <!-- Organization -->
-        <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">Organization</h3>
-        <div class="portal-card" style="margin-bottom: 32px; padding: 24px;">
-            <div class="card-body-custom" style="padding: 0;">
-                <div style="margin-bottom: 16px; max-width: 50%;">
+        <h3 class="as-addsub-3">Organization</h3>
+        <div class="portal-card as-addsub-4">
+            <div class="card-body-custom as-addsub-5">
+                <div class="as-addsub-9">
                     <label class="form-label-style">Organization *</label>
                     <input type="text" id="company_name" class="form-input-style" required>
                 </div>
-                <div style="display: flex; gap: 24px; margin-bottom: 16px;">
-                    <div style="flex: 1;">
+                <div class="as-addsub-6">
+                    <div class="as-addsub-7">
                         <label class="form-label-style">Address Line 1 *</label>
                         <input type="text" id="company_line1" class="form-input-style" required>
                     </div>
-                    <div style="flex: 1;">
+                    <div class="as-addsub-7">
                         <label class="form-label-style">Address Line 2</label>
                         <input type="text" id="company_line2" class="form-input-style">
                     </div>
                 </div>
-                <div style="display: flex; gap: 24px;">
-                    <div style="flex: 2;">
+                <div class="as-addsub-8">
+                    <div class="as-addsub-10">
                         <label class="form-label-style">City *</label>
                         <input type="text" id="company_city" class="form-input-style" required>
                     </div>
-                    <div style="flex: 1;">
+                    <div class="as-addsub-7">
                         <label class="form-label-style">State *</label>
-                        <select class="form-input-style" id="company_state" style="padding-top: 7px; padding-bottom: 7px;" required>
+                        <select class="form-input-style as-addsub-11" id="company_state" required>
                             <option value="AL">Alabama</option>
                             <option value="AK">Alaska</option>
                             <option value="AZ">Arizona</option>
@@ -116,7 +116,7 @@
                             <option value="WY">Wyoming</option>
                         </select>
                     </div>
-                    <div style="flex: 1.5;">
+                    <div class="as-addsub-12">
                         <label class="form-label-style">Zip Code *</label>
                         <input type="text" id="company_zip" class="form-input-style" required>
                     </div>
@@ -125,102 +125,102 @@
         </div>
 
         <!-- Subscription -->
-        <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">Subscription</h3>
-        <div class="portal-card" style="margin-bottom: 32px; padding: 24px;">
-            <div class="card-body-custom" style="padding: 0;">
+        <h3 class="as-addsub-3">Subscription</h3>
+        <div class="portal-card as-addsub-4">
+            <div class="card-body-custom as-addsub-5">
                 
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 24px;">
+                <div class="as-addsub-13">
                     <div>
-                        <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 12px;">Length *</div>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #475569; margin-bottom: 8px; cursor: pointer;">
+                        <div class="as-addsub-14">Length *</div>
+                        <label class="as-addsub-15">
                             <input type="radio" name="length" value="12"> 12 Month Subscription
                         </label>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #475569; cursor: pointer;">
+                        <label class="as-addsub-16">
                             <input type="radio" name="length" value="24" checked> 24 Month Subscription
                         </label>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 16px; font-weight: 500; color: #0f172a;">$</span>
-                        <input type="number" id="subscription-cost-input" class="form-input-style" value="2200" style="width: 150px; text-align: right; font-weight: 600; font-size: 16px;">
-                        <span style="font-size: 13px; color: #64748b; width: 120px;">Subscription Cost</span>
+                    <div class="as-addsub-17">
+                        <span class="as-addsub-18">$</span>
+                        <input type="number" id="subscription-cost-input" class="form-input-style as-addsub-19" value="2200">
+                        <span class="as-addsub-20">Subscription Cost</span>
                     </div>
                 </div>
                 
-                <div style="display: flex; flex-direction: column; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 24px; gap: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div class="as-addsub-21">
+                    <div class="as-addsub-22">
                         <div>
-                            <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 12px;">Hard Copy Subscriptions</div>
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <button type="button" id="btn-book-dec" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 32px; height: 32px; border-radius: 4px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700;">-</button>
-                                <span id="book-count-val" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; font-size: 15px; font-weight: 700; color: #0f172a;">0</span>
-                                <button type="button" id="btn-book-inc" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 32px; height: 32px; border-radius: 4px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700;">+</button>
+                            <div class="as-addsub-14">Hard Copy Subscriptions</div>
+                            <div class="as-addsub-23">
+                                <button class="as-addsub-24" type="button" id="btn-book-dec">-</button>
+                                <span class="as-addsub-25" id="book-count-val">0</span>
+                                <button class="as-addsub-24" type="button" id="btn-book-inc">+</button>
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <span style="font-size: 16px; font-weight: 500; color: #0f172a;">$</span>
-                            <input type="number" id="book-cost-input" class="form-input-style" value="500" style="width: 150px; text-align: right; font-weight: 600; font-size: 16px;">
-                            <span style="font-size: 13px; color: #64748b; width: 120px;">Book Cost (Per Book)</span>
+                        <div class="as-addsub-17">
+                            <span class="as-addsub-18">$</span>
+                            <input type="number" id="book-cost-input" class="form-input-style as-addsub-19" value="500">
+                            <span class="as-addsub-20">Book Cost (Per Book)</span>
                         </div>
                     </div>
                     
                     <!-- Dynamic Book Addresses Container -->
-                    <div id="book-addresses-container" style="display: flex; flex-direction: column; gap: 20px; width: 100%;"></div>
+                    <div class="as-addsub-26" id="book-addresses-container"></div>
                 </div>
                 
-                <div style="display: flex; flex-direction: column; gap: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div class="as-addsub-27">
+                    <div class="as-addsub-22">
                         <div>
-                            <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 12px;">Addons</div>
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <button type="button" id="btn-addon-dec" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 32px; height: 32px; border-radius: 4px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700;">-</button>
-                                <span id="addon-count-val" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; font-size: 15px; font-weight: 700; color: #0f172a;">0</span>
-                                <button type="button" id="btn-addon-inc" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 32px; height: 32px; border-radius: 4px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700;">+</button>
+                            <div class="as-addsub-14">Addons</div>
+                            <div class="as-addsub-23">
+                                <button class="as-addsub-24" type="button" id="btn-addon-dec">-</button>
+                                <span class="as-addsub-25" id="addon-count-val">0</span>
+                                <button class="as-addsub-24" type="button" id="btn-addon-inc">+</button>
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <span style="font-size: 16px; font-weight: 500; color: #0f172a;">$</span>
-                            <input type="number" id="addon-cost-input" class="form-input-style" value="100" style="width: 150px; text-align: right; font-weight: 600; font-size: 16px;">
-                            <span style="font-size: 13px; color: #64748b; width: 120px;">Addon Cost (Per User)</span>
+                        <div class="as-addsub-17">
+                            <span class="as-addsub-18">$</span>
+                            <input type="number" id="addon-cost-input" class="form-input-style as-addsub-19" value="100">
+                            <span class="as-addsub-20">Addon Cost (Per User)</span>
                         </div>
                     </div>
                     
                     <!-- Dynamic Addon Emails Container -->
-                    <div id="addons-container" style="display: flex; flex-direction: column; gap: 12px; width: 100%;"></div>
+                    <div class="as-addsub-28" id="addons-container"></div>
                 </div>
                 
             </div>
         </div>
 
         <!-- Payment -->
-        <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">Payment</h3>
-        <div class="portal-card" style="margin-bottom: 32px; padding: 24px;">
-            <div class="card-body-custom" style="padding: 0; display: flex; gap: 40px; width: 100%;">
-                <div style="flex: 1;">
-                    <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 16px;">Payment Method</div>
-                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #475569; cursor: pointer;">
+        <h3 class="as-addsub-3">Payment</h3>
+        <div class="portal-card as-addsub-4">
+            <div class="card-body-custom as-addsub-29">
+                <div class="as-addsub-7">
+                    <div class="as-addsub-30">Payment Method</div>
+                    <div class="as-addsub-31">
+                        <label class="as-addsub-16">
                             <input type="radio" name="payment_method" value="stripe" checked> Paying By Credit Card
                         </label>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #475569; cursor: pointer;">
+                        <label class="as-addsub-16">
                             <input type="radio" name="payment_method" value="check"> Paying By Check
                         </label>
                     </div>
                     
                     <div id="stripe-input-container">
-                        <div style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px;">Credit or Debit Card *</div>
-                        <div id="card-element" style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; background: #ffffff;"></div>
-                        <div id="card-errors" style="color: #ef4444; font-size: 12.5px; margin-top: 6px; font-weight: 500;" role="alert"></div>
+                        <div class="as-addsub-32">Credit or Debit Card *</div>
+                        <div class="as-addsub-33" id="card-element"></div>
+                        <div class="as-addsub-34" id="card-errors" role="alert"></div>
                     </div>
                 </div>
                 
-                <div style="flex: 1; border-left: 1px solid #f1f5f9; padding-left: 40px;">
-                    <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">Paid Up</div>
-                    <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 0 0 16px 0;">Check this box to mark the subscriber as paid. This will make their subscription active. This will not charge them.</p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #475569; font-weight: 500; cursor: pointer;">
+                <div class="as-addsub-35">
+                    <div class="as-addsub-36">Paid Up</div>
+                    <p class="as-addsub-37">Check this box to mark the subscriber as paid. This will make their subscription active. This will not charge them.</p>
+                    <div class="as-addsub-38">
+                        <label class="as-addsub-39">
                             <input type="checkbox" id="is_paid_for"> Is Paid For
                         </label>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #475569; font-weight: 500; cursor: pointer;">
+                        <label class="as-addsub-39">
                             <input type="checkbox" id="send_invoice" checked> Email Invoice
                         </label>
                     </div>
@@ -229,32 +229,32 @@
         </div>
 
         <!-- Summary -->
-        <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">Summary</h3>
-        <div class="portal-card" style="padding: 0; margin-bottom: 32px;">
+        <h3 class="as-addsub-3">Summary</h3>
+        <div class="portal-card as-addsub-40">
             <table class="portal-grid-table">
                 <tbody>
                     <tr>
-                        <td style="font-weight: 500; color: #475569; border-bottom: 1px solid #f1f5f9; padding: 14px 24px;">Base Subscription</td>
-                        <td style="text-align: right; font-weight: 600; color: #0f172a; width: 150px; border-bottom: 1px solid #f1f5f9; padding: 14px 24px;" id="summary-base">$0</td>
+                        <td class="as-addsub-41">Base Subscription</td>
+                        <td class="as-addsub-42" id="summary-base">$0</td>
                     </tr>
                     <tr>
-                        <td style="font-weight: 500; color: #475569; border-bottom: 1px solid #f1f5f9; padding: 14px 24px;">Hard Copies</td>
-                        <td style="text-align: right; font-weight: 600; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding: 14px 24px;" id="summary-books">$0</td>
+                        <td class="as-addsub-41">Hard Copies</td>
+                        <td class="as-addsub-43" id="summary-books">$0</td>
                     </tr>
                     <tr>
-                        <td style="font-weight: 500; color: #475569; border-bottom: 1px solid #f1f5f9; padding: 14px 24px;">Addons</td>
-                        <td style="text-align: right; font-weight: 600; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding: 14px 24px;" id="summary-addons">$0</td>
+                        <td class="as-addsub-41">Addons</td>
+                        <td class="as-addsub-43" id="summary-addons">$0</td>
                     </tr>
-                    <tr style="background-color: #f8fafc;">
-                        <td style="font-weight: 700; color: #0f172a; border-bottom: none; padding: 14px 24px;">Total</td>
-                        <td style="text-align: right; font-weight: 700; color: #0f172a; font-size: 16px; border-bottom: none; padding: 14px 24px;" id="summary-total">$0</td>
+                    <tr class="as-addsub-44">
+                        <td class="as-addsub-45">Total</td>
+                        <td class="as-addsub-46" id="summary-total">$0</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         
-        <div style="display: flex; justify-content: flex-end; margin-top: 24px; padding-bottom: 80px;">
-            <button type="submit" id="btn-submit" style="background-color: #4f46e5; color: #ffffff; padding: 12px 40px; border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background-color 0.15s ease-in-out;">SUBMIT</button>
+        <div class="as-addsub-47">
+            <button class="as-addsub-48" type="submit" id="btn-submit">SUBMIT</button>
         </div>
     </form>
 @endsection
@@ -464,37 +464,37 @@
             function appendBookAddressForm(index) {
                 const container = $('#book-addresses-container');
                 const formHtml = `
-                    <div class="book-address-item" data-index="${index}" style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; background-color: #f8fafc; margin-top: 12px;">
-                        <h4 style="font-size: 13.5px; font-weight: 700; color: #1e293b; margin-top: 0; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Book Delivery Address #${index + 1}</h4>
-                        <div style="display: flex; gap: 24px; margin-bottom: 16px;">
-                            <div style="flex: 1;">
+                    <div class="book-address-item as-addsub-49" data-index="${index}">
+                        <h4 class="as-addsub-50">Book Delivery Address #${index + 1}</h4>
+                        <div class="as-addsub-6">
+                            <div class="as-addsub-7">
                                 <label class="form-label-style">Address Line 1 *</label>
                                 <input type="text" class="form-input-style book-line1" required>
                             </div>
-                            <div style="flex: 1;">
+                            <div class="as-addsub-7">
                                 <label class="form-label-style">Address Line 2</label>
                                 <input type="text" class="form-input-style book-line2">
                             </div>
                         </div>
-                        <div style="display: flex; gap: 24px; margin-bottom: 16px;">
-                            <div style="flex: 2;">
+                        <div class="as-addsub-6">
+                            <div class="as-addsub-10">
                                 <label class="form-label-style">City *</label>
                                 <input type="text" class="form-input-style book-city" required>
                             </div>
-                            <div style="flex: 1;">
+                            <div class="as-addsub-7">
                                 <label class="form-label-style">State *</label>
-                                <select class="form-input-style book-state" style="padding-top: 7px; padding-bottom: 7px;" required>
+                                <select class="form-input-style book-state as-addsub-11" required>
                                     ${stateOptions}
                                 </select>
                             </div>
-                            <div style="flex: 1.5;">
+                            <div class="as-addsub-12">
                                 <label class="form-label-style">Zip Code *</label>
                                 <input type="text" class="form-input-style book-zip" required>
                             </div>
                         </div>
                         <div>
                             <label class="form-label-style">Special Instructions</label>
-                            <textarea class="form-input-style book-instructions" style="height: 60px; padding: 8px 12px; resize: none;"></textarea>
+                            <textarea class="form-input-style book-instructions as-addsub-51"></textarea>
                         </div>
                     </div>
                 `;
@@ -508,7 +508,7 @@
             function appendAddonInput(index) {
                 const container = $('#addons-container');
                 const inputHtml = `
-                    <div class="addon-item" data-index="${index}" style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
+                    <div class="addon-item as-addsub-52" data-index="${index}">
                         <label class="form-label-style">Addon Email #${index + 1} *</label>
                         <input type="email" class="form-input-style addon-email" placeholder="Enter email address" required>
                     </div>
@@ -599,7 +599,7 @@
 
             function showError($el, msg) {
                 $el.css('border-color', '#ef4444');
-                $el.after(`<div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px; font-weight: 500;">${msg}</div>`);
+                $el.after(`<div class="error-msg as-addsub-53">${msg}</div>`);
             }
 
             function validateEmail(email) {
@@ -721,7 +721,7 @@
                         let errMsg = 'There was an error creating the subscriber.';
                         if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
                             const errors = xhr.responseJSON.errors;
-                            let listErrors = '<ul style="margin: 0; padding-left: 20px;">';
+                            let listErrors = '<ul class="as-addsub-54">';
                             Object.keys(errors).forEach(key => {
                                 const fieldErr = errors[key].join(' ');
                                 listErrors += `<li>${fieldErr}</li>`;

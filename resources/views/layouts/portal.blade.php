@@ -14,6 +14,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <link href="/css/portal_custom.css" rel="stylesheet">
+@if(auth()->check() && auth()->user()->isAdmin())
+<link href="/css/admin_settings.css" rel="stylesheet">
+@endif
 @include('components.admin-menu-state')
 @yield('portal_styles')
 @endsection

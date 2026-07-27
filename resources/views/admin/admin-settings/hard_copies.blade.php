@@ -1,219 +1,54 @@
 @extends('layouts.portal')
 
-@section('portal_styles')
-    <style>
-        .table-action-edit {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            color: #0f172a;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: background-color 0.15s ease, color 0.15s ease;
-        }
-        .table-action-edit:hover {
-            background-color: #f1f5f9;
-            color: #b91c1c;
-        }
-        /* Custom modal overrides */
-        .ctb-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .ctb-modal-box {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-            max-width: 520px;
-            width: 100%;
-            overflow: hidden;
-            animation: modalFadeIn 0.2s ease-out;
-            margin: 16px;
-        }
-        .ctb-modal-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0f172a;
-            margin: 0 0 20px 0;
-        }
-        .ctb-modal-body {
-            padding: 24px;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        .form-row {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 18px;
-        }
-        .form-col {
-            flex: 1;
-        }
-        .form-label {
-            display: block;
-            font-size: 12.5px;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 6px;
-        }
-        .form-input {
-            width: 100%;
-            height: 38px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 8px 12px;
-            box-sizing: border-box;
-            font-size: 14px;
-            color: #0f172a;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        .form-input:focus {
-            border-color: #b91c1c !important;
-            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
-            outline: none;
-        }
-        .form-select {
-            width: 100%;
-            height: 38px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 8px 12px;
-            box-sizing: border-box;
-            font-size: 14px;
-            background-color: #ffffff;
-            color: #0f172a;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        .form-select:focus {
-            border-color: #b91c1c !important;
-            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
-            outline: none;
-        }
-        .form-textarea {
-            width: 100%;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 8px 12px;
-            box-sizing: border-box;
-            font-size: 14px;
-            resize: vertical;
-            font-family: inherit;
-            color: #0f172a;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        .form-textarea:focus {
-            border-color: #b91c1c !important;
-            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
-            outline: none;
-        }
-        .ctb-modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            align-items: center;
-        }
-        .btn-modal-cancel {
-            background: none;
-            border: none;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 13px;
-            padding: 8px 16px;
-            cursor: pointer;
-            text-transform: uppercase;
-            border-radius: 6px;
-            transition: background 0.15s;
-        }
-        .btn-modal-cancel:hover {
-            background: #f1f5f9;
-        }
-        .btn-modal-submit {
-            background: #b91c1c;
-            border: 1px solid #b91c1c;
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 13px;
-            padding: 8px 20px;
-            cursor: pointer;
-            text-transform: uppercase;
-            border-radius: 6px;
-            transition: opacity 0.15s;
-        }
-        .btn-modal-submit:hover {
-            background: #991b1b;
-        }
-        .btn-modal-submit:disabled {
-            background: #cbd5e1;
-            border-color: #cbd5e1;
-            cursor: not-allowed;
-            opacity: 1;
-        }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-    </style>
-@endsection
+
 
 @section('portal_content')
-    <div class="section-header" style="justify-content: space-between;">
+    <div class="section-header as-hardcopies-1">
         <div class="header-title-container">
             <h1 class="header-title">Shipments</h1>
         </div>
     </div>
 
     <!-- Stats Row -->
-    <div style="display: flex; gap: 24px; margin-bottom: 24px;">
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #0d9488;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Total</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-total">-</div>
+    <div class="as-hardcopies-2">
+        <div class="portal-card as-hardcopies-3">
+            <div class="as-hardcopies-4">Total</div>
+            <div class="as-hardcopies-5" id="stat-total">-</div>
         </div>
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #f59e0b;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Active</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-active">-</div>
+        <div class="portal-card as-hardcopies-6">
+            <div class="as-hardcopies-4">Active</div>
+            <div class="as-hardcopies-5" id="stat-active">-</div>
         </div>
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #ef4444;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">InActive</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-inactive">-</div>
+        <div class="portal-card as-hardcopies-7">
+            <div class="as-hardcopies-4">InActive</div>
+            <div class="as-hardcopies-5" id="stat-inactive">-</div>
         </div>
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #3b82f6;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Shipped</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-shipped">-</div>
+        <div class="portal-card as-hardcopies-8">
+            <div class="as-hardcopies-4">Shipped</div>
+            <div class="as-hardcopies-5" id="stat-shipped">-</div>
         </div>
-        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #16a34a;">
-            <div style="font-size: 13.5px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Delivered</div>
-            <div style="font-size: 28px; font-weight: 800; color: #0f172a;" id="stat-delivered">-</div>
+        <div class="portal-card as-hardcopies-9">
+            <div class="as-hardcopies-4">Delivered</div>
+            <div class="as-hardcopies-5" id="stat-delivered">-</div>
         </div>
     </div>
 
     <!-- Data Table -->
-    <div class="portal-card" style="padding: 0;">
-        <div class="card-header-custom" style="display: flex; flex-direction: column; gap: 16px; padding: 20px 24px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; width: 100%;">
-                <h2 class="card-title-custom" style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">Shipments List</h2>
-                <div style="position: relative;">
-                    <i class="bi bi-search" style="position: absolute; left: 12px; top: 10px; color: #94a3b8; font-size: 14px;"></i>
-                    <input type="text" class="form-input-style" id="search-hard-copies" placeholder="Search companies or addresses..." style="padding-left: 36px; width: 300px; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px;">
+    <div class="portal-card as-hardcopies-10">
+        <div class="card-header-custom as-hardcopies-11">
+            <div class="as-hardcopies-12">
+                <h2 class="card-title-custom as-hardcopies-13">Shipments List</h2>
+                <div class="as-hardcopies-14">
+                    <i class="bi bi-search as-hardcopies-15"></i>
+                    <input type="text" class="form-input-style as-hardcopies-16" id="search-hard-copies" placeholder="Search companies or addresses...">
                 </div>
             </div>
             
             <!-- Filters Row -->
-            <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; width: 100%; border-top: 1px solid #f1f5f9; padding-top: 16px;">
-                <div style="display: flex; flex-direction: column; gap: 6px;">
-                    <span style="font-size: 12.5px; font-weight: 600; color: #475569;">Status</span>
-                    <select class="form-input-style" id="filter-status" style="width: 150px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
+            <div class="as-hardcopies-17">
+                <div class="as-hardcopies-18">
+                    <span class="as-hardcopies-19">Status</span>
+                    <select class="form-input-style as-hardcopies-20" id="filter-status">
                         <option value="all">All Statuses</option>
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
@@ -227,27 +62,27 @@
                     </select>
                 </div>
                 <!-- Clear Filters Button -->
-                <div style="padding-bottom: 2px;">
-                    <button id="btn-clear-filters" onmouseenter="this.style.backgroundColor='#e2e8f0'" onmouseleave="this.style.backgroundColor='#f1f5f9'" style="display: none; height: 36px; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; align-items: center; gap: 6px; transition: all 0.15s ease-in-out;">
+                <div class="as-hardcopies-21">
+                    <button class="as-hardcopies-22" id="btn-clear-filters" onmouseenter="this.style.backgroundColor='#e2e8f0'" onmouseleave="this.style.backgroundColor='#f1f5f9'">
                         <i class="bi bi-x-circle"></i> Clear Filters
                     </button>
                 </div>
             </div>
         </div>
         <div class="card-body-custom">
-            <table class="portal-grid-table" id="hard-copies-table" style="table-layout: fixed; width: 100%;">
+            <table class="portal-grid-table as-hardcopies-23" id="hard-copies-table">
                 <thead>
                     <tr>
-                        <th style="width: 100px; min-width: 100px; white-space: nowrap;">Subscription</th>
-                        <th style="width: 120px; min-width: 120px; white-space: nowrap;">Shipment No.</th>
-                        <th style="width: 200px; min-width: 150px; white-space: nowrap;">Contact Name</th>
-                        <th style="width: 220px; min-width: 150px; white-space: nowrap;">Item Name</th>
-                        <th style="width: 100px; min-width: 100px; white-space: nowrap;">Carrier</th>
-                        <th style="width: 120px; min-width: 120px; white-space: nowrap;">Tracking No.</th>
-                        <th style="width: 110px; min-width: 110px; white-space: nowrap;">Ship Date</th>
-                        <th style="width: 110px; min-width: 110px; white-space: nowrap;">Est. Delivery</th>
-                        <th style="width: 130px; min-width: 120px; white-space: nowrap;">Shipment</th>
-                        <th style="width: 130px; min-width: 130px; text-align: center; white-space: nowrap;">Action</th>
+                        <th class="as-hardcopies-24">Subscription</th>
+                        <th class="as-hardcopies-25">Shipment No.</th>
+                        <th class="as-hardcopies-26">Contact Name</th>
+                        <th class="as-hardcopies-27">Item Name</th>
+                        <th class="as-hardcopies-24">Carrier</th>
+                        <th class="as-hardcopies-25">Tracking No.</th>
+                        <th class="as-hardcopies-28">Ship Date</th>
+                        <th class="as-hardcopies-28">Est. Delivery</th>
+                        <th class="as-hardcopies-29">Shipment</th>
+                        <th class="as-hardcopies-30">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -256,11 +91,11 @@
             </table>
         </div>
         <!-- Pagination Footer -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-top: 1px solid #f1f5f9; background-color: #ffffff; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
-            <div style="font-size: 13.5px; color: #64748b;" id="pagination-info">
+        <div class="as-hardcopies-31">
+            <div class="as-hardcopies-32" id="pagination-info">
                 Showing 1 to 5 of 9 entries
             </div>
-            <div style="display: flex; gap: 8px; align-items: center;" id="pagination-buttons">
+            <div class="as-hardcopies-33" id="pagination-buttons">
                 <!-- Pagination buttons will be dynamically injected -->
             </div>
         </div>
@@ -275,14 +110,14 @@
                     <input type="hidden" id="edit-shipment-id">
                     
                     <div class="form-row">
-                        <div class="form-col" style="flex: 1;">
+                        <div class="form-col as-hardcopies-34">
                             <label class="form-label">Item Name</label>
                             <input type="text" id="shipment-edit-item-name" class="form-input" maxlength="255" placeholder="e.g. California Target Book">
                         </div>
                     </div>
                     
                     <div class="form-row">
-                        <div class="form-col" style="flex: 1;">
+                        <div class="form-col as-hardcopies-34">
                             <label class="form-label">Status</label>
                             <select id="shipment-edit-status" class="form-select">
                                 <option value="Pending">Pending</option>
@@ -294,35 +129,35 @@
                                 <option value="Returned to Sender">Returned to Sender</option>
                             </select>
                         </div>
-                        <div class="form-col" style="flex: 1;">
+                        <div class="form-col as-hardcopies-34">
                             <label class="form-label">Carrier</label>
                             <input type="text" id="shipment-edit-carrier" class="form-input" maxlength="255" placeholder="e.g. FedEx, UPS">
                         </div>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-col" style="flex: 1;">
+                        <div class="form-col as-hardcopies-34">
                             <label class="form-label">Tracking Number</label>
                             <input type="text" id="shipment-edit-tracking" class="form-input" maxlength="255">
                         </div>
-                        <div class="form-col" style="flex: 1;">
+                        <div class="form-col as-hardcopies-34">
                             <label class="form-label">Tracking URL</label>
                             <input type="url" id="shipment-edit-tracking-url" class="form-input" maxlength="255" placeholder="https://...">
                         </div>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-col" style="flex: 1;">
+                        <div class="form-col as-hardcopies-34">
                             <label class="form-label">Ship Date</label>
                             <input type="date" id="shipment-edit-ship-date" class="form-input">
                         </div>
-                        <div class="form-col" style="flex: 1;">
+                        <div class="form-col as-hardcopies-34">
                             <label class="form-label">Delivery Estimate</label>
                             <input type="date" id="shipment-edit-est-delivery" class="form-input">
                         </div>
                     </div>
 
-                    <div id="shipment-edit-error" class="modal-error" style="display: none; color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; padding: 10px; border-radius: 6px; margin-bottom: 16px; font-size: 13px;"></div>
+                    <div id="shipment-edit-error" class="modal-error as-hardcopies-35"></div>
                     
                     <div class="ctb-modal-footer">
                         <button type="button" class="btn-modal-cancel" onclick="closeEditModal()">Cancel</button>
@@ -339,68 +174,68 @@
             <div class="ctb-modal-body">
                 <h3 class="ctb-modal-title">View Shipment Details</h3>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                <div class="as-hardcopies-36">
                     <div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Shipment Number</div>
-                        <div id="view-order-id" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                        <div class="as-hardcopies-37">Shipment Number</div>
+                        <div class="as-hardcopies-38" id="view-order-id">-</div>
                     </div>
                     <div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Status</div>
-                        <div id="view-status" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px; text-transform: capitalize;">-</div>
+                        <div class="as-hardcopies-37">Status</div>
+                        <div class="as-hardcopies-39" id="view-status">-</div>
                     </div>
                     <div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Carrier</div>
-                        <div id="view-carrier" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                        <div class="as-hardcopies-37">Carrier</div>
+                        <div class="as-hardcopies-38" id="view-carrier">-</div>
                     </div>
                     <div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Tracking Number</div>
-                        <div id="view-tracking" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                        <div class="as-hardcopies-37">Tracking Number</div>
+                        <div class="as-hardcopies-38" id="view-tracking">-</div>
                     </div>
                     <div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Ship Date</div>
-                        <div id="view-ship-date" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                        <div class="as-hardcopies-37">Ship Date</div>
+                        <div class="as-hardcopies-38" id="view-ship-date">-</div>
                     </div>
                     <div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Estimated Delivery</div>
-                        <div id="view-est-delivery" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                        <div class="as-hardcopies-37">Estimated Delivery</div>
+                        <div class="as-hardcopies-38" id="view-est-delivery">-</div>
                     </div>
                 </div>
 
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+                <hr class="as-hardcopies-40">
 
-                <h4 style="font-size: 14px; font-weight: 700; color: #0f172a; margin: 0 0 16px 0;">Address & Contact</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <h4 class="as-hardcopies-41">Address & Contact</h4>
+                <div class="as-hardcopies-42">
                     <div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Contact Name</div>
-                        <div id="view-contact-name" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Company Name</div>
-                        <div id="view-company-name" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                        <div class="as-hardcopies-37">Contact Name</div>
+                        <div class="as-hardcopies-38" id="view-contact-name">-</div>
                     </div>
                     <div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Item Name</div>
-                        <div id="view-item-name" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px;">-</div>
+                        <div class="as-hardcopies-37">Company Name</div>
+                        <div class="as-hardcopies-38" id="view-company-name">-</div>
                     </div>
-                    <div style="grid-column: span 2;">
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Shipping Address</div>
-                        <div id="view-address" style="font-size: 14px; color: #0f172a; font-weight: 500; margin-top: 4px; line-height: 1.5;">-</div>
+                    <div>
+                        <div class="as-hardcopies-37">Item Name</div>
+                        <div class="as-hardcopies-38" id="view-item-name">-</div>
                     </div>
-                    <div style="grid-column: span 2;">
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Special Instructions</div>
-                        <div id="view-instructions" style="font-size: 14px; color: #0f172a; font-style: italic; margin-top: 4px;">-</div>
+                    <div class="as-hardcopies-43">
+                        <div class="as-hardcopies-37">Shipping Address</div>
+                        <div class="as-hardcopies-44" id="view-address">-</div>
+                    </div>
+                    <div class="as-hardcopies-43">
+                        <div class="as-hardcopies-37">Special Instructions</div>
+                        <div class="as-hardcopies-45" id="view-instructions">-</div>
                     </div>
                 </div>
 
-                <div class="ctb-modal-footer" style="margin-top: 24px;">
-                    <button type="button" class="btn-modal-cancel" onclick="closeViewModal()" style="background: #f1f5f9; color: #0f172a;">Close</button>
+                <div class="ctb-modal-footer as-hardcopies-46">
+                    <button type="button" class="btn-modal-cancel as-hardcopies-47" onclick="closeViewModal()">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div id="custom-toast" class="portal-toast" style="display: none;">
+    <div id="custom-toast" class="portal-toast as-hardcopies-48">
         <h4 class="portal-toast-title" id="toast-title"></h4>
         <p class="portal-toast-body" id="toast-body"></p>
     </div>
@@ -463,7 +298,7 @@
                     if (item.tracking_id) {
                         trackingHtml = item.tracking_id;
                         if (item.tracking_url) {
-                            trackingHtml = `<a href="${item.tracking_url}" target="_blank" style="color: #b91c1c; text-decoration: underline;">${item.tracking_id}</a>`;
+                            trackingHtml = `<a class="as-hardcopies-49" href="${item.tracking_url}" target="_blank">${item.tracking_id}</a>`;
                         }
                     }
                     $('#view-tracking').html(trackingHtml);
@@ -676,7 +511,7 @@
                 // 3. Render only rows for current page
                 $tbody.empty();
                 if (totalEntries === 0) {
-                    $tbody.append(`<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 24px;">No hard copy subscriptions found</td></tr>`);
+                    $tbody.append(`<tr><td class="as-hardcopies-50" colspan="6">No hard copy subscriptions found</td></tr>`);
                 } else {
                     const pageRows = filteredRows.slice(startIndex, endIndex);
                     pageRows.forEach(item => {
@@ -700,23 +535,24 @@
 
                         const rowHtml = `
                             <tr>
-                                <td style="vertical-align: middle;"><span style="display: inline-block; padding: 4px 12px; font-size: 12.5px; font-weight: 600; border-radius: 9999px; ${sub.isActive ? 'background-color: #e6f4ea; color: #137333;' : 'background-color: #fce8e6; color: #c5221f;'}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
-                                <td class="fw-semibold" style="color: #0f172a !important;">SH-${item.id}</td>
-                                <td style="color: #0f172a !important; font-weight: 500;">${contactName}</td>
-                                <td style="color: #0f172a !important;">${item.item_name || ''}</td>
-                                <td style="color: #475569;">${item.carrier || '-'}</td>
-                                <td style="color: #475569;">${item.tracking_url ? `<a href="${item.tracking_url}" target="_blank" style="color: #2563eb; text-decoration: underline;">${item.tracking_id || 'Link'}</a>` : (item.tracking_id || '-')}</td>
-                                <td style="color: #475569;">${item.ship_date ? new Date(item.ship_date).toLocaleDateString() : '-'}</td>
-                                <td style="color: #475569;">${item.estimated_delivery ? new Date(item.estimated_delivery).toLocaleDateString() : '-'}</td>
-                                <td><span style="display: inline-block; padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 9999px; ${pillColor}">${shipmentStatus}</span></td>
-                                <td class="action-column-cell">
-                                    <div class="action-column-container">
-                                        <a href="javascript:void(0)" onclick="openViewModal(${item.id})" class="table-action-edit" title="View">
-                                            <i class="bi bi-eye" style="font-size: 16px;"></i>
-                                        </a>
-                                        <a href="javascript:void(0)" onclick="openEditModal(${item.id})" class="table-action-edit" title="Edit">
-                                            <i class="bi bi-pencil" style="font-size: 16px;"></i>
-                                        </a>
+                                <td class="as-hardcopies-51"><span class="as-hardcopies-52" style="${sub.isActive ? 'background-color: #e6f4ea; color: #137333;' : 'background-color: #fce8e6; color: #c5221f;'}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
+                                <td class="fw-semibold as-hardcopies-53">SH-${item.id}</td>
+                                <td class="as-hardcopies-54">${contactName}</td>
+                                <td class="as-hardcopies-53">${item.item_name || ''}</td>
+                                <td class="as-hardcopies-55">${item.carrier || '-'}</td>
+                                <td class="as-hardcopies-55">${item.tracking_url ? `<a class="as-hardcopies-56" href="${item.tracking_url}" target="_blank">${item.tracking_id || 'Link'}</a>` : (item.tracking_id || '-')}</td>
+                                <td class="as-hardcopies-55">${item.ship_date ? new Date(item.ship_date).toLocaleDateString() : '-'}</td>
+                                <td class="as-hardcopies-55">${item.estimated_delivery ? new Date(item.estimated_delivery).toLocaleDateString() : '-'}</td>
+                                <td><span class="as-hardcopies-57" style="${pillColor}">${shipmentStatus}</span></td>
+                                <td class="as-classifieds-76">
+                                    <div class="dropdown table-dropdown-container">
+                                        <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end as-classifieds-77">
+                                            <li><a class="dropdown-item as-classifieds-78" href="javascript:void(0)" onclick="openViewModal(${item.id})"><i class="bi bi-eye as-classifieds-79"></i> View</a></li>
+                                            <li><a class="dropdown-item as-classifieds-78" href="javascript:void(0)" onclick="openEditModal(${item.id})"><i class="bi bi-pencil as-classifieds-79"></i> Edit</a></li>
+                                        </ul>
                                     </div>
                                 </td>
                             </tr>
@@ -872,7 +708,7 @@
             }
 
             // Load data from API
-            $tbody.html(`<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 24px;"><i class="bi bi-arrow-repeat spin" style="font-size: 20px; display: inline-block; animation: spin 1s linear infinite; margin-right: 8px;"></i> Loading hard copies...</td></tr>`);
+            $tbody.html(`<tr><td class="as-hardcopies-50" colspan="6"><i class="bi bi-arrow-repeat spin as-hardcopies-59"></i> Loading hard copies...</td></tr>`);
 
             $('<style>')
                 .prop('type', 'text/css')
@@ -899,7 +735,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching hard copies:', error);
-                    $tbody.html(`<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 24px;">Failed to load hard copy subscriptions. Please try again later.</td></tr>`);
+                    $tbody.html(`<tr><td class="as-hardcopies-60" colspan="6">Failed to load hard copy subscriptions. Please try again later.</td></tr>`);
                 }
             });
         });

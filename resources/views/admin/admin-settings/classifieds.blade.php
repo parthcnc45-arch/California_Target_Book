@@ -1,177 +1,13 @@
 @extends('layouts.portal')
 
-@section('portal_styles')
-    <style>
-        .table-action-edit {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #475569;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            transition: all 0.15s ease-in-out;
-            border: 1px solid #cbd5e1;
-            background-color: #ffffff;
-            cursor: pointer;
-        }
-        .table-action-edit:hover {
-            background-color: #f8fafc;
-            color: #1e3a8a;
-            border-color: #94a3b8;
-        }
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            font-size: 11px;
-            font-weight: 700;
-            border-radius: 9999px;
-            line-height: 1;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin: 0;
-        }
-        .status-pending {
-            background-color: #fefcbf;
-            color: #b45309;
-            border: 1px solid #fef08a;
-        }
-        .status-active {
-            background-color: #dcfce7;
-            color: #15803d;
-            border: 1px solid #bbf7d0;
-        }
-        .status-inactive {
-            background-color: #fee2e2;
-            color: #b91c1c;
-            border: 1px solid #fca5a5;
-        }
-        .status-expired {
-            background-color: #f1f5f9;
-            color: #64748b;
-            border: 1px solid #cbd5e1;
-        }
-        .text-muted-expired {
-            opacity: 0.65;
-        }
-        .stats-card-classified {
-            background: #ffffff !important;
-            padding: 20px 24px !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 12px !important;
-            display: flex !important;
-            flex-direction: row !important;
-            justify-content: space-between !important;
-            align-items: flex-start !important;
-            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05) !important;
-            margin-bottom: 0 !important;
-            text-align: left !important;
-        }
-        
-        /* Mobile responsive utilities */
-        .stats-grid-classifieds {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-        @media (max-width: 1024px) {
-            .stats-grid-classifieds {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-        }
-        @media (max-width: 768px) {
-            .filter-row-classifieds {
-                flex-direction: column !important;
-                align-items: stretch !important;
-            }
-            .filter-row-classifieds > div {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            .filter-row-classifieds select, .filter-row-classifieds input {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            .filter-row-classifieds button {
-                width: 100% !important;
-                justify-content: center !important;
-            }
-        }
-        @media (max-width: 576px) {
-            .stats-grid-classifieds {
-                grid-template-columns: 1fr !important;
-                gap: 12px !important;
-            }
-            .stats-card-classified {
-                padding: 16px !important;
-            }
-            #classified-modal {
-                padding: 12px !important;
-            }
-            .form-input-style {
-                padding: 8px 10px !important;
-            }
-        }
 
-        /* Custom modal animation styles */
-        #classified-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
-            transition: all 0.3s ease;
-            opacity: 0;
-        }
-        #classified-modal.modal-open {
-            opacity: 1;
-        }
-        #modal-container {
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-        #classified-modal.modal-open #modal-container {
-            transform: translateY(0);
-        }
-        
-        .btn-export-csv {
-            background-color: #ffffff;
-            border: 1.5px solid #c52026;
-            color: #c52026;
-            padding: 8px 16px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.15s ease-in-out;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-export-csv:hover {
-            background-color: #fee2e2;
-            color: #a91b21;
-            border-color: #a91b21;
-        }
-    </style>
-@endsection
 
 @section('portal_content')
-    <div class="section-header" style="justify-content: space-between; display: flex; align-items: center; margin-bottom: 24px;">
+    <div class="section-header as-classifieds-1">
         <div class="header-title-container">
             <h1 class="header-title">Classifieds Manager</h1>
         </div>
-        <button type="button" id="btn-add-classified" class="btn-add-subscription" style="border: none; outline: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+        <button type="button" id="btn-add-classified" class="btn-add-subscription as-classifieds-2">
             <i class="bi bi-plus-lg"></i> ADD
         </button>
     </div>
@@ -181,11 +17,11 @@
         <!-- Card 1: Active Ads -->
         <div class="stats-card-classified">
             <div>
-                <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Active Ads</div>
-                <div style="font-family: Georgia, serif; font-size: 28px; font-weight: 700; color: #0f172a; margin-top: 4px; line-height: 1;" id="stat-active">-</div>
-                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 6px;">Currently live</div>
+                <div class="as-classifieds-3">Active Ads</div>
+                <div class="as-classifieds-4" id="stat-active">-</div>
+                <div class="as-classifieds-5">Currently live</div>
             </div>
-            <div style="width: 44px; height: 44px; background-color: #eff6ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #1d4ed8; font-size: 20px;">
+            <div class="as-classifieds-6">
                 <i class="bi bi-pencil-square"></i>
             </div>
         </div>
@@ -193,11 +29,11 @@
         <!-- Card 2: Pending Review -->
         <div class="stats-card-classified">
             <div>
-                <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Pending Review</div>
-                <div style="font-family: Georgia, serif; font-size: 28px; font-weight: 700; color: #0f172a; margin-top: 4px; line-height: 1;" id="stat-pending">-</div>
-                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 6px;">Awaiting approval</div>
+                <div class="as-classifieds-3">Pending Review</div>
+                <div class="as-classifieds-4" id="stat-pending">-</div>
+                <div class="as-classifieds-5">Awaiting approval</div>
             </div>
-            <div style="width: 44px; height: 44px; background-color: #fffbeb; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #b45309; font-size: 20px;">
+            <div class="as-classifieds-7">
                 <i class="bi bi-clock"></i>
             </div>
         </div>
@@ -205,11 +41,11 @@
         <!-- Card 3: Expiring Soon -->
         <div class="stats-card-classified">
             <div>
-                <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Expiring Soon</div>
-                <div style="font-family: Georgia, serif; font-size: 28px; font-weight: 700; color: #0f172a; margin-top: 4px; line-height: 1;" id="stat-expiring">-</div>
-                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 6px;">Within 3 days</div>
+                <div class="as-classifieds-3">Expiring Soon</div>
+                <div class="as-classifieds-4" id="stat-expiring">-</div>
+                <div class="as-classifieds-5">Within 3 days</div>
             </div>
-            <div style="width: 44px; height: 44px; background-color: #fef2f2; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #b91c1c; font-size: 20px;">
+            <div class="as-classifieds-8">
                 <i class="bi bi-exclamation-triangle"></i>
             </div>
         </div>
@@ -217,41 +53,41 @@
         <!-- Card 4: Revenue -->
         <div class="stats-card-classified">
             <div>
-                <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Revenue (Month)</div>
-                <div style="font-family: Georgia, serif; font-size: 28px; font-weight: 700; color: #0f172a; margin-top: 4px; line-height: 1;" id="stat-revenue">-</div>
-                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 6px;" id="stat-revenue-month-label">{{ date('F Y') }}</div>
+                <div class="as-classifieds-3">Revenue (Month)</div>
+                <div class="as-classifieds-4" id="stat-revenue">-</div>
+                <div class="as-classifieds-5" id="stat-revenue-month-label">{{ date('F Y') }}</div>
             </div>
-            <div style="width: 44px; height: 44px; background-color: #ecfeff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #0891b2; font-size: 20px;">
+            <div class="as-classifieds-9">
                 <i class="bi bi-currency-dollar"></i>
             </div>
         </div>
     </div>
 
     <!-- Pending Alert Banner -->
-    <div id="pending-alert-banner" style="display: none; background-color: #fffbeb; border: 1px solid #fef3c7; color: #b45309; padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; font-size: 13.5px; font-weight: 600; align-items: center; justify-content: space-between;">
+    <div class="as-classifieds-10" id="pending-alert-banner">
         <div>
-            <i class="bi bi-exclamation-circle-fill" style="margin-right: 8px; font-size: 15px;"></i>
+            <i class="bi bi-exclamation-circle-fill as-classifieds-11"></i>
             <span id="pending-alert-text">0 ads are pending review. New submissions require approval before going live.</span>
-            <a href="#" id="btn-review-now" style="color: #b45309; text-decoration: underline; margin-left: 4px;">Review now &rarr;</a>
+            <a class="as-classifieds-12" href="#" id="btn-review-now">Review now &rarr;</a>
         </div>
     </div>
 
     <!-- Data Table Card -->
-    <div class="portal-card" style="padding: 0; margin-bottom: 32px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05);">
-        <div class="card-header-custom" style="display: flex; flex-direction: column; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #f1f5f9;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; width: 100%;">
-                <h2 class="card-title-custom" style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">All Classified Ads</h2>
+    <div class="portal-card as-classifieds-13">
+        <div class="card-header-custom as-classifieds-14">
+            <div class="as-classifieds-15">
+                <h2 class="card-title-custom as-classifieds-16">All Classified Ads</h2>
             </div>
             
             <!-- Filters Row -->
-            <div class="filter-row-classifieds" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; width: 100%;">
-                <div style="position: relative; flex: 1; min-width: 200px; max-width: 320px;">
-                    <i class="bi bi-search" style="position: absolute; left: 12px; top: 10px; color: #94a3b8; font-size: 14px;"></i>
-                    <input type="text" class="form-input-style" id="search-classifieds" placeholder="Search ads..." style="padding-left: 36px; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px; width: 100%;">
+            <div class="filter-row-classifieds as-classifieds-17">
+                <div class="as-classifieds-18">
+                    <i class="bi bi-search as-classifieds-19"></i>
+                    <input type="text" class="form-input-style as-classifieds-20" id="search-classifieds" placeholder="Search ads...">
                 </div>
                 
                 <div>
-                    <select class="form-input-style" id="filter-status" style="width: 140px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
+                    <select class="form-input-style as-classifieds-21" id="filter-status">
                         <option value="all">All Statuses</option>
                         <option value="pending">Pending</option>
                         <option value="active">Active</option>
@@ -261,7 +97,7 @@
                 </div>
 
                 <div>
-                    <select class="form-input-style" id="filter-category" style="width: 140px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
+                    <select class="form-input-style as-classifieds-21" id="filter-category">
                         <option value="all">All Categories</option>
                         @if(isset($categories) && count($categories) > 0)
                             @foreach($categories as $cat)
@@ -277,7 +113,7 @@
                 </div>
 
                 <div>
-                    <select class="form-input-style" id="filter-date-range" style="width: 140px; height: 36px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; cursor: pointer; background-color: #ffffff;">
+                    <select class="form-input-style as-classifieds-21" id="filter-date-range">
                         <option value="all">All Time</option>
                         <option value="this_month">This Month</option>
                         <option value="last_month">Last Month</option>
@@ -285,30 +121,30 @@
                     </select>
                 </div>
 
-                <div style="margin-left: auto; display: flex; gap: 12px; align-items: center;">
-                    <button id="btn-clear-filters" style="display: none; height: 36px; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; align-items: center; gap: 6px; transition: all 0.15s ease-in-out;">
+                <div class="as-classifieds-22">
+                    <button class="as-classifieds-23" id="btn-clear-filters">
                         <i class="bi bi-x-circle"></i> Clear Filters
                     </button>
-                    <button type="button" class="btn-export-csv" id="btn-export-csv" style="height: 36px; border: 1.5px solid #c52026; color: #c52026; background-color: #ffffff; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease-in-out;">
+                    <button type="button" class="btn-export-csv as-classifieds-24" id="btn-export-csv">
                         <i class="bi bi-download"></i> Export CSV
                     </button>
                 </div>
             </div>
         </div>
         
-        <div class="card-body-custom" style="overflow-x: auto;">
-            <table class="portal-grid-table" id="classifieds-table" style="margin-bottom: 0;">
+        <div class="card-body-custom as-classifieds-25">
+            <table class="portal-grid-table as-classifieds-26" id="classifieds-table">
                 <thead>
                     <tr>
-                        <th style="width: 26%;">Ad</th>
-                        <th style="width: 12%;">Category</th>
-                        <th style="width: 18%;">Advertiser</th>
-                        <th style="width: 10%;">Start Date</th>
-                        <th style="width: 10%;">End Date</th>
-                        <th style="width: 8%;">Status</th>
-                        <th style="width: 10%;">Payment Status</th>
-                        <th style="width: 8%;">Rate</th>
-                        <th style="width: 50px; text-align: center; padding-right: 16px;"></th>
+                        <th class="as-classifieds-27">Ad</th>
+                        <th class="as-classifieds-28">Category</th>
+                        <th class="as-classifieds-29">Advertiser</th>
+                        <th class="as-classifieds-30">Start Date</th>
+                        <th class="as-classifieds-30">End Date</th>
+                        <th class="as-classifieds-31">Status</th>
+                        <th class="as-classifieds-30">Payment Status</th>
+                        <th class="as-classifieds-31">Rate</th>
+                        <th class="as-classifieds-32"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -318,39 +154,39 @@
         </div>
         
         <!-- Pagination Footer -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-top: 1px solid #f1f5f9; background-color: #ffffff; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; flex-wrap: wrap; gap: 12px;">
-            <div style="font-size: 13.5px; color: #64748b;" id="pagination-info">
+        <div class="as-classifieds-33">
+            <div class="as-classifieds-34" id="pagination-info">
                 Showing 0 to 0 of 0 entries
             </div>
-            <div style="display: flex; gap: 8px; align-items: center;" id="pagination-buttons">
+            <div class="as-classifieds-35" id="pagination-buttons">
                 <!-- Pagination buttons -->
             </div>
         </div>
     </div>
 
     <!-- Custom Confirm Delete Modal -->
-    <div id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s ease-in-out;">
-        <div class="portal-card" style="width: 100%; max-width: 400px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border-radius: 12px; background: #ffffff; text-align: center;">
-            <div style="width: 48px; height: 48px; border-radius: 50%; background-color: #fef2f2; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-                <i class="bi bi-exclamation-triangle" style="font-size: 24px; color: #ef4444;"></i>
+    <div class="as-classifieds-36" id="confirm-modal">
+        <div class="portal-card as-classifieds-37">
+            <div class="as-classifieds-38">
+                <i class="bi bi-exclamation-triangle as-classifieds-39"></i>
             </div>
-            <h3 style="margin: 0 0 8px; font-size: 18px; font-weight: 700; color: #0f172a;">Delete Classified Ad?</h3>
-            <p style="margin: 0 0 24px; font-size: 14px; color: #64748b;">Are you sure you want to permanently delete this classified ad? This action cannot be undone.</p>
-            <div style="display: flex; gap: 12px; justify-content: center;">
-                <button type="button" id="btn-cancel-delete" style="background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; flex: 1;">Cancel</button>
-                <button type="button" id="btn-confirm-delete" style="background-color: #ef4444; border: none; color: #ffffff; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; flex: 1;">Delete</button>
+            <h3 class="as-classifieds-40">Delete Classified Ad?</h3>
+            <p class="as-classifieds-41">Are you sure you want to permanently delete this classified ad? This action cannot be undone.</p>
+            <div class="as-classifieds-42">
+                <button class="as-classifieds-43" type="button" id="btn-cancel-delete">Cancel</button>
+                <button class="as-classifieds-44" type="button" id="btn-confirm-delete">Delete</button>
             </div>
         </div>
     </div>
 
     <!-- View Modal -->
-    <div id="view-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s ease-in-out;">
-        <div class="portal-card" style="width: 100%; max-width: 650px; max-height: calc(100vh - 48px); overflow-y: auto; padding: 0; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border-radius: 12px; background: #ffffff;">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-                <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">Classified Ad Details</h3>
-                <button type="button" id="btn-close-view-modal" style="background: transparent; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="bi bi-x-lg"></i></button>
+    <div class="as-classifieds-36" id="view-modal">
+        <div class="portal-card as-classifieds-45">
+            <div class="as-classifieds-46">
+                <h3 class="as-classifieds-16">Classified Ad Details</h3>
+                <button class="as-classifieds-47" type="button" id="btn-close-view-modal"><i class="bi bi-x-lg"></i></button>
             </div>
-            <div id="view-modal-content" style="padding: 24px; font-size: 14px; color: #334155;">
+            <div class="as-classifieds-48" id="view-modal-content">
                 <!-- Content will be injected here -->
             </div>
         </div>
@@ -358,38 +194,38 @@
 
     <!-- Modal Popup for Add/Edit Classified -->
     <div id="classified-modal">
-        <div class="portal-card" style="width: 100%; max-width: 650px; max-height: calc(100vh - 48px); overflow-y: auto; padding: 0; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border-radius: 12px; background: #ffffff;" id="modal-container">
+        <div class="portal-card as-classifieds-45" id="modal-container">
             <!-- Modal Header -->
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-                <h3 id="modal-title" style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">Add Classified Ad</h3>
-                <button type="button" id="btn-close-modal" style="background: transparent; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="bi bi-x-lg"></i></button>
+            <div class="as-classifieds-46">
+                <h3 class="as-classifieds-16" id="modal-title">Add Classified Ad</h3>
+                <button class="as-classifieds-47" type="button" id="btn-close-modal"><i class="bi bi-x-lg"></i></button>
             </div>
             
             <!-- Error Banner -->
-            <div id="modal-error-banner" style="display: none; background-color: #fef2f2; color: #ef4444; border-bottom: 1px solid #fca5a5; padding: 12px 24px; font-weight: 600; font-size: 13.0px; line-height: 1.5;"></div>
+            <div class="as-classifieds-49" id="modal-error-banner"></div>
 
             <!-- Form -->
-            <form id="classified-form" novalidate style="padding: 24px; display: flex; flex-direction: column; gap: 18px; margin: 0;">
+            <form class="as-classifieds-50" id="classified-form" novalidate>
                 <input type="hidden" id="classified_id">
 
                 <!-- Contact Information -->
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 180px;">
+                <div class="as-classifieds-51">
+                    <div class="as-classifieds-52">
                         <label class="form-label-style">First Name *</label>
                         <input type="text" id="first_name" class="form-input-style" placeholder="e.g. John" required>
                     </div>
-                    <div style="flex: 1; min-width: 180px;">
+                    <div class="as-classifieds-52">
                         <label class="form-label-style">Last Name *</label>
                         <input type="text" id="last_name" class="form-input-style" placeholder="e.g. Doe" required>
                     </div>
                 </div>
                 
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 180px;">
+                <div class="as-classifieds-51">
+                    <div class="as-classifieds-52">
                         <label class="form-label-style">Phone Number *</label>
                         <input type="text" id="phone_number" class="form-input-style" placeholder="e.g. (555) 123-4567" required>
                     </div>
-                    <div style="flex: 1; min-width: 180px;">
+                    <div class="as-classifieds-52">
                         <label class="form-label-style">Advertiser Email *</label>
                         <input type="email" id="advertiser_email" class="form-input-style" placeholder="contact@org.com" required>
                     </div>
@@ -402,8 +238,8 @@
                 </div>
 
                 <!-- Status & Category Select dropdowns -->
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 200px;">
+                <div class="as-classifieds-51">
+                    <div class="as-classifieds-53">
                         <label class="form-label-style">Category *</label>
                         <select class="form-input-style" id="category" required>
                             @if(isset($categories) && count($categories) > 0)
@@ -418,7 +254,7 @@
                             @endif
                         </select>
                     </div>
-                    <div style="flex: 1; min-width: 200px;">
+                    <div class="as-classifieds-53">
                         <label class="form-label-style">Status *</label>
                         <select class="form-input-style" id="status" required>
                             <option value="Pending" selected>Pending</option>
@@ -437,10 +273,10 @@
                 <!-- Ad Body Text -->
                 <div>
                     <label class="form-label-style">Ad Body Text *</label>
-                    <textarea id="body" class="form-input-style" placeholder="Ad description, salary, qualifications, how to apply..." style="height: 120px; padding: 10px 12px; resize: vertical;" required></textarea>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-                        <span style="font-size: 12px; color: #64748b;" id="body-helper-text">Maximum 100 words.</span>
-                        <span style="font-size: 12px; font-weight: 600; color: #64748b;" id="word-count-badge">0 / 100 words</span>
+                    <textarea id="body" class="form-input-style as-classifieds-54" placeholder="Ad description, salary, qualifications, how to apply..." required></textarea>
+                    <div class="as-classifieds-55">
+                        <span class="as-classifieds-56" id="body-helper-text">Maximum 100 words.</span>
+                        <span class="as-classifieds-57" id="word-count-badge">0 / 100 words</span>
                     </div>
                 </div>
 
@@ -449,8 +285,8 @@
                     <label class="form-label-style">Link URL</label>
                     <input type="text" id="link_url" class="form-input-style" placeholder="https://...">
                 </div>
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 180px;">
+                <div class="as-classifieds-51">
+                    <div class="as-classifieds-52">
                         <label class="form-label-style">Payment Status *</label>
                         <select class="form-input-style" id="payment_status" required>
                             <option value="Paid (via GHL)" selected>Paid (via GHL)</option>
@@ -462,8 +298,8 @@
                 </div>
 
                 <!-- Ad Duration & Rate ($) -->
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 180px;">
+                <div class="as-classifieds-51">
+                    <div class="as-classifieds-52">
                         <label class="form-label-style">Ad Duration *</label>
                         <select class="form-input-style" id="rate_type" required>
                             @if(isset($rates) && count($rates) > 0)
@@ -484,19 +320,19 @@
                             @endif
                         </select>
                     </div>
-                    <div style="flex: 1; min-width: 180px;">
+                    <div class="as-classifieds-52">
                         <label class="form-label-style">Rate ($) *</label>
                         <input type="number" id="ad_rate_amount" class="form-input-style" placeholder="e.g. 165" min="0" step="0.01" required>
                     </div>
                 </div>
 
                 <!-- Start Date & End Date -->
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 200px;">
+                <div class="as-classifieds-51">
+                    <div class="as-classifieds-53">
                         <label class="form-label-style">Start Date *</label>
                         <input type="date" id="starts_on" class="form-input-style" placeholder="mm/dd/yyyy" required>
                     </div>
-                    <div style="flex: 1; min-width: 200px;">
+                    <div class="as-classifieds-53">
                         <label class="form-label-style">End Date *</label>
                         <input type="date" id="ends_on" class="form-input-style" placeholder="mm/dd/yyyy" required>
                     </div>
@@ -505,15 +341,15 @@
                 <!-- Admin Notes -->
                 <div>
                     <label class="form-label-style">Admin Notes</label>
-                    <textarea id="admin_notes" class="form-input-style" placeholder="Internal notes (not shown publicly)..." style="height: 100px; padding: 10px 12px; resize: vertical;"></textarea>
+                    <textarea id="admin_notes" class="form-input-style as-classifieds-58" placeholder="Internal notes (not shown publicly)..."></textarea>
                 </div>
 
                 <!-- Actions Button Row -->
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 8px;">
+                <div class="as-classifieds-59">
 
-                    <div style="display: flex; gap: 12px; margin-left: auto;">
-                        <button type="button" id="btn-cancel-modal" style="background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.15s ease-in-out;">Cancel</button>
-                        <button type="submit" id="btn-save-classified" style="background-color: #4f46e5; border: none; color: #ffffff; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.15s ease-in-out;">Save</button>
+                    <div class="as-classifieds-60">
+                        <button class="as-classifieds-61" type="button" id="btn-cancel-modal">Cancel</button>
+                        <button class="as-classifieds-62" type="submit" id="btn-save-classified">Save</button>
                     </div>
                 </div>
             </form>
@@ -623,7 +459,7 @@
 
             function loadClassifieds() {
                 toggleClearFiltersButton();
-                $tbody.html(`<tr><td colspan="9" style="text-align: center; color: #64748b; padding: 24px;"><i class="bi bi-arrow-repeat spin" style="font-size: 20px; display: inline-block; animation: spin 1s linear infinite; margin-right: 8px;"></i> Loading classifieds...</td></tr>`);
+                $tbody.html(`<tr><td class="as-classifieds-63" colspan="9"><i class="bi bi-arrow-repeat spin as-classifieds-64"></i> Loading classifieds...</td></tr>`);
 
                 $.ajax({
                     url: '/api/classifieds',
@@ -646,7 +482,7 @@
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching classifieds:', error);
-                        $tbody.html(`<tr><td colspan="10" style="text-align: center; color: #c52026; padding: 24px;">Failed to load classifieds. Please try again.</td></tr>`);
+                        $tbody.html(`<tr><td class="as-classifieds-65" colspan="10">Failed to load classifieds. Please try again.</td></tr>`);
                     }
                 });
             }
@@ -656,7 +492,7 @@
                 $tbody.empty();
 
                 if (!data || data.length === 0) {
-                    $tbody.append(`<tr><td colspan="9" style="text-align: center; color: #64748b; padding: 24px;">No classified ads found</td></tr>`);
+                    $tbody.append(`<tr><td class="as-classifieds-63" colspan="9">No classified ads found</td></tr>`);
                     $paginationInfo.text('Showing 0 to 0 of 0 entries');
                     renderPaginationButtons(1, 1);
                     return;
@@ -697,18 +533,18 @@
                         paymentBadgeStyle = 'background-color: #fdf2f8; color: #be185d; border: 1px solid #fbcfe8; padding: 3px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; display: inline-block; white-space: nowrap;';
                     }
                     
-                    let startSubText = ad.starts_on ? '<div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Start</div>' : '';
+                    let startSubText = ad.starts_on ? '<div class="as-classifieds-66">Start</div>' : '';
                     let endSubText = '';
                     if (endsOnStr) {
                         if (isExpired) {
-                            endSubText = '<div style="font-size: 11px; color: #ef4444; font-weight: 600; margin-top: 2px;">Expired</div>';
+                            endSubText = '<div class="as-classifieds-67">Expired</div>';
                         } else {
                             const diffTime = Math.abs(new Date(endsOnStr + 'T00:00:00') - new Date(todayStr + 'T00:00:00'));
                             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                             if (diffDays === 0) {
-                                endSubText = '<div style="font-size: 11px; color: #d97706; font-weight: 600; margin-top: 2px;">Expires today</div>';
+                                endSubText = '<div class="as-classifieds-68">Expires today</div>';
                             } else {
-                                endSubText = `<div style="font-size: 11px; color: #64748b; margin-top: 2px;">Expires in ${diffDays} days</div>`;
+                                endSubText = `<div class="as-classifieds-69">Expires in ${diffDays} days</div>`;
                             }
                         }
                     }
@@ -723,32 +559,32 @@
                     const rowHtml = `
                         <tr style="${rowStyle}" class="${rowClass}">
                             <td>
-                                <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.3;">${headline}</div>
+                                <div class="as-classifieds-70">${headline}</div>
                             </td>
-                            <td style="color: #475569; font-weight: 500; font-size: 13px;">${ad.category || 'Jobs'}</td>
+                            <td class="as-classifieds-71">${ad.category || 'Jobs'}</td>
                             <td>
-                                <div style="font-size: 13px; font-weight: 600; color: #0f172a;">${ad.advertiser_email || '—'}</div>
+                                <div class="as-classifieds-72">${ad.advertiser_email || '—'}</div>
                             </td>
-                            <td style="color: #475569; font-size: 13px;">
-                                <div style="font-weight: 600; color: #0f172a;">${displayStart}</div>
+                            <td class="as-classifieds-73">
+                                <div class="as-classifieds-74">${displayStart}</div>
                                 ${startSubText}
                             </td>
-                            <td style="color: #475569; font-size: 13px;">
-                                <div style="font-weight: 600; color: #0f172a;">${displayEnd}</div>
+                            <td class="as-classifieds-73">
+                                <div class="as-classifieds-74">${displayEnd}</div>
                                 ${endSubText}
                             </td>
                             <td><span class="${badgeClass}">${displayStatus}</span></td>
                             <td><span style="${paymentBadgeStyle}">${pStatus}</span></td>
-                            <td style="color: #0f172a; font-weight: 700; font-size: 13px;">${ad.rate_amount ? '$' + parseFloat(ad.rate_amount).toFixed(2) : '—'}</td>
-                            <td style="text-align: center; padding-right: 16px; position: relative;">
-                                <div class="dropdown">
+                            <td class="as-classifieds-75">${ad.rate_amount ? '$' + parseFloat(ad.rate_amount).toFixed(2) : '—'}</td>
+                            <td class="as-classifieds-76">
+                                <div class="dropdown table-dropdown-container">
                                     <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
                                         <i class="bi bi-three-dots"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" style="font-size: 14px; border: 1px solid #f1f5f9; border-radius: 8px; padding: 8px 0; min-width: 150px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
-                                        <li><a class="dropdown-item btn-edit-row" href="#" data-id="${ad.id}" style="padding: 10px 20px; color: #c52026; font-weight: 500; display: flex; align-items: center;"><i class="bi bi-pencil" style="margin-right: 12px; font-size: 15px;"></i> Edit</a></li>
-                                        <li><a class="dropdown-item btn-view-row" href="#" data-id="${ad.id}" style="padding: 10px 20px; color: #c52026; font-weight: 500; display: flex; align-items: center;"><i class="bi bi-eye" style="margin-right: 12px; font-size: 15px;"></i> View</a></li>
-                                        <li><a class="dropdown-item btn-delete-row" href="#" data-id="${ad.id}" style="padding: 10px 20px; color: #c52026; font-weight: 500; display: flex; align-items: center;"><i class="bi bi-trash" style="margin-right: 12px; font-size: 15px;"></i> Delete</a></li>
+                                    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end as-classifieds-77">
+                                        <li><a class="dropdown-item btn-edit-row as-classifieds-78" href="#" data-id="${ad.id}"><i class="bi bi-pencil as-classifieds-79"></i> Edit</a></li>
+                                        <li><a class="dropdown-item btn-view-row as-classifieds-78" href="#" data-id="${ad.id}"><i class="bi bi-eye as-classifieds-79"></i> View</a></li>
+                                        <li><a class="dropdown-item btn-delete-row as-classifieds-78" href="#" data-id="${ad.id}"><i class="bi bi-trash as-classifieds-79"></i> Delete</a></li>
                                     </ul>
                                 </div>
                             </td>
@@ -1251,7 +1087,7 @@
                         let errMsg = 'Failed to save classified ad.';
                         if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
                             const errors = xhr.responseJSON.errors;
-                            let errorList = '<ul style="margin:0; padding-left: 20px;">';
+                            let errorList = '<ul class="as-classifieds-80">';
                             Object.keys(errors).forEach(k => {
                                 errorList += `<li>${errors[k].join(' ')}</li>`;
                                 if (k === 'body') showError($bodyTextarea, errors[k].join(' '));
@@ -1345,7 +1181,7 @@
                 e.preventDefault();
                 const adId = $(this).data('id');
                 const $vModal = $('#view-modal');
-                $('#view-modal-content').html('<div style="text-align: center; padding: 20px;">Loading...</div>');
+                $('#view-modal-content').html('<div class="as-classifieds-81">Loading...</div>');
                 $vModal.css('display', 'flex');
                 setTimeout(() => $vModal.css('opacity', '1'), 10);
 
@@ -1381,26 +1217,26 @@
                             { key: 'admin_notes', label: 'Admin Notes' }
                         ];
 
-                        let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">';
+                        let html = '<div class="as-classifieds-82">';
                         fields.forEach((f) => {
                             let val = ad[f.key];
-                            if (val === null || val === undefined || val === '') val = '<span style="color: #94a3b8; font-style: italic;">-</span>';
+                            if (val === null || val === undefined || val === '') val = '<span class="as-classifieds-83">-</span>';
                             
                             // Make body and notes full width
                             const isFullWidth = (f.key === 'body' || f.key === 'admin_notes');
                             const gridCol = isFullWidth ? 'grid-column: span 2;' : '';
 
                             html += `
-                            <div style="display: flex; flex-direction: column; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; ${gridCol}">
-                                <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">${f.label}</div>
-                                <div style="font-size: 14.5px; color: #0f172a; font-weight: 500; white-space: pre-wrap; line-height: 1.4;">${val}</div>
+                            <div class="as-classifieds-84" style="${gridCol}">
+                                <div class="as-classifieds-85">${f.label}</div>
+                                <div class="as-classifieds-86">${val}</div>
                             </div>`;
                         });
                         html += '</div>';
                         $('#view-modal-content').html(html);
                     },
                     error: function() {
-                        $('#view-modal-content').html('<div style="color: red; text-align: center;">Failed to load details.</div>');
+                        $('#view-modal-content').html('<div class="as-classifieds-87">Failed to load details.</div>');
                     }
                 });
             });
@@ -1413,7 +1249,7 @@
 
             function showError($el, msg) {
                 $el.css('border-color', '#ef4444');
-                $el.after(`<div class="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 4px; font-weight: 500;">${msg}</div>`);
+                $el.after(`<div class="error-msg as-classifieds-88">${msg}</div>`);
             }
 
             function validateEmail(email) {

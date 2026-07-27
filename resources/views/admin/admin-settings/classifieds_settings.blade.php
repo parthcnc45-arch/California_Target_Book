@@ -1,336 +1,12 @@
 @extends('layouts.portal')
 
-@section('portal_styles')
-    <style>
-        .settings-card {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            margin-bottom: 24px;
-            padding: 24px;
-        }
-        .settings-card-title {
-            font-family: 'Inter', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: #0f172a;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-        .form-group-custom {
-            margin-bottom: 18px;
-        }
-        .form-group-custom label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 6px;
-        }
-        .form-control-custom {
-            width: 100%;
-            padding: 10px 14px;
-            font-size: 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            background-color: #ffffff;
-            color: #0f172a;
-            transition: border-color 0.15s ease-in-out;
-        }
-        .form-control-custom:focus {
-            border-color: #1e3a8a;
-            outline: none;
-        }
-        .btn-save-settings {
-            background-color: #d32f2f;
-            color: #ffffff;
-            border: none;
-            padding: 10px 24px;
-            font-weight: 600;
-            font-size: 13px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-save-settings:hover {
-            background-color: #b71c1c;
-        }
-        
-        /* Ad Categories Styling */
-        .category-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .category-row:last-child {
-            border-bottom: none;
-        }
-        .category-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #0f172a;
-        }
-        .drag-handle {
-            color: #cbd5e1;
-            font-size: 18px;
-            cursor: move;
-        }
-        .category-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .active-ads-count {
-            font-size: 12.5px;
-            color: #94a3b8;
-        }
-        .btn-cat-outline {
-            border: 1.5px solid #d32f2f;
-            color: #d32f2f;
-            background: transparent;
-            font-size: 12.5px;
-            font-weight: 600;
-            padding: 6px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-cat-outline:hover {
-            background-color: #fee2e2;
-        }
-        .btn-cat-grey {
-            background-color: #f8fafc;
-            color: #475569;
-            border: 1px solid #e2e8f0;
-            font-size: 12.5px;
-            font-weight: 600;
-            padding: 6px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-cat-grey:hover {
-            background-color: #f1f5f9;
-        }
-        .btn-cat-delete {
-            background-color: #fee2e2;
-            color: #ef4444;
-            border: 1px solid #fca5a5;
-            font-size: 12.5px;
-            font-weight: 600;
-            padding: 6px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-cat-delete:hover {
-            background-color: #fecaca;
-        }
-        .btn-add-category, .btn-add-pricing {
-            background-color: #d32f2f;
-            color: #ffffff;
-            border: none;
-            padding: 6px 14px;
-            font-size: 12.5px;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .btn-add-category:hover, .btn-add-pricing:hover {
-            background-color: #b71c1c;
-        }
 
-        /* Custom Modal Overlay */
-        .cat-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(15, 23, 42, 0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            backdrop-filter: blur(4px);
-        }
-
-        .cat-modal {
-            background: #ffffff;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 480px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            overflow: hidden;
-            animation: modalFadeIn 0.2s ease-out;
-        }
-
-        @keyframes modalFadeIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .cat-modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #edf2f7;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cat-modal-title {
-            font-family: 'Inter', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: #0f172a;
-        }
-
-        .cat-modal-close {
-            background: transparent;
-            border: none;
-            font-size: 20px;
-            color: #94a3b8;
-            cursor: pointer;
-        }
-
-        .cat-modal-close:hover {
-            color: #475569;
-        }
-
-        .cat-modal-body {
-            padding: 24px;
-        }
-
-        .cat-modal-footer {
-            padding: 16px 24px;
-            background-color: #f8fafc;
-            border-top: 1px solid #edf2f7;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Custom switch toggle styling */
-        .switch-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .switch-label {
-            font-size: 13.5px;
-            font-weight: 600;
-            color: #475569;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #cbd5e1;
-            transition: .3s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #d32f2f;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        /* Custom Pagination Styling */
-        .pagination {
-            display: flex;
-            gap: 4px;
-            list-style: none;
-            padding: 0;
-            margin: 20px 0 0 0;
-            justify-content: center;
-        }
-        .pagination li {
-            margin: 0;
-        }
-        .pagination li a, .pagination li span {
-            display: inline-block;
-            padding: 8px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            color: #475569;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            background: #ffffff;
-            transition: all 0.15s ease-in-out;
-        }
-        .pagination li a:hover {
-            background-color: #f1f5f9;
-            border-color: #94a3b8;
-            color: #0f172a;
-        }
-        .pagination li.active span {
-            background-color: #d32f2f;
-            border-color: #d32f2f;
-            color: #ffffff;
-        }
-        .pagination li.disabled span {
-            color: #94a3b8;
-            background-color: #f8fafc;
-            border-color: #e2e8f0;
-            cursor: not-allowed;
-        }
-    </style>
-@endsection
 
 @section('portal_content')
     <!-- Toast Notification Container -->
-    <div id="settings-toast-container" style="position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; pointer-events: none;"></div>
+    <div class="as-class-settings-1" id="settings-toast-container"></div>
 
-    <div class="section-header" style="justify-content: space-between; display: flex; align-items: center; margin-bottom: 24px;">
+    <div class="section-header as-class-settings-2">
         <div class="header-title-container">
             <h1 class="header-title">Classifieds Settings</h1>
         </div>
@@ -340,8 +16,8 @@
         <div class="col-12">
             <!-- Ad Categories Card -->
             <div class="settings-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px;">
-                    <span style="font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: #0f172a;">Ad Categories</span>
+                <div class="as-class-settings-3">
+                    <span class="as-class-settings-4">Ad Categories</span>
                     <button type="button" class="btn-add-category" id="btnAddCategory">
                         <i class="bi bi-plus"></i> Add Category
                     </button>
@@ -362,7 +38,7 @@
                 </div>
                 
                 <!-- Pagination Links -->
-                <div style="margin-top: 15px; display: flex; justify-content: center;">
+                <div class="as-class-settings-5">
                     {!! $categories->appends(request()->query())->links('pagination::bootstrap-4') !!}
                 </div>
             </div>
@@ -373,8 +49,8 @@
         <div class="col-12">
             <!-- Pricing & Rates Card -->
             <div class="settings-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px;">
-                    <span style="font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: #0f172a;">Pricing & Rates</span>
+                <div class="as-class-settings-3">
+                    <span class="as-class-settings-4">Pricing & Rates</span>
                     <button type="button" class="btn-add-pricing" id="btnAddPricing">
                         <i class="bi bi-plus"></i> Add Pricing & Rates
                     </button>
@@ -405,7 +81,7 @@
                 </div>
 
                 <!-- Rates Pagination Links -->
-                <div style="margin-top: 15px; display: flex; justify-content: center;">
+                <div class="as-class-settings-5">
                     {!! $rates->appends(request()->query())->links('pagination::bootstrap-4') !!}
                 </div>
             </div>
@@ -438,11 +114,11 @@
             <div class="cat-modal-footer">
                 <div>
                     <!-- Only show for editing -->
-                    <button type="button" class="btn-cat-delete" id="btnModalDelete" style="display: none;">Delete Category</button>
+                    <button type="button" class="btn-cat-delete as-class-settings-6" id="btnModalDelete">Delete Category</button>
                 </div>
-                <div style="display: flex; gap: 10px;">
+                <div class="as-class-settings-7">
                     <button type="button" class="btn-cat-grey" id="btnModalCancel">Cancel</button>
-                    <button type="button" class="btn-save-settings" id="btnModalSave" style="margin-top: 0; padding: 8px 20px;">Save</button>
+                    <button type="button" class="btn-save-settings as-class-settings-8" id="btnModalSave">Save</button>
                 </div>
             </div>
         </div>
@@ -485,31 +161,31 @@
             <div class="cat-modal-footer">
                 <div>
                     <!-- Only show for editing -->
-                    <button type="button" class="btn-cat-delete" id="btnPriceModalDelete" style="display: none;">Delete Rate</button>
+                    <button type="button" class="btn-cat-delete as-class-settings-6" id="btnPriceModalDelete">Delete Rate</button>
                 </div>
-                <div style="display: flex; gap: 10px;">
+                <div class="as-class-settings-7">
                     <button type="button" class="btn-cat-grey" id="btnPriceModalCancel">Cancel</button>
-                    <button type="button" class="btn-save-settings" id="btnPriceModalSave" style="margin-top: 0; padding: 8px 20px;">Save</button>
+                    <button type="button" class="btn-save-settings as-class-settings-8" id="btnPriceModalSave">Save</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Custom Delete Confirmation Modal Overlay -->
-    <div class="cat-modal-overlay" id="confirmModalOverlay" style="z-index: 2100;">
-        <div class="cat-modal" style="max-width: 400px;">
+    <div class="cat-modal-overlay as-class-settings-9" id="confirmModalOverlay">
+        <div class="cat-modal as-class-settings-10">
             <div class="cat-modal-header">
                 <span class="cat-modal-title">Delete Category</span>
                 <button type="button" class="cat-modal-close" id="btnConfirmClose">&times;</button>
             </div>
             
-            <div class="cat-modal-body" style="padding: 20px 24px;">
-                <p style="font-size: 14px; color: #475569; margin: 0;">Are you sure you want to delete this category?</p>
+            <div class="cat-modal-body as-class-settings-11">
+                <p class="as-class-settings-12">Are you sure you want to delete this category?</p>
             </div>
             
-            <div class="cat-modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+            <div class="cat-modal-footer as-class-settings-13">
                 <button type="button" class="btn-cat-grey" id="btnConfirmCancel">Cancel</button>
-                <button type="button" class="btn-save-settings" id="btnConfirmYes" style="margin-top: 0; padding: 8px 20px; background-color: #d32f2f;">Delete</button>
+                <button type="button" class="btn-save-settings as-class-settings-14" id="btnConfirmYes">Delete</button>
             </div>
         </div>
     </div>
@@ -522,7 +198,7 @@
             const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
             const bg = type === 'success' ? '#10b981' : '#ef4444';
             const toastHtml = `
-                <div class="custom-toast" style="background: ${bg}; color: #ffffff; padding: 14px 20px; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 10px; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; min-width: 280px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s; opacity: 0; pointer-events: auto; margin-bottom: 8px;">
+                <div class="custom-toast as-class-settings-15" style="background: ${bg}">
                     <i class="bi ${icon}"></i>
                     <span>${message}</span>
                 </div>

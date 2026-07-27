@@ -532,19 +532,7 @@ trait CreatesUser {
 
             // Generate Dynamic Product Name and ID for the base subscription
             $hasPrint = count($bookAddresses) > 0;
-            $formatString = $hasPrint ? 'Online Access & Print' : 'Online Access Only';
-            
-            if ($frequency === config('subscriptions.duration_one_year')) {
-                $years = config('subscriptions.duration_one_year') / 12;
-                $label = $years >= 1 ? ($years . "-Year") : (config('subscriptions.duration_one_year') . "-Month");
-                $productName = "CTB Online " . $label . " Subscription ($formatString)";
-            } elseif ($frequency === config('subscriptions.duration_two_year')) {
-                $years = config('subscriptions.duration_two_year') / 12;
-                $label = $years >= 1 ? ($years . "-Year") : (config('subscriptions.duration_two_year') . "-Month");
-                $productName = "CTB Online " . $label . " Subscription ($formatString)";
-            } else {
-                $productName = "CTB Online Trial Subscription";
-            }
+            $productName = \App\Subscription::determineProductName($frequency, $hasPrint);
 
             $productId = 'prod_' . md5($productName);
 

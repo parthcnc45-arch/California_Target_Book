@@ -125,4 +125,25 @@ class Subscription extends Model
         return $addon;
     }
 
+    public function getProductName() {
+        $hasPrint = $this->book_subscriptions()->count() > 0;
+        return self::determineProductName((int)$this->frequency, $hasPrint);
+    }
+
+    public static function determineProductName($frequency, $hasPrint) {
+        if ($frequency === (int)config('subscriptions.duration_one_year')) {
+            return $hasPrint 
+                ? config('subscriptions.names.one_year_print') 
+                : config('subscriptions.names.one_year_online');
+        } elseif ($frequency === (int)config('subscriptions.duration_two_year')) {
+            return $hasPrint 
+                ? config('subscriptions.names.two_year_print') 
+                : config('subscriptions.names.two_year_online');
+        } elseif ($frequency === 0) {
+            return config('subscriptions.names.trial');
+        } else {
+            return "CTB Online Subscription (" . $frequency . " Months)";
+        }
+    }
+
 }

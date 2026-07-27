@@ -52,7 +52,7 @@
             <!-- One-Year Plan -->
             <div class="plan-card">
                 <div class="plan-header">
-                    <h3 class="plan-title">One-Year Subscription</h3>
+                    <h3 class="plan-title">{{ config('subscriptions.names.display_one_year') }}</h3>
                 </div>
                 
                 <div class="plan-price-section">
@@ -92,7 +92,7 @@
             <div class="plan-card best-value-card">
                 <div class="plan-header">
                     <span class="plan-tag best-value">Best Value</span>
-                    <h3 class="plan-title">Two-Year Subscription</h3>
+                    <h3 class="plan-title">{{ config('subscriptions.names.display_two_year') }}</h3>
                 </div>
                 
                 <div class="plan-price-section">

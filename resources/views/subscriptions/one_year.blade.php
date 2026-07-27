@@ -1,6 +1,6 @@
 @extends('layouts.master_headless')
 
-@section('title', 'California Target Book One-Year Subscription')
+@section('title', config('app.name', 'California Target Book') . ' ' . config('subscriptions.names.display_one_year'))
 
 @section('body_class', 'checkout-body landing-body')
 
@@ -17,7 +17,7 @@
     @include('layouts.navbar')
 
 <div class="checkout-header">
-    <h1>California Target Book One-Year Subscription</h1>
+    <h1>{{ config('app.name', 'California Target Book') }} {{ config('subscriptions.names.display_one_year') }}</h1>
     <p>Get online access, Hot Sheets email alerts, and optional printed editions delivered to your door.</p>
     <div class="header-badges">
         <div class="badge-item"><i class="bi bi-shield-check"></i> Secure checkout</div>
@@ -226,7 +226,7 @@
             <div class="summary-items">
                 <div class="summary-item">
                     <div>
-                        <div class="summary-item-title">{{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . "-Year" : config('subscriptions.duration_one_year') . "-Month" }} Subscription</div>
+                        <div class="summary-item-title">{{ config('subscriptions.names.display_one_year') }}</div>
                         <div class="summary-item-desc" id="summary-format-text">Online Access Only — {{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . " Year" : config('subscriptions.duration_one_year') . " Month" }}</div>
                     </div>
                     <div class="summary-item-price" id="summary-base-price">${{ number_format(config('subscriptions.one_year_online')) }}</div>
@@ -265,7 +265,7 @@
     </div>
     <h2 class="success-title">Subscription Request Submitted!</h2>
     <p class="success-text">
-        Thank you, <span id="success-first-name">Subscriber</span>. We've received your {{ config('subscriptions.duration_one_year') >= 12 ? (config('subscriptions.duration_one_year') / 12) . "-Year" : config('subscriptions.duration_one_year') . "-Month" }} Subscription request. You'll receive a confirmation email at <strong id="success-email">your email</strong> shortly.
+        Thank you, <span id="success-first-name">Subscriber</span>. We've received your {{ config('subscriptions.names.display_one_year') }} request. You'll receive a confirmation email at <strong id="success-email">your email</strong> shortly.
     </p>
     <a href="{{ route('home') }}" class="btn-home">Return to Home</a>
 </div>

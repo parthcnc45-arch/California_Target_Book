@@ -26,21 +26,7 @@ class SubscriptionOverviewResource extends JsonResource
         $hasPrint = $this->book_subscriptions()
             ->whereIn('item_name', ['California Target Book', '-'])
             ->count() > 0;
-        $formatString = $hasPrint ? 'Online Access & Print' : 'Online Access Only';
-        
-        if ((int)$this->frequency === config('subscriptions.duration_one_year')) {
-            $years = config('subscriptions.duration_one_year') / 12;
-            $label = $years >= 1 ? ($years . "-Year") : (config('subscriptions.duration_one_year') . "-Month");
-            $productName = "CTB Online " . $label . " Subscription ($formatString)";
-        } elseif ((int)$this->frequency === config('subscriptions.duration_two_year')) {
-            $years = config('subscriptions.duration_two_year') / 12;
-            $label = $years >= 1 ? ($years . "-Year") : (config('subscriptions.duration_two_year') . "-Month");
-            $productName = "CTB Online " . $label . " Subscription ($formatString)";
-        } elseif ((int)$this->frequency === 0) {
-            $productName = "CTB Online Trial Subscription";
-        } else {
-            $productName = "CTB Online Subscription (" . $this->frequency . " Months)";
-        }
+        $productName = \App\Subscription::determineProductName((int)$this->frequency, $hasPrint);
 
         return [
             'id' => $this->id,

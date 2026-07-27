@@ -1108,6 +1108,17 @@ class AccountController extends Controller
             return response()->json(['success' => false, 'message' => 'Addon user not found in this subscription.'], 404);
         }
 
+        // Check if user is the owner
+        if (strtolower($email) === strtolower($user->email)) {
+            return response()->json(['success' => false, 'message' => 'This email belongs to the subscription owner.'], 400);
+        }
+
+        // Check if user is already an addon on this subscription
+        $isAlreadyAddon = $sub->addons()->where('email', $email)->where('users.id', '!=', $addonId)->exists();
+        if ($isAlreadyAddon) {
+            return response()->json(['success' => false, 'message' => 'This user is already a member of your subscription.'], 400);
+        }
+
         // Parse Name into first_name and last_name
         $parts = explode(' ', trim($name ?? ''), 2);
         $firstName = $parts[0] ?? '';

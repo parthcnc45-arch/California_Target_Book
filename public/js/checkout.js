@@ -307,14 +307,6 @@ $(document).ready(function () {
             $('#addon-deck-qty').val(bookQty);
         }
 
-        $('input[name="deck_types[]"]').each(function() {
-            let msg = $(this).closest('.deck-radio-label').find('.deck-confirmation-msg');
-            if ($(this).is(':checked')) {
-                msg.show();
-            } else {
-                msg.hide();
-            }
-        });
 
         parseSelectedAddons();
         updateSummary();
@@ -585,7 +577,6 @@ $(document).ready(function () {
     $('input[name="deck_types[]"]').each(function() {
         if ($(this).is(':checked')) {
             $(this).closest('.deck-radio-label').addClass('selected');
-            $(this).closest('.deck-radio-label').find('.deck-confirmation-msg').show();
             let hasBook = $(this).val() === '300_book';
             if (hasBook) {
                 $('#deck-qty-wrapper').css('display', 'flex');

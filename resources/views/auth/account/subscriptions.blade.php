@@ -429,9 +429,12 @@
             var isValid = true;
             var errorMsg = '';
             var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+            var ownerEmail = '{{ strtolower(Auth::user()->email) }}';
+            var existingAddons = {!! json_encode($sub['addons']->pluck('email')->map(function($e) { return strtolower($e); })->toArray()) !!};
             
             $('.dynamic-invite-email').each(function() {
                 var email = $.trim($(this).val());
+                var emailLower = email.toLowerCase();
                 if (!email) {
                     isValid = false;
                     errorMsg = 'Please fill in all email fields.';
@@ -442,12 +445,22 @@
                     errorMsg = 'Please enter valid email addresses.';
                     return false; // break loop
                 }
-                if (emails.includes(email)) {
+                if (emailLower === ownerEmail) {
+                    isValid = false;
+                    errorMsg = 'You cannot assign a seat to yourself (the subscription owner).';
+                    return false; // break loop
+                }
+                if (existingAddons.includes(emailLower)) {
+                    isValid = false;
+                    errorMsg = 'Email "' + email + '" is already a member of this subscription.';
+                    return false; // break loop
+                }
+                if (emails.includes(emailLower)) {
                     isValid = false;
                     errorMsg = 'Duplicate emails found. Each seat must have a unique email.';
                     return false; // break loop
                 }
-                emails.push(email);
+                emails.push(emailLower);
             });
             
             if (!isValid) {

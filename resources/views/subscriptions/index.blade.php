@@ -57,7 +57,7 @@
                 
                 <div class="plan-price-section">
                     <span style="font-size: 14px; font-weight: 600; color: #64748b; margin-right: 4px;">from</span>
-                    <span class="price-amount">$1,200</span>
+                    <span class="price-amount">${{ number_format(config('subscriptions.one_year_online')) }}</span>
                     <span class="price-suffix">/ year</span>
                 </div>
                 
@@ -97,7 +97,7 @@
                 
                 <div class="plan-price-section">
                     <span style="font-size: 14px; font-weight: 600; color: #64748b; margin-right: 4px;">from</span>
-                    <span class="price-amount">$2,200</span>
+                    <span class="price-amount">${{ number_format(config('subscriptions.two_year_online')) }}</span>
                     <span class="price-suffix">/ 2 years</span>
                 </div>
                 

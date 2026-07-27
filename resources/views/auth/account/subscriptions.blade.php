@@ -268,7 +268,7 @@
                     </div>
                     <div class="modal-body modal-body-mt-16">
                         <p class="text-muted-135-mb-16" style="margin-bottom: 16px; font-size: 13.5px; color: #64748b;">
-                            Add more seats at $100/seat/year.
+                            Add more seats at ${{ number_format(config('subscriptions.additional_seat')) }}/seat/year.
                         </p>
                         
                         <div class="flex-col-gap-16-align-start" style="display: flex; flex-direction: column; gap: 16px;">
@@ -277,7 +277,7 @@
                                 <div class="flex-center-gap-12" style="display: flex; align-items: center; gap: 12px;">
                                     <input type="number" id="purchase-seats-input" min="1" max="50" value="1" class="input-number-seats form-input" style="width: 80px;">
                                     <span class="text-muted-135-fw-500" style="color: #64748b; font-size: 13.5px; font-weight: 500;">
-                                        = <strong class="text-dark-bold" style="color: #0f172a; font-weight: 700;">$<span id="purchase-total-price">100</span></strong>/year
+                                        = <strong class="text-dark-bold" style="color: #0f172a; font-weight: 700;">$<span id="purchase-total-price">{{ config('subscriptions.additional_seat') }}</span></strong>/year
                                     </span>
                                 </div>
                             </div>
@@ -313,7 +313,7 @@
                             Cancel
                         </button>
                         <button type="submit" class="btn-purchase-submit btn-modal-primary" id="btn-purchase-submit-confirm" style="padding: 8px 16px; background: #0f172a; color: white; border: none; border-radius: 6px; font-weight: 500;">
-                            <i class="bi bi-person-plus"></i> Pay $<span id="modal-seats-pay-btn-amount">100</span>
+                            <i class="bi bi-person-plus"></i> Pay $<span id="modal-seats-pay-btn-amount">{{ config('subscriptions.additional_seat') }}</span>
                         </button>
                     </div>
                 </form>
@@ -406,7 +406,7 @@
                 $(this).val(50);
             }
             
-            var price = count * 100;
+            var price = count * {{ config('subscriptions.additional_seat') }};
             $('#purchase-total-price').text(price);
             $('#modal-seats-pay-btn-amount').text(price);
             

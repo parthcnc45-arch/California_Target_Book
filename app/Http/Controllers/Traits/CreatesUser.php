@@ -355,10 +355,10 @@ trait CreatesUser {
         $hasPrint = count($data['book_addresses'] ?? []) > 0;
         
         if ($subscription->frequency === 12) {
-            $base_cost = $hasPrint ? (1500 * Globals::STRIPE_MULTIPLIER) : Globals::SUBSCRIPTION_COST_1YR;
+            $base_cost = $hasPrint ? (config('subscriptions.one_year_print') * Globals::STRIPE_MULTIPLIER) : (config('subscriptions.one_year_online') * Globals::STRIPE_MULTIPLIER);
             $subTitle = "12 Month";
         } else {
-            $base_cost = $hasPrint ? (2800 * Globals::STRIPE_MULTIPLIER) : Globals::SUBSCRIPTION_COST_2YR;
+            $base_cost = $hasPrint ? (config('subscriptions.two_year_print') * Globals::STRIPE_MULTIPLIER) : (config('subscriptions.two_year_online') * Globals::STRIPE_MULTIPLIER);
             $subTitle = "24 Month";
         }
     }
@@ -448,7 +448,7 @@ trait CreatesUser {
     if (is_numeric($data['addon_cost']??[])) {
         $addon_cost = $data['addon_cost'];
     } else {
-        $addon_cost = Globals::ADDON_COST;
+        $addon_cost = config('subscriptions.additional_seat') * Globals::STRIPE_MULTIPLIER;
     }
     if ($cycle->payment_method !== 'stripe') {
         $addons->each(function ($addon) use ($baseUser, $subscription, $subTitle, $addon_cost) {
@@ -497,21 +497,21 @@ trait CreatesUser {
                     $deck_qty = 1;
                 }
                 foreach ($deck_types as $type) {
-                    if ($type == '1000') {
+                    if ($type == config('subscriptions.deck_only')) {
                         $baseUser->addInvoiceItem([
-                            'unit_amount_decimal' => '100000', // $1,000 in cents
+                            'unit_amount_decimal' => (string) (config('subscriptions.deck_only') * 100),
                             'quantity' => 1,
                             'description' => "Post-Election Deck Only (Subscriber)",
                         ]);
-                    } elseif ($type == '200_presentation') {
+                    } elseif ($type == config('subscriptions.deck_presentation') . '_presentation') {
                         $baseUser->addInvoiceItem([
-                            'unit_amount_decimal' => '20000', // $200 in cents
+                            'unit_amount_decimal' => (string) (config('subscriptions.deck_presentation') * 100),
                             'quantity' => 1,
                             'description' => "Post-Election Presentation (Subscriber)",
                         ]);
-                    } elseif ($type == '300_book') {
+                    } elseif ($type == config('subscriptions.additional_printed_book') . '_book') {
                         $baseUser->addInvoiceItem([
-                            'unit_amount_decimal' => '30000', // $300 in cents
+                            'unit_amount_decimal' => (string) (config('subscriptions.additional_printed_book') * 100),
                             'quantity' => $deck_qty,
                             'description' => "Additional Printed Book (Subscriber)",
                         ]);
@@ -610,7 +610,7 @@ trait CreatesUser {
                         \Illuminate\Support\Facades\Cache::forever("stripe_plan_{$addonPlanId}", true);
                     } catch (\Exception $e) {
                         try {
-                            $addonPlanAmount = ($frequency === 24) ? 20000 : 10000; // $200 for 2-yr, $100 for 1-yr
+                            $addonPlanAmount = ($frequency === 24) ? (config('subscriptions.additional_seat') * 2 * 100) : (config('subscriptions.additional_seat') * 100); // $200 for 2-yr, $100 for 1-yr
                             \Stripe\Plan::create([
                                 'id' => $addonPlanId,
                                 'amount' => $addonPlanAmount,
@@ -786,21 +786,21 @@ trait CreatesUser {
             $deck_types = $data['deck_types'] ?? [];
             if (!empty($deck_types) && is_array($deck_types)) {
                 foreach ($deck_types as $type) {
-                    if ($type == '1000') {
+                    if ($type == config('subscriptions.deck_only')) {
                         \App\DigitalAddonOrder::create([
                             'user_id' => $baseUser->id,
                             'transaction_id' => $txObj ? $txObj->id : null,
                             'item_name' => 'Post-Election Deck Only (Subscriber)',
-                            'amount' => 100000,
+                            'amount' => config('subscriptions.deck_only') * 100,
                             'payment_status' => 'Paid',
                             'delivery_status' => 'Sent',
                         ]);
-                    } elseif ($type == '200_presentation') {
+                    } elseif ($type == config('subscriptions.deck_presentation') . '_presentation') {
                         \App\DigitalAddonOrder::create([
                             'user_id' => $baseUser->id,
                             'transaction_id' => $txObj ? $txObj->id : null,
                             'item_name' => 'Post-Election Presentation (Subscriber)',
-                            'amount' => 20000,
+                            'amount' => config('subscriptions.deck_presentation') * 100,
                             'payment_status' => 'Paid',
                             'delivery_status' => 'Sent',
                         ]);
@@ -1220,4 +1220,4 @@ trait CreatesUser {
   }
 
 }
-//  23/07/2026
+//  27/07/2026

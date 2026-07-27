@@ -193,10 +193,10 @@ class AccountController extends Controller
         
         if ($addonType === 'presentation') {
             $data['addonTitle'] = 'Post-Election Deck Presentation';
-            $data['addonPrice'] = 200;
+            $data['addonPrice'] = config('subscriptions.deck_presentation');
         } else {
             $data['addonTitle'] = 'Post-Election Deck';
-            $data['addonPrice'] = 1000;
+            $data['addonPrice'] = config('subscriptions.deck_only');
         }
         $data['addonType'] = $addonType;
 
@@ -682,9 +682,9 @@ class AccountController extends Controller
         ]);
 
         if ($sub->frequency === 12) {
-            $base_cost = Globals::SUBSCRIPTION_COST_1YR;
+            $base_cost = config('subscriptions.one_year_online') * Globals::STRIPE_MULTIPLIER;
         } else {
-            $base_cost = Globals::SUBSCRIPTION_COST_2YR;
+            $base_cost = config('subscriptions.two_year_online') * Globals::STRIPE_MULTIPLIER;
         }
 
         $subLength = $data['subscription_length'];
@@ -751,7 +751,7 @@ class AccountController extends Controller
             });
 
         $addons = $sub->addons()->get();
-        $addon_cost = Globals::ADDON_COST;
+        $addon_cost = config('subscriptions.additional_seat') * Globals::STRIPE_MULTIPLIER;
         $addons->each(function ($addon) use (&$user, &$sub, $subLength, $addon_cost) {
             $user->addInvoiceItem([
                 'amount' => $addon_cost,
@@ -1182,7 +1182,7 @@ class AccountController extends Controller
 
         $seats = (int) $request->input('seats');
         $stripe_token = $request->input('stripe_token');
-        $amount = $seats * 100 * 100; // $100 per seat in cents
+        $amount = $seats * config('subscriptions.additional_seat') * 100; // per seat in cents
 
         try {
             $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));

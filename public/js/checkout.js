@@ -33,7 +33,7 @@ $(document).ready(function () {
     let isPrint = false;
     let hasUserAddon = false;
     let userQty = 1;
-    let userPrice = 100;
+    let userPrice = config.userPrice !== undefined ? config.userPrice : 100;
     let hasDeckAddons = false;
     let isDeckVerified = $('.deck-verification-row').is(':visible') ? false : true;
     let bookQty = 1;
@@ -78,7 +78,7 @@ $(document).ready(function () {
         let hasAnyAddon = false;
         selectedAddons.forEach(function (addon) {
             hasAnyAddon = true;
-            let qty = addon.id === '300_book' ? bookQty : 1;
+            let qty = addon.id.endsWith('_book') ? bookQty : 1;
             let addonTotal = qty * addon.price;
             total += addonTotal;
 
@@ -156,7 +156,7 @@ $(document).ready(function () {
 
         let AddressBlockClass = Vue.extend(Vue.component('ctb-address-block'));
 
-        let hasBook = selectedAddons.some(a => a.id === '300_book');
+        let hasBook = selectedAddons.some(a => a.id.endsWith('_book'));
         if (hasBook) {
             if (bookQty > 1) {
                 let checkboxDiv = $(`
@@ -296,7 +296,7 @@ $(document).ready(function () {
             $(this).closest('.deck-radio-label').removeClass('selected');
         }
 
-        let hasBook = $('input[name="deck_types[]"][value="300_book"]').is(':checked');
+        let hasBook = $('#check-printed-book').is(':checked');
         if (hasBook) {
             $('#deck-qty-wrapper').css('display', 'flex');
             $('#deck-shipping-addresses-container').show();
@@ -447,7 +447,7 @@ $(document).ready(function () {
                 }
 
                 let deckAddresses = [];
-                let hasBookToShip = selectedAddons.some(a => a.id === '300_book');
+                let hasBookToShip = selectedAddons.some(a => a.id.endsWith('_book'));
                 if (hasBookToShip) {
                     for (let i = 0; i < bookQty; i++) {
                         let targetIndex = (bookQty > 1 && shipToSameAddress) ? 0 : i;
@@ -577,7 +577,7 @@ $(document).ready(function () {
     $('input[name="deck_types[]"]').each(function() {
         if ($(this).is(':checked')) {
             $(this).closest('.deck-radio-label').addClass('selected');
-            let hasBook = $(this).val() === '300_book';
+            let hasBook = $(this).val().endsWith('_book');
             if (hasBook) {
                 $('#deck-qty-wrapper').css('display', 'flex');
                 $('#label-printed-book .addon-price-span').hide();

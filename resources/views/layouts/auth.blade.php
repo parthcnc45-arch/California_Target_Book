@@ -48,11 +48,11 @@
                 ENV: "{{ env('APP_ENV') }}",
                 RELEASE: "{{ config('sentry.release') }}",
 
-                SUBSCRIPTION_COST_1YR: {{Globals::SUBSCRIPTION_COST_1YR / 100}},
-                SUBSCRIPTION_COST_2YR: {{Globals::SUBSCRIPTION_COST_2YR / 100}},
-                ADDON_COST_1YR: {{Globals::ADDON_COST / 100}},
-                ADDON_COST_2YR: {{Globals::ADDON_COST / 100}},
-                BOOK_COST: {{Globals::BOOK_COST / 100}},
+                SUBSCRIPTION_COST_1YR: {{ config('subscriptions.one_year_online') }},
+                SUBSCRIPTION_COST_2YR: {{ config('subscriptions.two_year_online') }},
+                ADDON_COST_1YR: {{ config('subscriptions.additional_seat') }},
+                ADDON_COST_2YR: {{ config('subscriptions.additional_seat') }},
+                BOOK_COST: {{ config('subscriptions.additional_seat') }},
 
                 getBookCountForSubscription: function (yrCount) {
                     var yr = (new Date()).getFullYear();

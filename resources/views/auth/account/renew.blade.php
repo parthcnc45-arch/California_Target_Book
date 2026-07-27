@@ -161,7 +161,7 @@
                                     <div class="col-md-12">
                                         <h4 class="upper text-red">Addons</h4>
                                         <p class="sub">
-                                            Add on accounts for $100/year. Add their emails below and we will send them
+                                            Add on accounts for ${{ number_format(config('subscriptions.additional_seat')) }}/year. Add their emails below and we will send them
                                             an invitation to register under this account.
                                         </p>
 

@@ -30,7 +30,7 @@
     <div class="checkout-main">
         <div class="price-header">
             <div>
-                <span class="price-amount">$2,200</span>
+                <span class="price-amount">${{ number_format(config('subscriptions.two_year_online')) }}</span>
                 <span class="price-period">/ 2 years</span>
             </div>
             <div class="price-meta">
@@ -143,9 +143,9 @@
                 <div class="deck-options" style="display: flex; margin-top: 0;">
 
                     <label class="deck-radio-label">
-                        <input type="checkbox" name="deck_types[]" value="1000" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
+                        <input type="checkbox" name="deck_types[]" value="{{ config('subscriptions.deck_only') }}" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
                         <div class="deck-radio-content">
-                            <div class="deck-radio-title">Post-Election Deck Only <span>$1,000</span></div>
+                            <div class="deck-radio-title">Post-Election Deck Only <span>${{ number_format(config('subscriptions.deck_only')) }}</span></div>
                             <div class="deck-radio-desc" style="margin-top: 5px;">The full post-election data deck, delivered as a digital file to your account email.<br><br>
                             <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #e0f2fe; color: #0284c7; margin-right: 5px;">DIGITAL FILE</span>
                             <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
@@ -153,9 +153,9 @@
                     </label>
                     
                     <label class="deck-radio-label">
-                        <input type="checkbox" name="deck_types[]" value="200_presentation" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
+                        <input type="checkbox" name="deck_types[]" value="{{ config('subscriptions.deck_presentation') }}_presentation" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
                         <div class="deck-radio-content">
-                            <div class="deck-radio-title">Post-Election Presentation <span>$200</span></div>
+                            <div class="deck-radio-title">Post-Election Presentation <span>${{ number_format(config('subscriptions.deck_presentation')) }}</span></div>
                             <div class="deck-radio-desc" style="margin-top: 5px;">The presentation companion to the deck, delivered as a digital file to your account email.<br><br>
                             <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #e0f2fe; color: #0284c7; margin-right: 5px;">DIGITAL FILE</span>
                             <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
@@ -164,9 +164,9 @@
 
                     <div class="deck-radio-label" id="wrapper-printed-book" style="display: block; cursor: default;">
                         <label id="label-printed-book" style="display: flex; align-items: flex-start; gap: 16px; cursor: pointer; width: 100%; margin: 0;">
-                            <input type="checkbox" name="deck_types[]" value="300_book" class="custom-addon-check" id="check-printed-book" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
+                            <input type="checkbox" name="deck_types[]" value="{{ config('subscriptions.additional_printed_book') }}_book" class="custom-addon-check" id="check-printed-book" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
                             <div class="deck-radio-content" style="flex: 1;">
-                                <div class="deck-radio-title">Additional Printed Book <span>$300</span></div>
+                                <div class="deck-radio-title">Additional Printed Book <span>${{ number_format(config('subscriptions.additional_printed_book')) }}</span></div>
                                 <div class="deck-radio-desc" style="margin-top: 5px; font-size: 13px; color: #475569;">A printed edition mailed to a physical address &mdash; 3 printed editions across the year, one per mailing.<br><br>
                                 <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fee2e2; color: #dc2626; margin-right: 5px;">PHYSICAL + MAILED</span>
                                 <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
@@ -230,7 +230,7 @@
                         <div class="summary-item-title">Two-Year Subscription</div>
                         <div class="summary-item-desc" id="summary-format-text">Two-Year Online Only — 2 Years</div>
                     </div>
-                    <div class="summary-item-price" id="summary-base-price">$2,200</div>
+                    <div class="summary-item-price" id="summary-base-price">${{ number_format(config('subscriptions.two_year_online')) }}</div>
                 </div>
 
                 <div class="summary-item" id="summary-addon-user" style="display: none;">
@@ -238,7 +238,7 @@
                         <div class="summary-item-title">Additional Online User <span id="summary-user-qty">x 1</span></div>
                         <div class="summary-item-desc">Billed annually per user</div>
                     </div>
-                    <div class="summary-item-price" id="summary-user-price">$100</div>
+                    <div class="summary-item-price" id="summary-user-price">${{ number_format(config('subscriptions.additional_seat')) }}</div>
                 </div>
 
                 <div id="summary-addon-deck" style="display: none;">
@@ -281,11 +281,12 @@
         stripeKey: '{{ config('app.STRIPE_PUB_KEY') ?: 'pk_test_TYooMQauvdEDq54NiTphI7jx' }}',
         registerUrl: '{{ route('register') }}',
         registerEmailsUrl: '/register-emails',
-        basePriceOnline: 2200,
-        basePricePrint: 2800,
+        basePriceOnline: {{ config('subscriptions.two_year_online') }},
+        basePricePrint: {{ config('subscriptions.two_year_print') }},
         subscriptionLength: 24,
         formatTextOnline: 'Two-Year Online Only — 2 Years',
-        formatTextPrint: 'Two-Year Online & Print — 2 Years'
+        formatTextPrint: 'Two-Year Online & Print — 2 Years',
+        userPrice: {{ config('subscriptions.additional_seat') }}
     };
 </script>
 <script src="/js/checkout.js"></script>

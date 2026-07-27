@@ -124,7 +124,7 @@
                         </div>
                         <div>
                             <div class="addon-item-price-row">
-                                <span class="addon-item-price">$1,000</span>
+                                <span class="addon-item-price">${{ number_format(config('subscriptions.deck_only')) }}</span>
                             </div>
                             <a href="{{ route('auth.account.addon_checkout', ['addon' => 'deck']) }}" class="btn-addon-add" style="text-decoration: none;">
                                 <i class="bi bi-plus-lg"></i> Add
@@ -143,7 +143,7 @@
                         </div>
                         <div>
                             <div class="addon-item-price-row">
-                                <span class="addon-item-price">$200</span>
+                                <span class="addon-item-price">${{ number_format(config('subscriptions.deck_presentation')) }}</span>
                             </div>
                             <a href="{{ route('auth.account.addon_checkout', ['addon' => 'presentation']) }}" class="btn-addon-add" style="text-decoration: none;">
                                 <i class="bi bi-plus-lg"></i> Add

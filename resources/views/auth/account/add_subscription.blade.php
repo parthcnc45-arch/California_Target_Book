@@ -18,7 +18,7 @@
             <div class="sub-option-card">
                 <h2 class="sub-option-title">One-Year Subscription</h2>
                 <div class="sub-option-price-container">
-                    <span class="sub-option-price">$1,200</span>
+                    <span class="sub-option-price">${{ number_format(config('subscriptions.one_year_online')) }}</span>
                     <span class="sub-option-price-period">/ 1 year</span>
                 </div>
                 <p class="sub-option-description">
@@ -55,15 +55,15 @@
                     <div class="addons-list">
                         <div class="addon-item">
                             <span>Additional Online User</span>
-                            <span>$100/year</span>
+                            <span>${{ number_format(config('subscriptions.additional_seat')) }}/year</span>
                         </div>
                         <div class="addon-item">
                             <span>Post-Election Deck Only (Subscriber)</span>
-                            <span>$1000</span>
+                            <span>${{ number_format(config('subscriptions.deck_only')) }}</span>
                         </div>
                         <div class="addon-item">
                             <span>Post-Election Deck + Presentation (Subscriber)</span>
-                            <span>$200</span>
+                            <span>${{ number_format(config('subscriptions.deck_presentation')) }}</span>
                         </div>
                     </div>
                     <p class="addons-footer-text">Add-ons can be configured during checkout.</p>
@@ -74,7 +74,7 @@
             <div class="sub-option-card">
                 <h2 class="sub-option-title">Two-Year Subscription</h2>
                 <div class="sub-option-price-container">
-                    <span class="sub-option-price">$2,200</span>
+                    <span class="sub-option-price">${{ number_format(config('subscriptions.two_year_online')) }}</span>
                     <span class="sub-option-price-period">/ 2 years</span>
                 </div>
                 <p class="sub-option-description">
@@ -111,15 +111,15 @@
                     <div class="addons-list">
                         <div class="addon-item">
                             <span>Additional Online User</span>
-                            <span>$100/year</span>
+                            <span>${{ number_format(config('subscriptions.additional_seat')) }}/year</span>
                         </div>
                         <div class="addon-item">
                             <span>Post-Election Deck Only (Subscriber)</span>
-                            <span>$1000</span>
+                            <span>${{ number_format(config('subscriptions.deck_only')) }}</span>
                         </div>
                         <div class="addon-item">
                             <span>Post-Election Deck + Presentation (Subscriber)</span>
-                            <span>$200</span>
+                            <span>${{ number_format(config('subscriptions.deck_presentation')) }}</span>
                         </div>
                     </div>
                     <p class="addons-footer-text">Add-ons can be configured during checkout.</p>

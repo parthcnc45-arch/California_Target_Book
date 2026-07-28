@@ -30,61 +30,9 @@
 <div class="checkout-container">
     <div class="checkout-main">
 
-
-        <h3 class="section-title">Select your package</h3>
-        <p class="section-subtitle">Choose the package that fits your needs.</p>
-
-        <div class="addon-card" id="addon-deck-card" style="padding: 0; border: none; background: transparent;">
-            <div class="deck-options" style="display: flex; margin-top: 0;">
-
-                <label class="deck-radio-label">
-                    <input type="checkbox" name="deck_types[]" value="{{ config('subscriptions.deck_only') }}" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;" checked>
-                    <div class="deck-radio-content">
-                        <div class="deck-radio-title">{{ config('subscriptions.names.deck_only', 'Post-Election Deck Only') }} <span>${{ number_format(config('subscriptions.deck_only')) }}</span></div>
-                        <div class="deck-radio-desc" style="margin-top: 5px;">The full post-election data deck, delivered as a digital file to your account email.<br><br>
-                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #e0f2fe; color: #0284c7; margin-right: 5px;">DIGITAL FILE</span>
-                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
-                    </div>
-                </label>
-                
-                <label class="deck-radio-label">
-                    <input type="checkbox" name="deck_types[]" value="{{ config('subscriptions.deck_presentation') }}_presentation" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
-                    <div class="deck-radio-content">
-                        <div class="deck-radio-title">{{ config('subscriptions.names.deck_presentation', 'Post-Election Presentation') }} <span>${{ number_format(config('subscriptions.deck_presentation')) }}</span></div>
-                        <div class="deck-radio-desc" style="margin-top: 5px;">The presentation companion to the deck, delivered as a digital file to your account email.<br><br>
-                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #e0f2fe; color: #0284c7; margin-right: 5px;">DIGITAL FILE</span>
-                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
-                    </div>
-                </label>
- 
-                <div class="deck-radio-label" id="wrapper-printed-book" style="display: block; cursor: default;">
-                    <label id="label-printed-book" style="display: flex; align-items: flex-start; gap: 16px; cursor: pointer; width: 100%; margin: 0;">
-                        <input type="checkbox" name="deck_types[]" value="{{ config('subscriptions.additional_printed_book') }}_book" class="custom-addon-check" id="check-printed-book" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
-                        <div class="deck-radio-content" style="flex: 1;">
-                            <div class="deck-radio-title">{{ config('subscriptions.names.additional_printed_book', 'Additional Printed Book') }} <span>${{ number_format(config('subscriptions.additional_printed_book')) }}</span></div>
-                            <div class="deck-radio-desc" style="margin-top: 5px; font-size: 13px; color: #475569;">A printed edition mailed to a physical address &mdash; 3 printed editions across the year, one per mailing.<br><br>
-                            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fee2e2; color: #dc2626; margin-right: 5px;">PHYSICAL + MAILED</span>
-                            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
-                        </div>
-                    </label>
-
-                    <div id="deck-qty-wrapper" style="display: none; justify-content: flex-end; align-items: center; margin-top: 15px; margin-bottom: 5px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
-                        <span style="font-weight: 600; font-size: 14px; color: #0d2a45; margin-right: 15px;">Number of Books:</span>
-                        <div class="qty-selector-inline" id="deck-qty-selector" style="display: flex;">
-                            <button type="button" class="qty-btn" id="deck-qty-minus"><i class="bi bi-dash"></i></button>
-                            <input type="text" class="qty-input" id="addon-deck-qty" name="deck_qty" value="1" readonly>
-                            <button type="button" class="qty-btn" id="deck-qty-plus"><i class="bi bi-plus"></i></button>
-                        </div>
-                    </div>
-
-                    <div id="deck-shipping-addresses-container" style="width: 100%; margin-top: 15px; display: none;"></div>
-                </div>
-            </div>
-        </div>
-
         <form id="payment-form">
 
-            <h3 class="section-title checkout-mt40">Account Information</h3>
+            <h3 class="section-title">Account Information</h3>
 
             <div class="form-row">
                 <div class="form-group">
@@ -128,6 +76,57 @@
             @endguest
             <div id="shipping-address-block" class="shipping-address-block">
                 <div id="shipping-addresses-container"></div>
+            </div>
+
+            <h3 class="section-title checkout-mt40">Select your package</h3>
+            <p class="section-subtitle">Choose the package that fits your needs.</p>
+
+            <div class="addon-card" id="addon-deck-card" style="padding: 0; border: none; background: transparent;">
+                <div class="deck-options" style="display: flex; margin-top: 0;">
+
+                    <label class="deck-radio-label">
+                        <input type="checkbox" name="deck_types[]" value="{{ config('subscriptions.deck_only') }}" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;" checked>
+                        <div class="deck-radio-content">
+                            <div class="deck-radio-title">{{ config('subscriptions.names.deck_only', 'Post-Election Deck Only') }} <span>${{ number_format(config('subscriptions.deck_only')) }}</span></div>
+                            <div class="deck-radio-desc" style="margin-top: 5px;">The full post-election data deck, delivered as a digital file to your account email.<br><br>
+                            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #e0f2fe; color: #0284c7; margin-right: 5px;">DIGITAL FILE</span>
+                            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
+                        </div>
+                    </label>
+                    
+                    <label class="deck-radio-label">
+                        <input type="checkbox" name="deck_types[]" value="{{ config('subscriptions.deck_presentation') }}_presentation" class="custom-addon-check" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
+                        <div class="deck-radio-content">
+                            <div class="deck-radio-title">{{ config('subscriptions.names.deck_presentation', 'Post-Election Presentation') }} <span>${{ number_format(config('subscriptions.deck_presentation')) }}</span></div>
+                            <div class="deck-radio-desc" style="margin-top: 5px;">The presentation companion to the deck, delivered as a digital file to your account email.<br><br>
+                            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #e0f2fe; color: #0284c7; margin-right: 5px;">DIGITAL FILE</span>
+                            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
+                        </div>
+                    </label>
+     
+                    <div class="deck-radio-label" id="wrapper-printed-book" style="display: block; cursor: default;">
+                        <label id="label-printed-book" style="display: flex; align-items: flex-start; gap: 16px; cursor: pointer; width: 100%; margin: 0;">
+                            <input type="checkbox" name="deck_types[]" value="{{ config('subscriptions.additional_printed_book') }}_book" class="custom-addon-check" id="check-printed-book" style="margin-top: 2px; width: 16px; height: 16px; accent-color: #c52026;">
+                            <div class="deck-radio-content" style="flex: 1;">
+                                <div class="deck-radio-title">{{ config('subscriptions.names.additional_printed_book', 'Additional Printed Book') }} <span>${{ number_format(config('subscriptions.additional_printed_book')) }}</span></div>
+                                <div class="deck-radio-desc" style="margin-top: 5px; font-size: 13px; color: #475569;">A printed edition mailed to a physical address &mdash; 3 printed editions across the year, one per mailing.<br><br>
+                                <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fee2e2; color: #dc2626; margin-right: 5px;">PHYSICAL + MAILED</span>
+                                <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #d97706;">ONE-TIME CHARGE</span></div>
+                            </div>
+                        </label>
+
+                        <div id="deck-qty-wrapper" style="display: none; justify-content: flex-end; align-items: center; margin-top: 15px; margin-bottom: 5px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                            <span style="font-weight: 600; font-size: 14px; color: #0d2a45; margin-right: 15px;">Number of Books:</span>
+                            <div class="qty-selector-inline" id="deck-qty-selector" style="display: flex;">
+                                <button type="button" class="qty-btn" id="deck-qty-minus"><i class="bi bi-dash"></i></button>
+                                <input type="text" class="qty-input" id="addon-deck-qty" name="deck_qty" value="1" readonly>
+                                <button type="button" class="qty-btn" id="deck-qty-plus"><i class="bi bi-plus"></i></button>
+                            </div>
+                        </div>
+
+                        <div id="deck-shipping-addresses-container" style="width: 100%; margin-top: 15px; display: none;"></div>
+                    </div>
+                </div>
             </div>
 
             <h3 class="section-title checkout-mt32">Payment Method</h3>

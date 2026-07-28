@@ -4948,3 +4948,12 @@ body.landing-body footer {
 .addon-list-card.selected .qty-selector-inline + .addon-check-box {
     display: none;
 }
+
+a:hover,
+a:focus,
+a:focus-visible,
+a:active {
+  text-decoration: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}

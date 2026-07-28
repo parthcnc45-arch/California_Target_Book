@@ -36,7 +36,13 @@ body {
     font-weight: 400;
     line-height: 24px;
 }
-.dashboard-banner .dropdown-toggle::after {
-    border: unset;
-}
 /* Main Dashboard Container End */
+
+a:hover,
+a:focus,
+a:focus-visible,
+a:active {
+  text-decoration: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}

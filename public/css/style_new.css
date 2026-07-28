@@ -73,6 +73,15 @@ a {
   color: inherit;
 }
 
+a:hover,
+a:focus,
+a:focus-visible,
+a:active {
+  text-decoration: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 img {
   max-width: 100%;
   height: auto;
@@ -226,8 +235,12 @@ a[class*="btn"]:hover, button:hover, input[type="submit"]:hover, input[type="but
   text-decoration: none;
 }
 
-.nav-menu a:focus-visible {
-  border: none;
+.nav-menu a:focus-visible,
+.nav-menu a:focus,
+.nav-menu a:active {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 

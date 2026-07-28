@@ -17,16 +17,19 @@ class SyncGHLContact implements ShouldQueue
 
     public $tries = 3;
     protected $user;
+    protected $customTags;
 
     /**
      * Create a new job instance.
      *
      * @param  \App\User  $user
+     * @param  array  $customTags
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(User $user, $customTags = null)
     {
         $this->user = $user;
+        $this->customTags = $customTags;
     }
 
     /**
@@ -42,8 +45,26 @@ class SyncGHLContact implements ShouldQueue
             return;
         }
 
+        // Determine tags
+        $tags = is_array($this->customTags) ? $this->customTags : config('app.GHL_SUBSCRIBER_TAGS', ['active_subscriber', 'CTB Active']);
+
         $ghlToken   = config('app.GHL_TOKEN') ?? 'pit-9edbcb56-3ea3-4e72-b633-a54a943ec8cf';
         $locationId = config('app.GHL_LOCATION_ID') ?? 'Fvvh7SvvoDgMQg4PNPCB';
+
+        // Fetch subscription renewal date and prepare GHL custom field
+        $customFields = [];
+        $renewalFieldId = config('app.GHL_RENEWAL_DATE_FIELD_ID');
+        if ($renewalFieldId) {
+            $subscription = $user->latestSubscription();
+            $renewalDate = $subscription ? $subscription->next_payment : null;
+            if ($renewalDate) {
+                $fieldKey = (strpos($renewalFieldId, 'contact.') === 0) ? 'key' : 'id';
+                $customFields[] = [
+                    $fieldKey => $renewalFieldId,
+                    'fieldValue' => date('Y-m-d', strtotime($renewalDate))
+                ];
+            }
+        }
 
         // Try creating contact with Active Subscriber tags
         $payload = [
@@ -52,13 +73,18 @@ class SyncGHLContact implements ShouldQueue
             'lastName'   => $user->last_name ?? '',
             'email'      => $user->email,
             'phone'      => $user->phone_number ?? $user->phone ?? '',
-            'tags'       => ['active_subscriber', 'CTB Active'],
+            'tags'       => $tags,
         ];
+
+        if (!empty($customFields)) {
+            $payload['customFields'] = $customFields;
+        }
 
         try {
             Log::info('SyncGHLContact Job: Sending create contact request to GHL', [
                 'user_id' => $user->id,
-                'email' => $user->email
+                'email' => $user->email,
+                'payload' => $payload
             ]);
 
             $response = Http::withHeaders([
@@ -104,16 +130,20 @@ class SyncGHLContact implements ShouldQueue
                 }
             }
 
-            // If contact already existed, let's update it to add the active_subscriber tags
+            // If contact already existed, let's update it to add the active_subscriber tags and custom fields
             if ($contactId && ($response->status() === 400 || !empty($contacts))) {
-                Log::info('SyncGHLContact Job: Updating tags for existing contact ID: ' . $contactId);
+                Log::info('SyncGHLContact Job: Updating tags and custom fields for existing contact ID: ' . $contactId);
+                $updatePayload = [
+                    'tags' => $tags
+                ];
+                if (!empty($customFields)) {
+                    $updatePayload['customFields'] = $customFields;
+                }
                 Http::withHeaders([
                     'Authorization' => "Bearer $ghlToken",
                     'Version'       => '2021-07-28',
                     'Accept'        => 'application/json',
-                ])->put("https://services.leadconnectorhq.com/contacts/{$contactId}", [
-                    'tags' => ['active_subscriber', 'CTB Active']
-                ]);
+                ])->put("https://services.leadconnectorhq.com/contacts/{$contactId}", $updatePayload);
             }
 
             if ($contactId) {

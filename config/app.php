@@ -59,6 +59,9 @@ return [
 
     'GHL_TOKEN' => env('GHL_API_TOKEN', 'pit-9edbcb56-3ea3-4e72-b633-a54a943ec8cf'),
     'GHL_LOCATION_ID' => env('GHL_LOCATION_ID', 'Fvvh7SvvoDgMQg4PNPCB'),
+    'GHL_RENEWAL_DATE_FIELD_ID' => env('GHL_RENEWAL_DATE_FIELD_ID', '8RlyTrqbs2XWwksk0kPH'),
+    'GHL_SUBSCRIBER_TAGS' => array_map('trim', explode(',', env('GHL_SUBSCRIBER_TAGS', 'active_subscriber,CTB Active'))),
+    'GHL_ONE_TIME_BUYER_TAGS' => array_map('trim', explode(',', env('GHL_ONE_TIME_BUYER_TAGS', 'one_time_buyer'))),
 
     /*
     |--------------------------------------------------------------------------

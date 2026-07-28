@@ -834,6 +834,17 @@ class RegisterController extends Controller
             Auth::login($user);
         }
 
+        // 5. Sync GHL Contact with dynamic tags from config
+        try {
+            $tags = config('app.GHL_ONE_TIME_BUYER_TAGS', ['one_time_buyer']);
+            if ($user->hasActiveSubscription()) {
+                $tags = array_merge($tags, config('app.GHL_SUBSCRIBER_TAGS', ['active_subscriber', 'CTB Active']));
+            }
+            dispatch_now(new \App\Jobs\SyncGHLContact($user, $tags));
+        } catch (\Exception $e) {
+            Log::error('SyncGHLContact failed in purchaseBookOnly: ' . $e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Thank you for your purchase!',

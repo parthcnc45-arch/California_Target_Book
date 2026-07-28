@@ -218,31 +218,31 @@
                                     </div>
                                     <div class="col-sm-12">
                                         <label class="control-label" for="1yr"
-                                                :class="{ selected: subLength === '{{ config('subscriptions.duration_one_year') }}' }">
+                                                :class="{ selected: subLength === '12' }">
                                             <input class="pull-left" name="subscription_length" type="radio" id="1yr"
-                                                    value="{{ config('subscriptions.duration_one_year') }}"
-                                                    @if( old('subscription_length') == config('subscriptions.duration_one_year')) checked @endif
+                                                    value="12"
+                                                    @if( old('subscription_length') == '12') checked @endif
                                                     v-model="subLength"/>
 
                                             <span class="pl-md">
-                                                {{ config('subscriptions.duration_one_year') }} Month Subscription
+                                                12 Month Subscription
                                                 <span class="pull-right">
-                                                    $@{{ pricing['{{ config('subscriptions.duration_one_year') }}'].base | currency }}
+                                                    $@{{ pricing['12'].base | currency }}
                                                 </span>
                                             </span>
                                         </label>
                                     </div>
                                     <div class="col-sm-12">
                                         <label class="control-label" for="2yr"
-                                                v-bind:class="{ selected: subLength === '{{ config('subscriptions.duration_two_year') }}' }">
+                                                v-bind:class="{ selected: subLength === '24' }">
                                             <input class="pull-left" name="subscription_length" type="radio" id="2yr"
-                                                    value="{{ config('subscriptions.duration_two_year') }}"
-                                                    @if(old('subscription_length') == config('subscriptions.duration_two_year')) checked @endif
+                                                    value="24"
+                                                    @if(old('subscription_length') == '24') checked @endif
                                                     v-model="subLength"/>
                                             <span class="pl-md">
-                                                {{ config('subscriptions.duration_two_year') }} Month Subscription
+                                                24 Month Subscription
                                                 <span class="pull-right">
-                                                    $@{{ pricing['{{ config('subscriptions.duration_two_year') }}'].base | currency }}
+                                                    $@{{ pricing['24'].base | currency }}
                                                 </span>
                                             </span>
                                         </label>

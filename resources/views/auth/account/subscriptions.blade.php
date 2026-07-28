@@ -78,7 +78,7 @@
                                     if ($totalSeats > 0) {
                                         $addonsList[] = "Additional Seats (" . $totalSeats . ")";
                                     }
-                                    $addonsText = !empty($addonsList) ? implode(' + ', $addonsList) : '';
+                                    $addonsText = !empty($addonsList) ? implode(' + ', $addonsList) : ' — ';
                                 @endphp
                                 {{ $addonsText }}
                             </td>

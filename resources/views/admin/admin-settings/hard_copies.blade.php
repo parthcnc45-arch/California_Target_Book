@@ -55,10 +55,8 @@
                         <option value="pending">Pending</option>
                         <option value="shipped">Shipped</option>
                         <option value="in transit">In Transit</option>
-                        <option value="out for delivery">Out for Delivery</option>
+                        <option value="ready to ship">Ready to Ship</option>
                         <option value="delivered">Delivered</option>
-                        <option value="exception / delayed">Exception / Delayed</option>
-                        <option value="returned to sender">Returned to Sender</option>
                     </select>
                 </div>
                 <!-- Clear Filters Button -->
@@ -123,10 +121,8 @@
                                 <option value="Pending">Pending</option>
                                 <option value="Shipped">Shipped</option>
                                 <option value="In Transit">In Transit</option>
-                                <option value="Out for Delivery">Out for Delivery</option>
+                                <option value="Ready to Ship">Ready to Ship</option>
                                 <option value="Delivered">Delivered</option>
-                                <option value="Exception / Delayed">Exception / Delayed</option>
-                                <option value="Returned to Sender">Returned to Sender</option>
                             </select>
                         </div>
                         <div class="form-col as-hardcopies-34">
@@ -349,7 +345,7 @@
                 
                 let validationErrors = [];
 
-                if (['Shipped', 'In Transit', 'Out for Delivery', 'Delivered'].includes(statusVal)) {
+                if (['Shipped', 'In Transit', 'Ready to Ship', 'Delivered'].includes(statusVal)) {
                     if (!carrierVal) validationErrors.push('Carrier is required when status is ' + statusVal + '.');
                     if (!trackingVal) validationErrors.push('Tracking Number is required when status is ' + statusVal + '.');
                     if (!shipDateVal) validationErrors.push('Ship Date is required when status is ' + statusVal + '.');
@@ -536,10 +532,8 @@
                         const statusLower = (item.status || 'pending').toLowerCase();
                         if (statusLower === 'delivered') {
                             pillColor = 'background-color: #dcfce7; color: #16a34a;';
-                        } else if (statusLower === 'shipped' || statusLower === 'in transit' || statusLower === 'out for delivery') {
+                        } else if (statusLower === 'shipped' || statusLower === 'in transit' || statusLower === 'ready to ship') {
                             pillColor = 'background-color: #dbeafe; color: #2563eb;';
-                        } else if (statusLower.includes('delay') || statusLower.includes('exception') || statusLower === 'returned to sender') {
-                            pillColor = 'background-color: #fee2e2; color: #ef4444;';
                         }
 
                         const rowHtml = `

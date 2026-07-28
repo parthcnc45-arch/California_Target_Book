@@ -280,8 +280,10 @@
   padding: 0 !important;
   border-top: none !important;
   display: flex !important;
-  justify-content: flex-end !important;
+  justify-content: center !important;
   gap: 10px !important;
+  background-color: transparent !important;
+  background: transparent !important;
 }
 
 .btn {

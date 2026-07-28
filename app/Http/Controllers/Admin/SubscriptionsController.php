@@ -149,7 +149,7 @@ class SubscriptionsController extends Controller
                 'item_name' => 'nullable|string|max:255',
             ];
 
-            $activeStatuses = ['Shipped', 'In Transit', 'Out for Delivery', 'Delivered'];
+            $activeStatuses = ['Shipped', 'In Transit', 'Ready to Ship', 'Delivered'];
             $statusVal = $shipmentData['status'] ?? '';
             
             if (in_array($statusVal, $activeStatuses)) {

@@ -66,6 +66,28 @@ class SyncGHLContact implements ShouldQueue
             }
         }
 
+        // Fetch shipment details and prepare GHL custom fields
+        $shipment = \App\BookSubscription::where('user_id', $user->id)->orderBy('id', 'desc')->first();
+        if ($shipment) {
+            $fieldMappings = [
+                'GHL_SHIPMENT_STATUS_FIELD_ID' => $shipment->status,
+                'GHL_SHIPMENT_TRACKING_ID_FIELD_ID' => $shipment->tracking_id,
+                'GHL_SHIPMENT_CARRIER_FIELD_ID' => $shipment->carrier,
+                'GHL_SHIPMENT_TRACKING_URL_FIELD_ID' => $shipment->tracking_url,
+            ];
+
+            foreach ($fieldMappings as $configKey => $val) {
+                $fieldId = config("app.{$configKey}");
+                if ($fieldId && !is_null($val)) {
+                    $fieldKey = (strpos($fieldId, 'contact.') === 0) ? 'key' : 'id';
+                    $customFields[] = [
+                        $fieldKey => $fieldId,
+                        'fieldValue' => (string)$val
+                    ];
+                }
+            }
+        }
+
         // Try creating contact with Active Subscriber tags
         $payload = [
             'locationId' => $locationId,

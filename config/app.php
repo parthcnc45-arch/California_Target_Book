@@ -62,6 +62,10 @@ return [
     'GHL_RENEWAL_DATE_FIELD_ID' => env('GHL_RENEWAL_DATE_FIELD_ID', '8RlyTrqbs2XWwksk0kPH'),
     'GHL_SUBSCRIBER_TAGS' => array_map('trim', explode(',', env('GHL_SUBSCRIBER_TAGS', 'active_subscriber,CTB Active'))),
     'GHL_ONE_TIME_BUYER_TAGS' => array_map('trim', explode(',', env('GHL_ONE_TIME_BUYER_TAGS', 'one_time_buyer'))),
+    'GHL_SHIPMENT_STATUS_FIELD_ID' => env('GHL_SHIPMENT_STATUS_FIELD_ID'),
+    'GHL_SHIPMENT_TRACKING_ID_FIELD_ID' => env('GHL_SHIPMENT_TRACKING_ID_FIELD_ID'),
+    'GHL_SHIPMENT_CARRIER_FIELD_ID' => env('GHL_SHIPMENT_CARRIER_FIELD_ID'),
+    'GHL_SHIPMENT_TRACKING_URL_FIELD_ID' => env('GHL_SHIPMENT_TRACKING_URL_FIELD_ID'),
 
     /*
     |--------------------------------------------------------------------------

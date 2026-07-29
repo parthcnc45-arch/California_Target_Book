@@ -167,6 +167,20 @@ class SubscriptionsController extends Controller
             ])->validate();
             
             $bs->update($shipmentData);
+
+            // Sync updated shipment status to GoHighLevel
+            $user = $bs->user ?: ($bs->subscription ? $bs->subscription->user : null);
+            if ($user) {
+                try {
+                    $tags = config('app.GHL_ONE_TIME_BUYER_TAGS', ['one_time_buyer']);
+                    if ($user->hasActiveSubscription()) {
+                        $tags = array_merge($tags, config('app.GHL_SUBSCRIBER_TAGS', ['active_subscriber', 'CTB Active']));
+                    }
+                    dispatch_now(new \App\Jobs\SyncGHLContact($user, $tags));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('SyncGHLContact failed after shipment update: ' . $e->getMessage());
+                }
+            }
         }
 
         return BookSubscription::with('address')->find($bookId);

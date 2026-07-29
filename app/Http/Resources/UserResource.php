@@ -26,7 +26,7 @@ class UserResource extends JsonResource
             'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
             'company' => $this->load('company')->company->name,
             'notes' => $this->notes,
-            'role' => $this->role,
+            'role' => $this->getDisplayRole(),
             'stripe_id' => $this->stripe_id,
             'verified' => $this->verified,
             'subscriptions' => new SubscriptionCollection($this->subscriptions)

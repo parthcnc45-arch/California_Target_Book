@@ -54,6 +54,8 @@
                     <select class="form-input-style as-contacts-18" id="filter-role">
                         <option value="all">All Roles</option>
                         <option value="subscriber">Subscriber</option>
+                        <option value="book buyer">Book Buyer</option>
+                        <option value="registered user">Registered User</option>
                         <option value="editor">Editor</option>
                         <option value="admin">Admin</option>
                     </select>

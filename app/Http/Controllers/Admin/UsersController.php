@@ -31,7 +31,7 @@ class UsersController extends Controller
     // List all users
     public function index()
     {
-        return new UserCollection(User::orderBy('created_at', 'desc')->get());
+        return new UserCollection(User::with(['subscriptions', 'bookSubscriptions'])->orderBy('created_at', 'desc')->get());
     }
 
     // Get user by id

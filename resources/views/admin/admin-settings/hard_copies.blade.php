@@ -110,7 +110,7 @@
                     <div class="form-row">
                         <div class="form-col as-hardcopies-34">
                             <label class="form-label">Item Name</label>
-                            <input type="text" id="shipment-edit-item-name" class="form-input" maxlength="255" placeholder="e.g. California Target Book">
+                            <input type="text" id="shipment-edit-item-name" class="form-input" maxlength="255" placeholder="e.g. California Target Book" readonly style="background-color: #f8fafc; color: #64748b; cursor: not-allowed;">
                         </div>
                     </div>
                     

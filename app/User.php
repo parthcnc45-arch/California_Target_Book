@@ -132,6 +132,43 @@ class User extends Authenticatable
             });
     }
 
+    public function bookSubscriptions() {
+        return $this->hasMany('App\BookSubscription');
+    }
+
+    public function getDisplayRole()
+    {
+        if ($this->role === self::ROLE_ADMIN) {
+            return 'Admin';
+        }
+        if ($this->role === self::ROLE_EDITOR) {
+            return 'Editor';
+        }
+
+        // Check if user has active online subscriptions
+        $hasActiveOnline = $this->subscriptions()
+            ->get()
+            ->contains(function ($sub) {
+                return $sub->isActive();
+            });
+
+        if ($hasActiveOnline) {
+            return 'Subscriber';
+        }
+
+        // Check if user has purchased books (shipments)
+        if ($this->bookSubscriptions()->count() > 0) {
+            return 'Book Buyer';
+        }
+
+        // Check if user has expired subscriptions
+        if ($this->subscriptions()->count() > 0) {
+            return 'Subscriber';
+        }
+
+        return 'Registered User';
+    }
+
     public function hasActiveSubscription()
     {
         return $this->subscriptions()

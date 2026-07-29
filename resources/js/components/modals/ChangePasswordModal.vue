@@ -23,29 +23,44 @@
               <div v-if="!success" class="modal-body">
                 <div class="form-group">
                   <label class="control-label">Current password</label>
-                  <input class="form-control"
-                    name="old"
-                    v-model="currentPassword"
-                    type="password"
-                    required />
+                  <div class="password-input-wrapper">
+                    <input class="form-control"
+                      name="old"
+                      v-model="currentPassword"
+                      :type="showCurrentPassword ? 'text' : 'password'"
+                      required />
+                    <span class="password-toggle-icon" @click="showCurrentPassword = !showCurrentPassword">
+                      <i :class="['bi', showCurrentPassword ? 'bi-eye-slash' : 'bi-eye']"></i>
+                    </span>
+                  </div>
                 </div>
                 <div class="form-group">
                   <label class="control-label">New Password</label>
-                  <input class="form-control"
-                    name="password"
-                    v-model="password"
-                    type="password"
-                    minlength="6"
-                    required />
+                  <div class="password-input-wrapper">
+                    <input class="form-control"
+                      name="password"
+                      v-model="password"
+                      :type="showPassword ? 'text' : 'password'"
+                      minlength="6"
+                      required />
+                    <span class="password-toggle-icon" @click="showPassword = !showPassword">
+                      <i :class="['bi', showPassword ? 'bi-eye-slash' : 'bi-eye']"></i>
+                    </span>
+                  </div>
                 </div>
                 <div class="form-group">
                   <label class="control-label">Confirm New Password</label>
-                  <input class="form-control"
-                    name="password_confirm"
-                    v-model="passwordConfirm"
-                    type="password"
-                    minlength="6"
-                    required />
+                  <div class="password-input-wrapper">
+                    <input class="form-control"
+                      name="password_confirm"
+                      v-model="passwordConfirm"
+                      :type="showPasswordConfirm ? 'text' : 'password'"
+                      minlength="6"
+                      required />
+                    <span class="password-toggle-icon" @click="showPasswordConfirm = !showPasswordConfirm">
+                      <i :class="['bi', showPasswordConfirm ? 'bi-eye-slash' : 'bi-eye']"></i>
+                    </span>
+                  </div>
                 </div>
 
                 <div class="bg-danger" v-if="errors.length">
@@ -106,6 +121,9 @@
             currentPassword: '',
             password: '',
             passwordConfirm: '',
+            showCurrentPassword: false,
+            showPassword: false,
+            showPasswordConfirm: false,
             errors: [],
             isLoading: false,
             success: false,
@@ -355,5 +373,33 @@
 .bg-success p {
   margin: 0 !important;
   font-weight: 500 !important;
+}
+
+.password-input-wrapper {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.password-input-wrapper .form-control {
+  padding-right: 40px !important;
+}
+
+.password-toggle-icon {
+  position: absolute !important;
+  right: 12px !important;
+  cursor: pointer !important;
+  color: #64748b !important;
+  user-select: none !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  font-size: 16px !important;
+  z-index: 10 !important;
+}
+
+.password-toggle-icon:hover {
+  color: #0f172a !important;
 }
 </style>

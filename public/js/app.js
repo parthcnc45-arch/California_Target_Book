@@ -6915,6 +6915,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['invoice'],
@@ -6923,6 +6938,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       currentPassword: '',
       password: '',
       passwordConfirm: '',
+      showCurrentPassword: false,
+      showPassword: false,
+      showPasswordConfirm: false,
       errors: [],
       isLoading: false,
       success: false
@@ -12764,7 +12782,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.modal-mask[data-v-5c84b8c4] {\n  position: fixed !important;\n  z-index: 9998 !important;\n  top: 0 !important;\n  left: 0 !important;\n  width: 100% !important;\n  height: 100% !important;\n  background-color: rgba(15, 23, 42, 0.6) !important;\n  display: flex !important;\n  align-items: center !important;\n  justify-content: center !important;\n  transition: opacity .3s ease !important;\n}\n.modal-wrapper[data-v-5c84b8c4] {\n  width: 100% !important;\n  max-width: 440px !important;\n  padding: 16px !important;\n  box-sizing: border-box !important;\n  display: block !important;\n}\n.modal-container[data-v-5c84b8c4] {\n  width: 100% !important;\n  background-color: #ffffff !important;\n  border-radius: 12px !important;\n  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;\n  padding: 24px !important;\n  box-sizing: border-box !important;\n  text-align: left !important;\n}\n.modal-header[data-v-5c84b8c4] {\n  padding: 0 0 12px 0 !important;\n  border-bottom: none !important;\n  position: relative !important;\n  display: flex !important;\n  justify-content: space-between !important;\n  align-items: flex-start !important;\n}\n.modal-title[data-v-5c84b8c4] {\n  font-size: 18px !important;\n  font-weight: 700 !important;\n  color: #0f172a !important;\n  margin: 0 !important;\n}\n.modal-subtitle[data-v-5c84b8c4] {\n  font-size: 13.5px !important;\n  color: #64748b !important;\n  margin-top: 4px !important;\n  margin-bottom: 20px !important;\n  line-height: 1.5 !important;\n}\n.close[data-v-5c84b8c4] {\n  background: none !important;\n  border: none !important;\n  font-size: 22px !important;\n  font-weight: 400 !important;\n  color: #94a3b8 !important;\n  cursor: pointer !important;\n  padding: 0 !important;\n  line-height: 1 !important;\n  transition: color 0.15s !important;\n  opacity: 0.8 !important;\n}\n.close[data-v-5c84b8c4]:hover {\n  color: #475569 !important;\n  opacity: 1 !important;\n}\n.modal-body[data-v-5c84b8c4] {\n  padding: 0 !important;\n  margin-bottom: 20px !important;\n}\n.form-group[data-v-5c84b8c4] {\n  margin-bottom: 16px !important;\n}\n.form-group[data-v-5c84b8c4]:last-child {\n  margin-bottom: 0 !important;\n}\n.control-label[data-v-5c84b8c4] {\n  display: block !important;\n  font-size: 13px !important;\n  font-weight: 600 !important;\n  color: #334155 !important;\n  margin-bottom: 6px !important;\n  text-align: left !important;\n}\n.form-control[data-v-5c84b8c4] {\n  display: block !important;\n  width: 100% !important;\n  height: auto !important;\n  padding: 8px 12px !important;\n  font-size: 14px !important;\n  line-height: 1.5 !important;\n  color: #0f172a !important;\n  background-color: #ffffff !important;\n  border: 1px solid #cbd5e1 !important;\n  border-radius: 6px !important;\n  box-sizing: border-box !important;\n  transition: border-color 0.15s, box-shadow 0.15s !important;\n}\n.form-control[data-v-5c84b8c4]:focus {\n  border-color: #d93838 !important;\n  outline: none !important;\n  box-shadow: 0 0 0 3px rgba(217, 56, 56, 0.15) !important;\n}\n.modal-footer[data-v-5c84b8c4] {\n  padding: 0 !important;\n  border-top: none !important;\n  display: flex !important;\n  justify-content: center !important;\n  gap: 10px !important;\n  background-color: transparent !important;\n  background: transparent !important;\n}\n.btn[data-v-5c84b8c4] {\n  display: inline-flex !important;\n  align-items: center !important;\n  justify-content: center !important;\n  padding: 8px 16px !important;\n  font-size: 13.5px !important;\n  font-weight: 600 !important;\n  border-radius: 6px !important;\n  cursor: pointer !important;\n  transition: all 0.15s !important;\n  border: 1px solid transparent !important;\n  outline: none !important;\n}\n.btn-cancel[data-v-5c84b8c4] {\n  background-color: #ffffff !important;\n  border-color: #cbd5e1 !important;\n  color: #475569 !important;\n}\n.btn-cancel[data-v-5c84b8c4]:hover {\n  background-color: #f8fafc !important;\n  border-color: #cbd5e1 !important;\n  color: #1e293b !important;\n}\n.btn-update[data-v-5c84b8c4] {\n  background-color: #d93838 !important;\n  color: #ffffff !important;\n  border-color: #d93838 !important;\n}\n.btn-update[data-v-5c84b8c4]:hover {\n  background-color: #b91c1c !important;\n  border-color: #b91c1c !important;\n}\n.btn-update[data-v-5c84b8c4]:disabled {\n  background-color: #fca5a5 !important;\n  border-color: #fca5a5 !important;\n  color: #ffffff !important;\n  cursor: not-allowed !important;\n}\n.bg-danger[data-v-5c84b8c4] {\n  background-color: #fef2f2 !important;\n  border: 1px solid #fee2e2 !important;\n  border-radius: 6px !important;\n  padding: 12px !important;\n  margin-top: 16px !important;\n  color: #991b1b !important;\n}\n.bg-danger ul[data-v-5c84b8c4] {\n  padding-left: 20px !important;\n  margin: 0 !important;\n}\n.bg-success[data-v-5c84b8c4] {\n  background-color: #f0fdf4 !important;\n  border: 1px solid #dcfce7 !important;\n  border-radius: 6px !important;\n  padding: 16px !important;\n  color: #166534 !important;\n}\n.bg-success p[data-v-5c84b8c4] {\n  margin: 0 !important;\n  font-weight: 500 !important;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.modal-mask[data-v-5c84b8c4] {\n  position: fixed !important;\n  z-index: 9998 !important;\n  top: 0 !important;\n  left: 0 !important;\n  width: 100% !important;\n  height: 100% !important;\n  background-color: rgba(15, 23, 42, 0.6) !important;\n  display: flex !important;\n  align-items: center !important;\n  justify-content: center !important;\n  transition: opacity .3s ease !important;\n}\n.modal-wrapper[data-v-5c84b8c4] {\n  width: 100% !important;\n  max-width: 440px !important;\n  padding: 16px !important;\n  box-sizing: border-box !important;\n  display: block !important;\n}\n.modal-container[data-v-5c84b8c4] {\n  width: 100% !important;\n  background-color: #ffffff !important;\n  border-radius: 12px !important;\n  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;\n  padding: 24px !important;\n  box-sizing: border-box !important;\n  text-align: left !important;\n}\n.modal-header[data-v-5c84b8c4] {\n  padding: 0 0 12px 0 !important;\n  border-bottom: none !important;\n  position: relative !important;\n  display: flex !important;\n  justify-content: space-between !important;\n  align-items: flex-start !important;\n}\n.modal-title[data-v-5c84b8c4] {\n  font-size: 18px !important;\n  font-weight: 700 !important;\n  color: #0f172a !important;\n  margin: 0 !important;\n}\n.modal-subtitle[data-v-5c84b8c4] {\n  font-size: 13.5px !important;\n  color: #64748b !important;\n  margin-top: 4px !important;\n  margin-bottom: 20px !important;\n  line-height: 1.5 !important;\n}\n.close[data-v-5c84b8c4] {\n  background: none !important;\n  border: none !important;\n  font-size: 22px !important;\n  font-weight: 400 !important;\n  color: #94a3b8 !important;\n  cursor: pointer !important;\n  padding: 0 !important;\n  line-height: 1 !important;\n  transition: color 0.15s !important;\n  opacity: 0.8 !important;\n}\n.close[data-v-5c84b8c4]:hover {\n  color: #475569 !important;\n  opacity: 1 !important;\n}\n.modal-body[data-v-5c84b8c4] {\n  padding: 0 !important;\n  margin-bottom: 20px !important;\n}\n.form-group[data-v-5c84b8c4] {\n  margin-bottom: 16px !important;\n}\n.form-group[data-v-5c84b8c4]:last-child {\n  margin-bottom: 0 !important;\n}\n.control-label[data-v-5c84b8c4] {\n  display: block !important;\n  font-size: 13px !important;\n  font-weight: 600 !important;\n  color: #334155 !important;\n  margin-bottom: 6px !important;\n  text-align: left !important;\n}\n.form-control[data-v-5c84b8c4] {\n  display: block !important;\n  width: 100% !important;\n  height: auto !important;\n  padding: 8px 12px !important;\n  font-size: 14px !important;\n  line-height: 1.5 !important;\n  color: #0f172a !important;\n  background-color: #ffffff !important;\n  border: 1px solid #cbd5e1 !important;\n  border-radius: 6px !important;\n  box-sizing: border-box !important;\n  transition: border-color 0.15s, box-shadow 0.15s !important;\n}\n.form-control[data-v-5c84b8c4]:focus {\n  border-color: #d93838 !important;\n  outline: none !important;\n  box-shadow: 0 0 0 3px rgba(217, 56, 56, 0.15) !important;\n}\n.modal-footer[data-v-5c84b8c4] {\n  padding: 0 !important;\n  border-top: none !important;\n  display: flex !important;\n  justify-content: center !important;\n  gap: 10px !important;\n  background-color: transparent !important;\n  background: transparent !important;\n}\n.btn[data-v-5c84b8c4] {\n  display: inline-flex !important;\n  align-items: center !important;\n  justify-content: center !important;\n  padding: 8px 16px !important;\n  font-size: 13.5px !important;\n  font-weight: 600 !important;\n  border-radius: 6px !important;\n  cursor: pointer !important;\n  transition: all 0.15s !important;\n  border: 1px solid transparent !important;\n  outline: none !important;\n}\n.btn-cancel[data-v-5c84b8c4] {\n  background-color: #ffffff !important;\n  border-color: #cbd5e1 !important;\n  color: #475569 !important;\n}\n.btn-cancel[data-v-5c84b8c4]:hover {\n  background-color: #f8fafc !important;\n  border-color: #cbd5e1 !important;\n  color: #1e293b !important;\n}\n.btn-update[data-v-5c84b8c4] {\n  background-color: #d93838 !important;\n  color: #ffffff !important;\n  border-color: #d93838 !important;\n}\n.btn-update[data-v-5c84b8c4]:hover {\n  background-color: #b91c1c !important;\n  border-color: #b91c1c !important;\n}\n.btn-update[data-v-5c84b8c4]:disabled {\n  background-color: #fca5a5 !important;\n  border-color: #fca5a5 !important;\n  color: #ffffff !important;\n  cursor: not-allowed !important;\n}\n.bg-danger[data-v-5c84b8c4] {\n  background-color: #fef2f2 !important;\n  border: 1px solid #fee2e2 !important;\n  border-radius: 6px !important;\n  padding: 12px !important;\n  margin-top: 16px !important;\n  color: #991b1b !important;\n}\n.bg-danger ul[data-v-5c84b8c4] {\n  padding-left: 20px !important;\n  margin: 0 !important;\n}\n.bg-success[data-v-5c84b8c4] {\n  background-color: #f0fdf4 !important;\n  border: 1px solid #dcfce7 !important;\n  border-radius: 6px !important;\n  padding: 16px !important;\n  color: #166534 !important;\n}\n.bg-success p[data-v-5c84b8c4] {\n  margin: 0 !important;\n  font-weight: 500 !important;\n}\n.password-input-wrapper[data-v-5c84b8c4] {\n  position: relative !important;\n  display: flex !important;\n  align-items: center !important;\n  width: 100% !important;\n}\n.password-input-wrapper .form-control[data-v-5c84b8c4] {\n  padding-right: 40px !important;\n}\n.password-toggle-icon[data-v-5c84b8c4] {\n  position: absolute !important;\n  right: 12px !important;\n  cursor: pointer !important;\n  color: #64748b !important;\n  -webkit-user-select: none !important;\n     -moz-user-select: none !important;\n      -ms-user-select: none !important;\n          user-select: none !important;\n  display: flex !important;\n  align-items: center !important;\n  height: 100% !important;\n  font-size: 16px !important;\n  z-index: 10 !important;\n}\n.password-toggle-icon[data-v-5c84b8c4]:hover {\n  color: #0f172a !important;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -69848,27 +69866,131 @@ var render = function () {
                         _vm._v("Current password"),
                       ]),
                       _vm._v(" "),
-                      _c("input", {
-                        directives: [
+                      _c("div", { staticClass: "password-input-wrapper" }, [
+                        (_vm.showCurrentPassword ? "text" : "password") ===
+                        "checkbox"
+                          ? _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.currentPassword,
+                                  expression: "currentPassword",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                name: "old",
+                                required: "",
+                                type: "checkbox",
+                              },
+                              domProps: {
+                                checked: Array.isArray(_vm.currentPassword)
+                                  ? _vm._i(_vm.currentPassword, null) > -1
+                                  : _vm.currentPassword,
+                              },
+                              on: {
+                                change: function ($event) {
+                                  var $$a = _vm.currentPassword,
+                                    $$el = $event.target,
+                                    $$c = $$el.checked ? true : false
+                                  if (Array.isArray($$a)) {
+                                    var $$v = null,
+                                      $$i = _vm._i($$a, $$v)
+                                    if ($$el.checked) {
+                                      $$i < 0 &&
+                                        (_vm.currentPassword = $$a.concat([
+                                          $$v,
+                                        ]))
+                                    } else {
+                                      $$i > -1 &&
+                                        (_vm.currentPassword = $$a
+                                          .slice(0, $$i)
+                                          .concat($$a.slice($$i + 1)))
+                                    }
+                                  } else {
+                                    _vm.currentPassword = $$c
+                                  }
+                                },
+                              },
+                            })
+                          : (_vm.showCurrentPassword ? "text" : "password") ===
+                            "radio"
+                          ? _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.currentPassword,
+                                  expression: "currentPassword",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                name: "old",
+                                required: "",
+                                type: "radio",
+                              },
+                              domProps: {
+                                checked: _vm._q(_vm.currentPassword, null),
+                              },
+                              on: {
+                                change: function ($event) {
+                                  _vm.currentPassword = null
+                                },
+                              },
+                            })
+                          : _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.currentPassword,
+                                  expression: "currentPassword",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                name: "old",
+                                required: "",
+                                type: _vm.showCurrentPassword
+                                  ? "text"
+                                  : "password",
+                              },
+                              domProps: { value: _vm.currentPassword },
+                              on: {
+                                input: function ($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.currentPassword = $event.target.value
+                                },
+                              },
+                            }),
+                        _vm._v(" "),
+                        _c(
+                          "span",
                           {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.currentPassword,
-                            expression: "currentPassword",
+                            staticClass: "password-toggle-icon",
+                            on: {
+                              click: function ($event) {
+                                _vm.showCurrentPassword =
+                                  !_vm.showCurrentPassword
+                              },
+                            },
                           },
-                        ],
-                        staticClass: "form-control",
-                        attrs: { name: "old", type: "password", required: "" },
-                        domProps: { value: _vm.currentPassword },
-                        on: {
-                          input: function ($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.currentPassword = $event.target.value
-                          },
-                        },
-                      }),
+                          [
+                            _c("i", {
+                              class: [
+                                "bi",
+                                _vm.showCurrentPassword
+                                  ? "bi-eye-slash"
+                                  : "bi-eye",
+                              ],
+                            }),
+                          ]
+                        ),
+                      ]),
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "form-group" }, [
@@ -69876,32 +69998,123 @@ var render = function () {
                         _vm._v("New Password"),
                       ]),
                       _vm._v(" "),
-                      _c("input", {
-                        directives: [
+                      _c("div", { staticClass: "password-input-wrapper" }, [
+                        (_vm.showPassword ? "text" : "password") === "checkbox"
+                          ? _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.password,
+                                  expression: "password",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                name: "password",
+                                minlength: "6",
+                                required: "",
+                                type: "checkbox",
+                              },
+                              domProps: {
+                                checked: Array.isArray(_vm.password)
+                                  ? _vm._i(_vm.password, null) > -1
+                                  : _vm.password,
+                              },
+                              on: {
+                                change: function ($event) {
+                                  var $$a = _vm.password,
+                                    $$el = $event.target,
+                                    $$c = $$el.checked ? true : false
+                                  if (Array.isArray($$a)) {
+                                    var $$v = null,
+                                      $$i = _vm._i($$a, $$v)
+                                    if ($$el.checked) {
+                                      $$i < 0 &&
+                                        (_vm.password = $$a.concat([$$v]))
+                                    } else {
+                                      $$i > -1 &&
+                                        (_vm.password = $$a
+                                          .slice(0, $$i)
+                                          .concat($$a.slice($$i + 1)))
+                                    }
+                                  } else {
+                                    _vm.password = $$c
+                                  }
+                                },
+                              },
+                            })
+                          : (_vm.showPassword ? "text" : "password") === "radio"
+                          ? _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.password,
+                                  expression: "password",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                name: "password",
+                                minlength: "6",
+                                required: "",
+                                type: "radio",
+                              },
+                              domProps: { checked: _vm._q(_vm.password, null) },
+                              on: {
+                                change: function ($event) {
+                                  _vm.password = null
+                                },
+                              },
+                            })
+                          : _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.password,
+                                  expression: "password",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                name: "password",
+                                minlength: "6",
+                                required: "",
+                                type: _vm.showPassword ? "text" : "password",
+                              },
+                              domProps: { value: _vm.password },
+                              on: {
+                                input: function ($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.password = $event.target.value
+                                },
+                              },
+                            }),
+                        _vm._v(" "),
+                        _c(
+                          "span",
                           {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.password,
-                            expression: "password",
+                            staticClass: "password-toggle-icon",
+                            on: {
+                              click: function ($event) {
+                                _vm.showPassword = !_vm.showPassword
+                              },
+                            },
                           },
-                        ],
-                        staticClass: "form-control",
-                        attrs: {
-                          name: "password",
-                          type: "password",
-                          minlength: "6",
-                          required: "",
-                        },
-                        domProps: { value: _vm.password },
-                        on: {
-                          input: function ($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.password = $event.target.value
-                          },
-                        },
-                      }),
+                          [
+                            _c("i", {
+                              class: [
+                                "bi",
+                                _vm.showPassword ? "bi-eye-slash" : "bi-eye",
+                              ],
+                            }),
+                          ]
+                        ),
+                      ]),
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "form-group" }, [
@@ -69909,32 +70122,134 @@ var render = function () {
                         _vm._v("Confirm New Password"),
                       ]),
                       _vm._v(" "),
-                      _c("input", {
-                        directives: [
+                      _c("div", { staticClass: "password-input-wrapper" }, [
+                        (_vm.showPasswordConfirm ? "text" : "password") ===
+                        "checkbox"
+                          ? _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.passwordConfirm,
+                                  expression: "passwordConfirm",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                name: "password_confirm",
+                                minlength: "6",
+                                required: "",
+                                type: "checkbox",
+                              },
+                              domProps: {
+                                checked: Array.isArray(_vm.passwordConfirm)
+                                  ? _vm._i(_vm.passwordConfirm, null) > -1
+                                  : _vm.passwordConfirm,
+                              },
+                              on: {
+                                change: function ($event) {
+                                  var $$a = _vm.passwordConfirm,
+                                    $$el = $event.target,
+                                    $$c = $$el.checked ? true : false
+                                  if (Array.isArray($$a)) {
+                                    var $$v = null,
+                                      $$i = _vm._i($$a, $$v)
+                                    if ($$el.checked) {
+                                      $$i < 0 &&
+                                        (_vm.passwordConfirm = $$a.concat([
+                                          $$v,
+                                        ]))
+                                    } else {
+                                      $$i > -1 &&
+                                        (_vm.passwordConfirm = $$a
+                                          .slice(0, $$i)
+                                          .concat($$a.slice($$i + 1)))
+                                    }
+                                  } else {
+                                    _vm.passwordConfirm = $$c
+                                  }
+                                },
+                              },
+                            })
+                          : (_vm.showPasswordConfirm ? "text" : "password") ===
+                            "radio"
+                          ? _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.passwordConfirm,
+                                  expression: "passwordConfirm",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                name: "password_confirm",
+                                minlength: "6",
+                                required: "",
+                                type: "radio",
+                              },
+                              domProps: {
+                                checked: _vm._q(_vm.passwordConfirm, null),
+                              },
+                              on: {
+                                change: function ($event) {
+                                  _vm.passwordConfirm = null
+                                },
+                              },
+                            })
+                          : _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.passwordConfirm,
+                                  expression: "passwordConfirm",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                name: "password_confirm",
+                                minlength: "6",
+                                required: "",
+                                type: _vm.showPasswordConfirm
+                                  ? "text"
+                                  : "password",
+                              },
+                              domProps: { value: _vm.passwordConfirm },
+                              on: {
+                                input: function ($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.passwordConfirm = $event.target.value
+                                },
+                              },
+                            }),
+                        _vm._v(" "),
+                        _c(
+                          "span",
                           {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.passwordConfirm,
-                            expression: "passwordConfirm",
+                            staticClass: "password-toggle-icon",
+                            on: {
+                              click: function ($event) {
+                                _vm.showPasswordConfirm =
+                                  !_vm.showPasswordConfirm
+                              },
+                            },
                           },
-                        ],
-                        staticClass: "form-control",
-                        attrs: {
-                          name: "password_confirm",
-                          type: "password",
-                          minlength: "6",
-                          required: "",
-                        },
-                        domProps: { value: _vm.passwordConfirm },
-                        on: {
-                          input: function ($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.passwordConfirm = $event.target.value
-                          },
-                        },
-                      }),
+                          [
+                            _c("i", {
+                              class: [
+                                "bi",
+                                _vm.showPasswordConfirm
+                                  ? "bi-eye-slash"
+                                  : "bi-eye",
+                              ],
+                            }),
+                          ]
+                        ),
+                      ]),
                     ]),
                     _vm._v(" "),
                     _vm.errors.length

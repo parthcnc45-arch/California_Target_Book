@@ -173,7 +173,7 @@
             <h3 class="as-classifieds-40">Delete Classified Ad?</h3>
             <p class="as-classifieds-41">Are you sure you want to permanently delete this classified ad? This action cannot be undone.</p>
             <div class="as-classifieds-42">
-                <button class="as-classifieds-43" type="button" id="btn-cancel-delete">Cancel</button>
+                <button class="as-classifieds-43 btn-modal-cancel" type="button" id="btn-cancel-delete">Cancel</button>
                 <button class="as-classifieds-44" type="button" id="btn-confirm-delete">Delete</button>
             </div>
         </div>
@@ -348,7 +348,7 @@
                 <div class="as-classifieds-59">
 
                     <div class="as-classifieds-60">
-                        <button class="as-classifieds-61" type="button" id="btn-cancel-modal">Cancel</button>
+                        <button class="as-classifieds-61 btn-modal-cancel" type="button" id="btn-cancel-modal">Cancel</button>
                         <button class="as-classifieds-62" type="submit" id="btn-save-classified">Save</button>
                     </div>
                 </div>

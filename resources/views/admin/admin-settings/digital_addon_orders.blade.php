@@ -76,7 +76,7 @@
                         <th class="as-digital-27">Order Date</th>
                         <th class="as-digital-28">Payment</th>
                         <th class="as-digital-28">Delivery</th>
-                        <th class="as-digital-29">Actions</th>
+                        <th class="as-digital-29 text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,6 +143,16 @@
                 $('#toast-title').text(title).css('color', isError ? '#ef4444' : '#10b981');
                 $('#toast-body').text(body);
                 $('#custom-toast').stop(true, true).fadeIn(300).delay(4000).fadeOut(300);
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return '-';
+                const dateObj = new Date(dateStr);
+                if (typeof dateStr === 'string' && dateStr.length === 10 && dateStr.includes('-')) {
+                    const parts = dateStr.split('-');
+                    return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                }
+                return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             }
 
             function loadData() {
@@ -247,10 +257,10 @@
                                     <div class="as-digital-42">${order.item}</div>
                                     <div class="as-digital-43">${amountStr}</div>
                                 </td>
-                                <td class="as-digital-41">${new Date(order.order_date).toLocaleDateString()}</td>
+                                <td class="as-digital-41">${formatDate(order.order_date)}</td>
                                 <td class="as-digital-38"><span class="as-digital-44" style="${payPillColor}">${order.payment_status}</span></td>
                                 <td class="as-digital-38"><span class="as-digital-44" style="${delPillColor}">${order.delivery_status}</span></td>
-                                <td class="as-classifieds-76">
+                                <td class="as-digital-45 text-center">
                                     <button onclick="resendEmail(${order.id})" class="table-action-btn btn-resend" title="Resend Delivery Email" ${resendDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                                         <i class="bi bi-envelope-at"></i> Resend
                                     </button>

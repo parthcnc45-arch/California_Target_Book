@@ -149,7 +149,7 @@
                 <div class="as-addsub-21">
                     <div class="as-addsub-22">
                         <div>
-                            <div class="as-addsub-14">Hard Copy Subscriptions</div>
+                            <div class="as-addsub-14">Additional Printed Book </div>
                             <div class="as-addsub-23">
                                 <button class="as-addsub-24" type="button" id="btn-book-dec">-</button>
                                 <span class="as-addsub-25" id="book-count-val">0</span>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="as-addsub-17">
                             <span class="as-addsub-18">$</span>
-                            <input type="number" id="book-cost-input" class="form-input-style as-addsub-19" value="500">
+                            <input type="number" id="book-cost-input" class="form-input-style as-addsub-19" value="1000">
                             <span class="as-addsub-20">Book Cost (Per Book)</span>
                         </div>
                     </div>
@@ -374,15 +374,6 @@
                 });
             }
 
-            // Book Cost helper function
-            function getBookCostBase(freq) {
-                if (window.globals && typeof window.globals.getBookCountForSubscription === 'function') {
-                    const yrCount = freq / 12;
-                    return 100 * window.globals.getBookCountForSubscription(yrCount);
-                }
-                return freq === 12 ? 300 : 500; // fallback default values
-            }
-
             // Calculation updates
             function updateTotals() {
                 const baseCost = parseFloat($('#subscription-cost-input').val()) || 0;
@@ -409,10 +400,8 @@
                 const lengthVal = parseInt($(this).val());
                 if (lengthVal === 12) {
                     $('#subscription-cost-input').val(1200);
-                    $('#book-cost-input').val(getBookCostBase(12));
                 } else {
                     $('#subscription-cost-input').val(2200);
-                    $('#book-cost-input').val(getBookCostBase(24));
                 }
                 updateTotals();
             });
@@ -525,9 +514,9 @@
                 const method = $(this).val();
                 const container = $('#stripe-input-container');
                 if (method === 'stripe') {
-                    container.slideDown(200);
+                    container.slideDown(1000);
                 } else {
-                    container.slideUp(200);
+                    container.slideUp(1000);
                 }
             });
 

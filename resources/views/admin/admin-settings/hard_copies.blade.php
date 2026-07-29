@@ -13,23 +13,23 @@
     <div class="as-hardcopies-2">
         <div class="portal-card as-hardcopies-3">
             <div class="as-hardcopies-4">Total</div>
-            <div class="as-hardcopies-5" id="stat-total">-</div>
+            <div class="as-hardcopies-5" id="stat-total">0</div>
         </div>
         <div class="portal-card as-hardcopies-6">
             <div class="as-hardcopies-4">Active</div>
-            <div class="as-hardcopies-5" id="stat-active">-</div>
+            <div class="as-hardcopies-5" id="stat-active">0</div>
         </div>
         <div class="portal-card as-hardcopies-7">
             <div class="as-hardcopies-4">Inactive</div>
-            <div class="as-hardcopies-5" id="stat-inactive">-</div>
+            <div class="as-hardcopies-5" id="stat-inactive">0</div>
         </div>
         <div class="portal-card as-hardcopies-8">
             <div class="as-hardcopies-4">Shipped</div>
-            <div class="as-hardcopies-5" id="stat-shipped">-</div>
+            <div class="as-hardcopies-5" id="stat-shipped">0</div>
         </div>
         <div class="portal-card as-hardcopies-9">
             <div class="as-hardcopies-4">Delivered</div>
-            <div class="as-hardcopies-5" id="stat-delivered">-</div>
+            <div class="as-hardcopies-5" id="stat-delivered">0</div>
         </div>
     </div>
 
@@ -240,6 +240,14 @@
 @section('portal_scripts')
     <script>
         $(document).ready(function () {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
+            $('#shipment-edit-ship-date').attr('min', todayStr);
+            $('#shipment-edit-est-delivery').attr('min', todayStr);
+
             function showToast(title, body, isError = false) {
                 $('#toast-title').text(title).css('color', isError ? '#ef4444' : '#10b981');
                 $('#toast-body').text(body);
@@ -308,8 +316,8 @@
                     }
                     $('#view-tracking').html(trackingHtml);
 
-                    $('#view-ship-date').text(item.ship_date ? new Date(item.ship_date).toLocaleDateString() : '-');
-                    $('#view-est-delivery').text(item.estimated_delivery ? new Date(item.estimated_delivery).toLocaleDateString() : '-');
+                    $('#view-ship-date').text(formatDate(item.ship_date));
+                    $('#view-est-delivery').text(formatDate(item.estimated_delivery));
 
                     $('#view-contact-name').text(contactName);
                     $('#view-company-name').text(companyName);
@@ -406,6 +414,7 @@
                         }
                         
                         closeEditModal();
+                        updateStats(allHardCopies);
                         filterAndPaginate();
                         showToast('Success', 'Shipment updated successfully.', false);
                     },
@@ -448,16 +457,28 @@
                 return parts.join(', ');
             }
 
+            function formatDate(dateStr) {
+                if (!dateStr) return '-';
+                const dateObj = new Date(dateStr);
+                if (typeof dateStr === 'string' && dateStr.length === 10 && dateStr.includes('-')) {
+                    const parts = dateStr.split('-');
+                    return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                }
+                return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
             function updateStats(items) {
                 const total = items.length;
                 const active = items.filter(item => item.subscription && item.subscription.isActive).length;
                 const inactive = items.filter(item => !item.subscription || !item.subscription.isActive).length;
                 const shipped = items.filter(item => (item.status || '').toLowerCase() === 'shipped').length;
+                const delivered = items.filter(item => (item.status || '').toLowerCase() === 'delivered').length;
 
                 $('#stat-total').text(total);
                 $('#stat-active').text(active);
                 $('#stat-inactive').text(inactive);
                 $('#stat-shipped').text(shipped);
+                $('#stat-delivered').text(delivered);
             }
 
             function filterAndPaginate() {
@@ -516,7 +537,7 @@
                 // 3. Render only rows for current page
                 $tbody.empty();
                 if (totalEntries === 0) {
-                    $tbody.append(`<tr><td class="as-hardcopies-50" colspan="6">No hard copy subscriptions found</td></tr>`);
+                    $tbody.append(`<tr><td class="as-hardcopies-50" colspan="10">No hard copy subscriptions found</td></tr>`);
                 } else {
                     const pageRows = filteredRows.slice(startIndex, endIndex);
                     pageRows.forEach(item => {
@@ -544,8 +565,8 @@
                                 <td class="as-hardcopies-53">${item.item_name || ''}</td>
                                 <td class="as-hardcopies-55">${item.carrier || '-'}</td>
                                 <td class="as-hardcopies-55">${item.tracking_url ? `<a class="as-hardcopies-56" href="${item.tracking_url}" target="_blank">${item.tracking_id || 'Link'}</a>` : (item.tracking_id || '-')}</td>
-                                <td class="as-hardcopies-55">${item.ship_date ? new Date(item.ship_date).toLocaleDateString() : '-'}</td>
-                                <td class="as-hardcopies-55">${item.estimated_delivery ? new Date(item.estimated_delivery).toLocaleDateString() : '-'}</td>
+                                <td class="as-hardcopies-55">${formatDate(item.ship_date)}</td>
+                                <td class="as-hardcopies-55">${formatDate(item.estimated_delivery)}</td>
                                 <td><span class="as-hardcopies-57" style="${pillColor}">${shipmentStatus}</span></td>
                                 <td class="as-classifieds-76">
                                     <div class="dropdown table-dropdown-container">
@@ -711,7 +732,7 @@
             }
 
             // Load data from API
-            $tbody.html(`<tr><td class="as-hardcopies-50" colspan="6"><i class="bi bi-arrow-repeat spin as-hardcopies-59"></i> Loading hard copies...</td></tr>`);
+            $tbody.html(`<tr><td class="as-hardcopies-50" colspan="10"><i class="bi bi-arrow-repeat spin as-hardcopies-59"></i> Loading hard copies...</td></tr>`);
 
             $('<style>')
                 .prop('type', 'text/css')
@@ -738,7 +759,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching hard copies:', error);
-                    $tbody.html(`<tr><td class="as-hardcopies-60" colspan="6">Failed to load hard copy subscriptions. Please try again later.</td></tr>`);
+                    $tbody.html(`<tr><td class="as-hardcopies-60" colspan="10">Failed to load hard copy subscriptions. Please try again later.</td></tr>`);
                 }
             });
 

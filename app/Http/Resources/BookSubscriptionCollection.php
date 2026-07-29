@@ -44,6 +44,7 @@ class BookSubscriptionCollection extends ResourceCollection
                 'subscription_id' => $bookSub->subscription_id,
                 'carrier' => $bookSub->carrier,
                 'tracking_id' => $bookSub->tracking_id,
+                'tracking_url' => $bookSub->tracking_url,
                 'ship_date' => $bookSub->ship_date,
                 'estimated_delivery' => $bookSub->estimated_delivery,
                 'status' => $bookSub->status,

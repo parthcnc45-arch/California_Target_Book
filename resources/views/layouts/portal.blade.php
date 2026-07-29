@@ -121,8 +121,8 @@
             <verify-bank-modal v-if="showVerifyBankModal" @close="showVerifyBankModal = false"></verify-bank-modal>
         @endif
         
-        @if($sub['role'] === 'subscriber' && !empty($invoice))
-            <invoice-modal v-if="showInvoiceModal" :invoice="{{ json_encode($sub['invoice']) }}" @close="showInvoiceModal = false"></invoice-modal>
+        @if(!empty($sub) && !empty($sub['role']) && $sub['role'] === 'subscriber' && !empty($invoice))
+            <invoice-modal v-if="showInvoiceModal" :invoice="{{ json_encode($sub['invoice'] ?? null) }}" @close="showInvoiceModal = false"></invoice-modal>
         @endif
     </main>
 </div>

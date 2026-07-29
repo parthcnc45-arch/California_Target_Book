@@ -207,12 +207,8 @@
                 <h3 class="modal-title">Create Add-on Account</h3>
                 <form id="create-addon-form" novalidate>
                     <div class="form-group">
-                        <label class="form-label">First Name</label>
-                        <input type="text" id="addon-create-first" class="form-input" maxlength="255">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" id="addon-create-last" class="form-input" maxlength="255">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" id="addon-create-name" class="form-input" required maxlength="255" placeholder="e.g. John Smith">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email Address *</label>
@@ -860,8 +856,7 @@
 
             // ---------- 5. CREATE ADDON/SUBSCRIBER ----------
             $('#btn-trigger-create-addon').on('click', function() {
-                $('#addon-create-first').val('');
-                $('#addon-create-last').val('');
+                $('#addon-create-name').val('');
                 $('#addon-create-email').val('');
                 $('#addon-create-error').hide().text('');
                 $('#addon-create-success').hide().text('');
@@ -870,8 +865,7 @@
 
             $('#btn-cancel-create-addon').on('click', function() {
                 $('#create-addon-modal').hide();
-                $('#addon-create-first').val('');
-                $('#addon-create-last').val('');
+                $('#addon-create-name').val('');
                 $('#addon-create-email').val('');
                 $('#addon-create-error').hide().text('');
                 $('#addon-create-success').hide().text('');
@@ -879,13 +873,27 @@
 
             $('#create-addon-form').on('submit', function(e) {
                 e.preventDefault();
-                const first = $('#addon-create-first').val().trim();
-                const last = $('#addon-create-last').val().trim();
+                const name = $('#addon-create-name').val().trim();
                 const email = $('#addon-create-email').val().trim();
 
+                if (!name) {
+                    $('#addon-create-error').text('Full Name is required.').show();
+                    return;
+                }
                 if (!email) {
                     $('#addon-create-error').text('Email address is required.').show();
                     return;
+                }
+
+                // Split name into first and last name
+                const spaceIndex = name.indexOf(' ');
+                let first = '';
+                let last = '';
+                if (spaceIndex === -1) {
+                    first = name;
+                } else {
+                    first = name.substring(0, spaceIndex).trim();
+                    last = name.substring(spaceIndex + 1).trim();
                 }
 
                 $('#btn-submit-create-addon').prop('disabled', true).text('SUBMITTING...');

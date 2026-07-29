@@ -1122,7 +1122,8 @@ main:has(.login-container-wrapper) footer.footer-ctb {
 }
 
 body.landing-body .login-container-wrapper {
-  padding-top: 100px !important;
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
 }
 
 body.landing-body footer.footer-ctb .footer-nav,

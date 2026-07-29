@@ -2934,10 +2934,10 @@ main:has(.login-container-wrapper) footer:not(:has(.footer-container)) {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    min-height: auto;
     width: 100%;
     background-color: #f9fafb;
-    padding: 24px;
+    padding: 40px 24px;
     box-sizing: border-box;
 }
 

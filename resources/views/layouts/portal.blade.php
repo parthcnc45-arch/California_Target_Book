@@ -129,6 +129,7 @@
 @endsection
 
 @section('scripts')
-@yield('portal_scripts')
-@include('components.admin-menu-script')
+    <script src="/js/table-rows-filter.js"></script>
+    @yield('portal_scripts')
+    @include('components.admin-menu-script')
 @endsection

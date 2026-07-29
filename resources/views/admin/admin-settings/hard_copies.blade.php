@@ -440,7 +440,20 @@
 
             let allHardCopies = [];
             let currentPage = 1;
-            const pageSize = 5;
+            let pageSize = 10;
+
+            initRowsPerPage({
+                targetSelector: '.as-hardcopies-17',
+                itemClass: 'as-hardcopies-18',
+                labelClass: 'as-hardcopies-19',
+                labelName: 'Per page',
+                defaultSize: pageSize,
+                onChange: function(newSize) {
+                    pageSize = newSize;
+                    currentPage = 1;
+                    filterAndPaginate();
+                }
+            });
 
             function formatAddress(addr) {
                 if (!addr) return 'Not Specified';

@@ -374,7 +374,17 @@
 
             let rateOptions = [];
             let currentPage = 1;
-            const pageSize = 8; // Screen lists 8 items in example page size.
+            let pageSize = 10;
+
+            initRowsPerPage({
+                targetSelector: '.filter-row-classifieds',
+                defaultSize: pageSize,
+                onChange: function(newSize) {
+                    pageSize = newSize;
+                    currentPage = 1;
+                    loadClassifieds();
+                }
+            });
 
             function loadRateOptions(callback) {
                 $.ajax({

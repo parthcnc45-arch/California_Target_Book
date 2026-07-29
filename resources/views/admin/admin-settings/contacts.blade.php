@@ -257,7 +257,20 @@
             
             let allContacts = [];
             let currentPage = 1;
-            const pageSize = 5;
+            let pageSize = 10;
+
+            initRowsPerPage({
+                targetSelector: '.as-contacts-15',
+                itemClass: 'as-contacts-16',
+                labelClass: 'as-contacts-17',
+                labelName: 'Per page',
+                defaultSize: pageSize,
+                onChange: function(newSize) {
+                    pageSize = newSize;
+                    currentPage = 1;
+                    filterAndPaginate();
+                }
+            });
 
             function formatDate(dateStr) {
                 if (!dateStr) return 'N/A';

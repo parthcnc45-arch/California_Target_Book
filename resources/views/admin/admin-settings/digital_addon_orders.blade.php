@@ -137,7 +137,20 @@
 
             let allOrders = [];
             let currentPage = 1;
-            const pageSize = 5;
+            let pageSize = 10;
+
+            initRowsPerPage({
+                targetSelector: '.as-digital-16',
+                itemClass: 'as-digital-17',
+                labelClass: 'as-digital-18',
+                labelName: 'Per page',
+                defaultSize: pageSize,
+                onChange: function(newSize) {
+                    pageSize = newSize;
+                    currentPage = 1;
+                    filterAndPaginate();
+                }
+            });
 
             function showToast(title, body, isError = false) {
                 $('#toast-title').text(title).css('color', isError ? '#ef4444' : '#10b981');

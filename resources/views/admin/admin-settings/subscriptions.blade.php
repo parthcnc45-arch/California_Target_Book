@@ -121,7 +121,20 @@
 
             let allSubscriptions = [];
             let currentPage = 1;
-            const pageSize = 10;
+            let pageSize = 10;
+
+            initRowsPerPage({
+                targetSelector: '.as-subscriptions-15',
+                itemClass: 'as-subscriptions-16',
+                labelClass: 'as-subscriptions-17',
+                labelName: 'Per page',
+                defaultSize: pageSize,
+                onChange: function(newSize) {
+                    pageSize = newSize;
+                    currentPage = 1;
+                    filterAndPaginate();
+                }
+            });
 
             function formatDate(dateStr) {
                 if (!dateStr) return '';

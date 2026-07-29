@@ -204,7 +204,7 @@
     <div id="create-addon-modal" class="ctb-modal">
         <div class="ctb-modal-box as-sub-detail-10">
             <div class="modal-body">
-                <h3 class="modal-title">Create Addon Account</h3>
+                <h3 class="modal-title">Create Add-on Account</h3>
                 <form id="create-addon-form" novalidate>
                     <div class="form-group">
                         <label class="form-label">First Name</label>

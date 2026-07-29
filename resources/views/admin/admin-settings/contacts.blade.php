@@ -106,7 +106,7 @@
           </div>
           
           <div class="as-contacts-34">
-              <h3 class="as-contacts-35">Account</h3>
+              <h3 class="as-contacts-35">Account Information</h3>
               
               <div class="as-contacts-36">
                   <div class="as-contacts-37">
@@ -115,7 +115,7 @@
                   </div>
                   <div class="as-contacts-37">
                       <span class="as-contacts-38">Email</span>
-                      <span class="as-contacts-40" id="modal-email"></span>
+                      <span class="as-contacts-39" id="modal-email"></span>
                   </div>
                   <div class="as-contacts-37">
                       <span class="as-contacts-38">Subscribed On</span>
@@ -127,7 +127,7 @@
                   </div>
                   <div class="as-contacts-37">
                       <span class="as-contacts-38">Company</span>
-                      <span class="as-contacts-40" id="modal-company"></span>
+                      <span class="as-contacts-39" id="modal-company"></span>
                   </div>
                   <div class="as-contacts-37">
                       <span class="as-contacts-38">Phone Number</span>
@@ -135,15 +135,15 @@
                   </div>
                   <div class="as-contacts-37">
                       <span class="as-contacts-38">Stripe Customer ID</span>
-                      <span class="as-contacts-40" id="modal-stripe-id"></span>
+                      <span class="as-contacts-39" id="modal-stripe-id"></span>
                   </div>
                   <div class="as-contacts-37">
-                      <span class="as-contacts-38">Account Id</span>
+                      <span class="as-contacts-38">Account ID</span>
                       <span class="as-contacts-39" id="modal-account-id"></span>
                   </div>
                   <div class="as-contacts-37">
                       <span class="as-contacts-38">Subscription ID</span>
-                      <span class="as-contacts-40" id="modal-subscription-id"></span>
+                      <span class="as-contacts-39" id="modal-subscription-id"></span>
                   </div>
               </div>
               
@@ -209,12 +209,8 @@
                 <form id="edit-account-form" novalidate>
                     <div class="as-contacts-63">
                         <div class="as-contacts-64">
-                            <label class="as-contacts-50">First Name *</label>
-                            <input class="as-contacts-65" type="text" id="edit-first-name" required maxlength="255">
-                        </div>
-                        <div class="as-contacts-64">
-                            <label class="as-contacts-50">Last Name</label>
-                            <input class="as-contacts-65" type="text" id="edit-last-name" maxlength="255">
+                            <label class="as-contacts-50">Full Name *</label>
+                            <input class="as-contacts-65" type="text" id="edit-full-name" required maxlength="255">
                         </div>
                     </div>
 
@@ -529,13 +525,15 @@
                 }
 
                 // Headers
-                const headers = ['Name', 'Email', 'Company', 'Is Active'];
-                
+                const headers = ['Name', 'Email', 'Company', 'Role', 'Subscribed On', 'Is Active'];
+                 
                 // Rows
                 const rows = allContacts.map(u => [
                     u.name || '',
                     u.email || '',
                     u.company || '',
+                    u.role ? u.role.charAt(0).toUpperCase() + u.role.slice(1) : 'Subscriber',
+                    formatDate(u.createdAt),
                     u.hasActiveSubscription ? 'Yes' : 'No'
                 ]);
 
@@ -639,8 +637,7 @@
             let currentEditContactId = null;
             const $editModal = $('#edit-account-modal');
             const $editForm = $('#edit-account-form');
-            const $firstNameInput = $('#edit-first-name');
-            const $lastNameInput = $('#edit-last-name');
+            const $fullNameInput = $('#edit-full-name');
             const $emailInput = $('#edit-email');
             const $phoneInput = $('#edit-phone-number');
             const $notesInput = $('#edit-notes');
@@ -656,8 +653,7 @@
                 $editSuccessDiv.hide().text('');
                 
                 // Show loading state by clearing inputs and disabling them briefly
-                $firstNameInput.val('Loading...').prop('disabled', true);
-                $lastNameInput.val('Loading...').prop('disabled', true);
+                $fullNameInput.val('Loading...').prop('disabled', true);
                 $emailInput.val('Loading...').prop('disabled', true);
                 $phoneInput.val('Loading...').prop('disabled', true);
                 $notesInput.val('Loading...').prop('disabled', true);
@@ -675,29 +671,24 @@
                     success: function(res) {
                         let contact = res.data || res;
 
-                        let fName = contact.first_name || '';
-                        let lName = contact.last_name || '';
-                        if (!fName && !lName && contact.name) {
-                            let parts = contact.name.split(' ');
-                            fName = parts[0];
-                            lName = parts.slice(1).join(' ');
+                        let fullName = contact.name;
+                        if (!fullName && (contact.first_name || contact.last_name)) {
+                            fullName = [contact.first_name, contact.last_name].filter(Boolean).join(' ');
                         }
 
-                        $firstNameInput.val(fName).prop('disabled', false);
-                        $lastNameInput.val(lName).prop('disabled', false);
+                        $fullNameInput.val(fullName).prop('disabled', false);
                         $emailInput.val(contact.email || '').prop('disabled', false);
                         $phoneInput.val(contact.phone_number || contact.phone || '').prop('disabled', false);
                         $notesInput.val(contact.notes || '').prop('disabled', false);
                         $editSubmitBtn.prop('disabled', false);
                         
-                        $firstNameInput.focus();
+                        $fullNameInput.focus();
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching contact details for edit:', error);
                         $editErrorDiv.text('Failed to load contact data. Please try again.').show();
                         // Re-enable to allow cancel
-                        $firstNameInput.prop('disabled', false).val('');
-                        $lastNameInput.prop('disabled', false).val('');
+                        $fullNameInput.prop('disabled', false).val('');
                         $emailInput.prop('disabled', false).val('');
                         $phoneInput.prop('disabled', false).val('');
                         $notesInput.prop('disabled', false).val('');
@@ -707,8 +698,7 @@
 
             function closeEditModal() {
                 $editModal.hide();
-                $firstNameInput.val('');
-                $lastNameInput.val('');
+                $fullNameInput.val('');
                 $emailInput.val('');
                 $phoneInput.val('');
                 $notesInput.val('');
@@ -723,15 +713,14 @@
                 $editErrorDiv.hide().text('');
                 $editSuccessDiv.hide().text('');
 
-                const firstName = $firstNameInput.val().trim();
-                const lastName = $lastNameInput.val().trim();
+                const fullName = $fullNameInput.val().trim();
                 const email = $emailInput.val().trim();
                 const phoneNumber = $phoneInput.val().trim();
                 const notes = $notesInput.val().trim();
 
-                if (!firstName) {
-                    $editErrorDiv.text('First Name is required.').show();
-                    $firstNameInput.trigger('focus');
+                if (!fullName) {
+                    $editErrorDiv.text('Full Name is required.').show();
+                    $fullNameInput.trigger('focus');
                     return;
                 }
 
@@ -740,6 +729,10 @@
                     $emailInput.trigger('focus');
                     return;
                 }
+
+                const nameParts = fullName.split(' ');
+                const firstName = nameParts[0];
+                const lastName = nameParts.slice(1).join(' ');
 
                 $editSubmitBtn.prop('disabled', true).css('opacity', '0.6');
 

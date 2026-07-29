@@ -77,7 +77,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="detail-label">Account Id</td>
+                        <td class="detail-label">Account ID</td>
                         <td class="detail-value">
                             <span class="detail-value-span">{{ $contact->id }}</span>
                         </td>

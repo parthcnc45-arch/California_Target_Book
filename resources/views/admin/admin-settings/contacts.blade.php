@@ -73,12 +73,11 @@
                 <thead>
                     <tr>
                         <th class="as-contacts-21">Status</th>
-                        <th class="as-contacts-22">Name</th>
-                        <th class="as-contacts-23">Email</th>
+                        <th class="as-contacts-22">Customer / Email</th>
                         <th class="as-contacts-22">Company</th>
                         <th class="as-contacts-23">Role</th>
                         <th class="as-contacts-23">Subscribed On</th>
-                        <th class="as-contacts-24">Action</th>
+                        <th class="as-contacts-24 text-center" style="text-align: center !important;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -346,7 +345,7 @@
                 // 3. Render only rows for current page
                 $tbody.empty();
                 if (totalEntries === 0) {
-                    $tbody.append(`<tr><td class="as-contacts-67" colspan="7">No contacts found</td></tr>`);
+                    $tbody.append(`<tr><td class="as-contacts-67" colspan="6">No contacts found</td></tr>`);
                 } else {
                     const pageRows = filteredRows.slice(startIndex, endIndex);
                     pageRows.forEach(item => {
@@ -356,13 +355,15 @@
                         const rowHtml = `
                             <tr data-id="${item.id}">
                                 <td><span class="status-pill-completed" style="${statusStyle}">${item.hasActiveSubscription ? 'Active' : 'Inactive'}</span></td>
-                                <td class="fw-semibold as-contacts-68">${item.name || 'Not Specified'}</td>
-                                <td><a class="as-contacts-68" href="mailto:${item.email}">${item.email}</a></td>
+                                <td class="as-digital-38">
+                                    <div class="as-digital-39">${item.name || 'Not Specified'}</div>
+                                    <div class="as-digital-40">${item.email}</div>
+                                </td>
                                 <td class="as-contacts-68">${item.company || 'Not Specified'}</td>
                                 <td class="as-contacts-68">${roleText}</td>
                                 <td class="as-contacts-68">${formatDate(item.createdAt)}</td>
-                                <td class="as-classifieds-76">
-                                    <div class="dropdown table-dropdown-container">
+                                <td class="as-classifieds-76 text-center" style="text-align: center !important;">
+                                    <div class="dropdown table-dropdown-container" style="display: inline-block;">
                                         <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
                                             <i class="bi bi-three-dots"></i>
                                         </button>
@@ -952,7 +953,7 @@
             });
 
             // Load data from API
-            $tbody.html(`<tr><td class="as-contacts-67" colspan="7"><i class="bi bi-arrow-repeat spin as-contacts-72"></i> Loading contacts...</td></tr>`);
+            $tbody.html(`<tr><td class="as-contacts-67" colspan="6"><i class="bi bi-arrow-repeat spin as-contacts-72"></i> Loading contacts...</td></tr>`);
 
             $('<style>')
                 .prop('type', 'text/css')
@@ -978,7 +979,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching contacts:', error);
-                    $tbody.html(`<tr><td class="as-contacts-73" colspan="7">Failed to load contacts. Please try again later.</td></tr>`);
+                    $tbody.html(`<tr><td class="as-contacts-73" colspan="6">Failed to load contacts. Please try again later.</td></tr>`);
                 }
             });
 

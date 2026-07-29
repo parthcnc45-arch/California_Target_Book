@@ -144,7 +144,7 @@
                         <th class="as-classifieds-31">Status</th>
                         <th class="as-classifieds-30">Payment Status</th>
                         <th class="as-classifieds-31">Rate</th>
-                        <th class="as-classifieds-32"></th>
+                        <th class="as-classifieds-32 text-center" style="text-align: center !important;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -586,8 +586,8 @@
                             <td><span class="${badgeClass}">${displayStatus}</span></td>
                             <td><span style="${paymentBadgeStyle}">${pStatus}</span></td>
                             <td class="as-classifieds-75">${ad.rate_amount ? '$' + parseFloat(ad.rate_amount).toFixed(2) : '—'}</td>
-                            <td class="as-classifieds-76">
-                                <div class="dropdown table-dropdown-container">
+                            <td class="as-classifieds-76 text-center" style="text-align: center !important;">
+                                <div class="dropdown table-dropdown-container" style="display: inline-block;">
                                     <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
                                         <i class="bi bi-three-dots"></i>
                                     </button>

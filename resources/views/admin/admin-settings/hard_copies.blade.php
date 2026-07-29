@@ -80,7 +80,7 @@
                         <th class="as-hardcopies-28">Ship Date</th>
                         <th class="as-hardcopies-28">Est. Delivery</th>
                         <th class="as-hardcopies-29">Shipment</th>
-                        <th class="as-hardcopies-30">Action</th>
+                        <th class="as-hardcopies-30 text-center" style="text-align: center !important;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -581,8 +581,8 @@
                                 <td class="as-hardcopies-55">${formatDate(item.ship_date)}</td>
                                 <td class="as-hardcopies-55">${formatDate(item.estimated_delivery)}</td>
                                 <td><span class="as-hardcopies-57" style="${pillColor}">${shipmentStatus}</span></td>
-                                <td class="as-classifieds-76">
-                                    <div class="dropdown table-dropdown-container">
+                                <td class="as-classifieds-76 text-center" style="text-align: center !important;">
+                                    <div class="dropdown table-dropdown-container" style="display: inline-block;">
                                         <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
                                             <i class="bi bi-three-dots"></i>
                                         </button>

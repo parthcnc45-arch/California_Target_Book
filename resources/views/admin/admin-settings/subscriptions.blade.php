@@ -79,13 +79,12 @@
                 <thead>
                     <tr>
                         <th class="as-subscriptions-22">Status</th>
-                        <th class="as-subscriptions-23">Company</th>
-                        <th class="as-subscriptions-24">Contact</th>
+                        <th class="as-subscriptions-24">Customer / Email</th>
                         <th class="as-subscriptions-25">Product</th>
                         <th class="as-subscriptions-26">Term</th>
                         <th class="as-subscriptions-27">Starts On</th>
                         <th class="as-subscriptions-27">Ends On</th>
-                        <th class="as-subscriptions-28">Action</th>
+                        <th class="as-subscriptions-28 text-center" style="text-align: center !important;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -184,14 +183,14 @@
 
                 // 1. Get filtered list of rows
                 const filteredRows = allSubscriptions.filter(sub => {
-                    const company = (sub.company || '').toLowerCase();
+                    const email = (sub.baseAccount ? sub.baseAccount.email : '').toLowerCase();
                     const name = (sub.baseAccount ? sub.baseAccount.name : '').toLowerCase();
                     const productName = (sub.productName || '').toLowerCase();
                     const status = sub.isActive ? 'active' : 'inactive';
                     const startsOnStr = sub.cycle ? sub.cycle.starts_on : null;
                     const endsOnStr = sub.cycle ? sub.cycle.ends_on : null;
 
-                    const matchesSearch = company.includes(searchVal) || name.includes(searchVal) || productName.includes(searchVal);
+                    const matchesSearch = email.includes(searchVal) || name.includes(searchVal) || productName.includes(searchVal);
                     const matchesStatus = statusVal === 'all' || status === statusVal;
                     const matchesFrequency = freqVal === 'all' || String(sub.frequency) === freqVal;
 
@@ -225,7 +224,7 @@
                 // 3. Render only rows for current page
                 $tbody.empty();
                 if (totalEntries === 0) {
-                    $tbody.append(`<tr><td class="as-subscriptions-32" colspan="8">No subscriptions found</td></tr>`);
+                    $tbody.append(`<tr><td class="as-subscriptions-32" colspan="7">No subscriptions found</td></tr>`);
                 } else {
                     const pageRows = filteredRows.slice(startIndex, endIndex);
                     pageRows.forEach(sub => {
@@ -236,14 +235,16 @@
                         const rowHtml = `
                             <tr>
                                 <td><span class="status-pill-completed" style="${statusStyle}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
-                                <td class="fw-semibold as-subscriptions-33">${sub.company || ''}</td>
-                                <td><a class="as-subscriptions-34" href="#">${sub.baseAccount ? sub.baseAccount.name : 'N/A'}</a></td>
+                                <td class="as-digital-38">
+                                    <div class="as-digital-39">${sub.baseAccount ? sub.baseAccount.name : 'N/A'}</div>
+                                    <div class="as-digital-40">${sub.baseAccount ? sub.baseAccount.email : ''}</div>
+                                </td>
                                 <td class="as-subscriptions-35">${sub.productName || '—'}</td>
                                 <td class="as-subscriptions-36">${formatFrequency(sub.frequency)}</td>
                                 <td class="as-subscriptions-36">${formatDate(startsOnStr)}</td>
                                 <td class="as-subscriptions-36">${formatDate(endsOnStr)}</td>
-                                <td class="as-classifieds-76">
-                                    <div class="dropdown table-dropdown-container">
+                                <td class="as-classifieds-76 text-center" style="text-align: center !important;">
+                                    <div class="dropdown table-dropdown-container" style="display: inline-block;">
                                         <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
                                             <i class="bi bi-three-dots"></i>
                                         </button>
@@ -413,7 +414,7 @@
             }
 
             // Load data from API
-            $tbody.html(`<tr><td class="as-subscriptions-32" colspan="8"><i class="bi bi-arrow-repeat spin as-subscriptions-38"></i> Loading subscriptions...</td></tr>`);
+            $tbody.html(`<tr><td class="as-subscriptions-32" colspan="7"><i class="bi bi-arrow-repeat spin as-subscriptions-38"></i> Loading subscriptions...</td></tr>`);
 
             $('<style>')
                 .prop('type', 'text/css')
@@ -439,7 +440,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching subscriptions:', error);
-                    $tbody.html(`<tr><td class="as-subscriptions-39" colspan="8">Failed to load subscriptions. Please try again later.</td></tr>`);
+                    $tbody.html(`<tr><td class="as-subscriptions-39" colspan="7">Failed to load subscriptions. Please try again later.</td></tr>`);
                 }
             });
         });

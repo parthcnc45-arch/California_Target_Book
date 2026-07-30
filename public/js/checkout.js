@@ -319,6 +319,13 @@ $(document).ready(function () {
 
 
 
+    // Real-time email validation clear
+    $(document).on('input keyup', 'input[name="email"]', function () {
+        $(this).removeClass('is-invalid');
+        $(this).siblings('.invalid-feedback').text('Required');
+        $(this).siblings('.form-label, .control-label').removeClass('is-invalid');
+    });
+
     // Real-time password validation
     $(document).on('input keyup', 'input[name="password"], input[name="password_confirmation"]', function () {
         let passwordInput = $('input[name="password"]');
@@ -562,7 +569,20 @@ $(document).ready(function () {
                             let firstErrorKey = Object.keys(err.responseJSON.errors)[0];
                             msg = err.responseJSON.errors[firstErrorKey][0];
                         }
-                        alert(msg);
+                        
+                        if (msg.toLowerCase().includes('email is already registered') || msg.toLowerCase().includes('email is already in use')) {
+                            let $emailInput = $('input[name="email"]');
+                            $emailInput.addClass('is-invalid');
+                            $emailInput.siblings('.invalid-feedback').text(msg).show();
+                            $emailInput.siblings('.form-label, .control-label').addClass('is-invalid');
+                            
+                            // Scroll to email field
+                            $('html, body').animate({
+                                scrollTop: $emailInput.offset().top - 100
+                            }, 500);
+                        } else {
+                            alert(msg);
+                        }
                         $btn.prop('disabled', false).text(originalText);
                     }
                 });

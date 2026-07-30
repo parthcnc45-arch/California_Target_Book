@@ -343,6 +343,11 @@ class RegisterController extends Controller
         if ($userEmail) {
             $existingUser = User::where('email', $userEmail)->first();
             if ($existingUser) {
+                if (!Auth::check() || Auth::user()->id !== $existingUser->id) {
+                    return $request->wantsJson()
+                    ? new JsonResponse(['success' => false, 'message' => 'This email is already registered. Please log in to your account first.'], 422)
+                    : redirect()->back()->withErrors(['email' => 'This email is already registered. Please log in to your account first.'])->withInput();
+                }
                 $userExists = true;
                 $isVerified = (int)$existingUser->verified === 1;
             }
@@ -619,6 +624,13 @@ class RegisterController extends Controller
         $txDesc = !empty($selectedNames) ? implode(', ', $selectedNames) : ($validated['deck_title'] ?? 'Post-Election Deck/Book Purchase');
 
         // 1. Create or Update User
+        if ($user && (!Auth::check() || Auth::user()->id !== $user->id)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This email is already registered. Please log in to your account first.',
+            ], 422);
+        }
+
         if (!$user) {
             $password = !empty($validated['password']) ? bcrypt($validated['password']) : bcrypt(\Illuminate\Support\Str::random(10));
             // Find or create default company
@@ -668,7 +680,21 @@ class RegisterController extends Controller
                 $user->save();
             }
 
-            $cust = \Stripe\Customer::retrieve($user->stripe_id);
+            try {
+                $cust = \Stripe\Customer::retrieve($user->stripe_id);
+            } catch (\Exception $stripeEx) {
+                if (strpos($stripeEx->getMessage(), 'No such customer') !== false) {
+                    $customer = \Stripe\Customer::create([
+                        'email' => $user->email,
+                        'name' => $user->first_name . ' ' . $user->last_name,
+                    ]);
+                    $user->stripe_id = $customer->id;
+                    $user->save();
+                    $cust = $customer;
+                } else {
+                    throw $stripeEx;
+                }
+            }
             $amount = (int)$validated['custom_total_amount'];
             $chargeId = null;
 

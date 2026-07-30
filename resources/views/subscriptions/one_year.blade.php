@@ -82,6 +82,13 @@
         <form id="payment-form">
             <h3 class="section-title checkout-mt40">Account Information</h3>
 
+            @guest
+            <div class="checkout-info-banner" style="display: flex; align-items: center; gap: 12px; background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; line-height: 1.5; font-family: 'Plus Jakarta Sans', sans-serif;">
+                <i class="bi bi-info-circle" style="font-size: 18px; color: #c52026; flex-shrink: 0; line-height: 1;"></i>
+                <span>Already a subscriber? <a href="{{ route('login') }}" style="color: #c52026; font-weight: 600; text-decoration: underline;">Sign in</a> to check out faster — no need to fill out your details again.</span>
+            </div>
+            @endguest
+
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">First Name <span class="required">*</span></label>

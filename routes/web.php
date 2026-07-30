@@ -213,6 +213,11 @@ Route::group([
         'as' => 'auth.account.subscriptions.cancel',
     ]);
 
+    Route::post('/subscriptions/reactivate-auto-renew', [
+        'uses' => 'Auth\AccountController@reactivateAutoRenew',
+        'as' => 'auth.account.subscriptions.reactivate_auto_renew',
+    ]);
+
     Route::post('/subscriptions/addons', [
         'uses' => 'Auth\AccountController@inviteAddon',
         'as' => 'auth.account.subscriptions.addons.invite',

@@ -66,7 +66,7 @@ class AccountController extends Controller
         $purchasedAddons = $digitalAddons->concat($bookAddons);
 
         $user->load('company.address');
-        $sub = $user->latestSubscription();
+        $sub = $user->latestSubscriptionIncludingExpired();
 
         if (empty($sub)) {
             $prevSub = $user->subscriptions()->first();
@@ -655,10 +655,10 @@ class AccountController extends Controller
 
     public function showRenew(Request $request) {
         $u = Auth::user();
-        $sub = $u->activeSubscription();
+        $sub = $u->latestSubscriptionIncludingExpired();
         if (!$sub) {
             return redirect()->route('auth.account')
-                ->with(['message' => "No active subscription found."]);
+                ->with(['message' => "No subscription found."]);
         }
         $cycle = $sub->getLatestCycle();
         if (!$cycle || empty($cycle->ends_on)) {
@@ -716,7 +716,7 @@ class AccountController extends Controller
         $validator->validate();
 
         $user = Auth::user();
-        $sub = $user->activeSubscription();
+        $sub = $user->latestSubscriptionIncludingExpired();
 
         if (!empty($data['stripe_token'])) {
             try {
@@ -1012,7 +1012,7 @@ class AccountController extends Controller
     public function cancelSubscription()
     {
         $user = Auth::user();
-        $sub = $user->latestSubscription();
+        $sub = $user->latestSubscriptionIncludingExpired();
 
         if (empty($sub)) {
             return redirect()->back()->with('message', 'No active subscription found.');
@@ -1021,14 +1021,15 @@ class AccountController extends Controller
         try {
             $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
             
-            // 1. Cancel on Stripe if a Stripe subscription ID is linked
+            // 1. Cancel on Stripe (auto-renew off) if a Stripe subscription ID is linked
             if ($sub->wordpress_subscription_id && strpos($sub->wordpress_subscription_id, 'sub_') === 0) {
                 if ($stripeKey) {
                     \Stripe\Stripe::setApiKey($stripeKey);
                     try {
                         $stripeSub = \Stripe\Subscription::retrieve($sub->wordpress_subscription_id);
                         if ($stripeSub && $stripeSub->status !== 'canceled') {
-                            $stripeSub->cancel();
+                            $stripeSub->cancel_at_period_end = true;
+                            $stripeSub->save();
                         }
                     } catch (\Exception $stripeEx) {
                         \Log::warning('Stripe cancel during customer self-cancel failed: ' . $stripeEx->getMessage());
@@ -1041,11 +1042,81 @@ class AccountController extends Controller
             $sub->next_payment = null;
             $sub->save();
 
-            return redirect()->back()->with('message', 'Your subscription has been cancelled successfully.');
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Auto-renewal has been turned off successfully.'
+                ]);
+            }
+
+            return redirect()->back()->with('message', 'Auto-renewal has been turned off successfully.');
 
         } catch (\Exception $e) {
             \Log::error('Subscription Cancel Failed: ' . $e->getMessage());
+            
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to cancel subscription: ' . $e->getMessage()
+                ], 500);
+            }
+            
             return redirect()->back()->with('message', 'Failed to cancel subscription: ' . $e->getMessage());
+        }
+    }
+
+    public function reactivateAutoRenew()
+    {
+        $user = Auth::user();
+        $sub = $user->latestSubscriptionIncludingExpired();
+
+        if (empty($sub)) {
+            return redirect()->back()->with('message', 'No active subscription found.');
+        }
+
+        try {
+            $stripeKey = config('services.stripe.secret') ?: (config('app.STRIPE_KEY') ?: env('STRIPE_KEY'));
+            
+            // 1. Enable auto-renew on Stripe if a Stripe subscription ID is linked
+            if ($sub->wordpress_subscription_id && strpos($sub->wordpress_subscription_id, 'sub_') === 0) {
+                if ($stripeKey) {
+                    \Stripe\Stripe::setApiKey($stripeKey);
+                    try {
+                        $stripeSub = \Stripe\Subscription::retrieve($sub->wordpress_subscription_id);
+                        if ($stripeSub && $stripeSub->status !== 'canceled') {
+                            $stripeSub->cancel_at_period_end = false;
+                            $stripeSub->save();
+                        }
+                    } catch (\Exception $stripeEx) {
+                        \Log::warning('Stripe reactivate during customer request failed: ' . $stripeEx->getMessage());
+                    }
+                }
+            }
+
+            // 2. Update local database
+            $sub->status = 'active';
+            $sub->save();
+
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Auto-renewal has been turned back on successfully.'
+                ]);
+            }
+
+            return redirect()->back()->with('message', 'Auto-renewal has been turned back on successfully.');
+
+        } catch (\Exception $e) {
+            \Log::error('Auto-Renew Reactivate Failed: ' . $e->getMessage());
+            
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to reactivate auto-renewal: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return redirect()->back()->with('message', 'Failed to reactivate auto-renewal: ' . $e->getMessage());
         }
     }
 

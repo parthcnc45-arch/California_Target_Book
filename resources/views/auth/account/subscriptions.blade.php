@@ -30,7 +30,11 @@
                     $status = 'Active';
                     $statusClass = 'badge-active';
                     
-                    if (isset($sub['stripe_data']) && $sub['stripe_data']) {
+                    $localStatus = strtolower($sub['status'] ?? 'active');
+                    if ($localStatus === 'expired' || $localStatus === 'none') {
+                        $status = ucfirst($localStatus);
+                        $statusClass = 'badge-inactive';
+                    } elseif (isset($sub['stripe_data']) && $sub['stripe_data']) {
                         $status = ucfirst($sub['stripe_data']->status);
                         if (strtolower($status) !== 'active' && strtolower($status) !== 'trialing') {
                             $statusClass = 'badge-inactive';
@@ -54,14 +58,59 @@
                             <td class="subscription-info-label">Started</td>
                             <td class="subscription-info-value">{{ $sub['start'] ?? 'N/A' }}</td>
                         </tr>
+                        @php
+                            $isRecurring = false;
+                            if (isset($sub['stripe_data']) && $sub['stripe_data']) {
+                                if (!$sub['stripe_data']->cancel_at_period_end) {
+                                    $isRecurring = true;
+                                }
+                            }
+                        @endphp
                         <tr>
                             <td class="subscription-info-label">Expires</td>
                             <td class="subscription-info-value">{{ $sub['end'] ?? 'N/A' }}</td>
                         </tr>
                         <tr>
                             <td class="subscription-info-label">Renewal</td>
-                            <td class="subscription-info-value">{{ $sub['end'] ?? 'N/A' }}</td>
+                            <td class="subscription-info-value">
+                                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 8px;">
+                                    <div id="auto-renew-status-container">
+                                        {{ $sub['end'] ?? 'N/A' }} 
+                                        @if($isRecurring)
+                                            <span style="background-color: #d1fae5; color: #065f46; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-left: 8px; font-weight: 500; display: inline-block;">Auto-renews</span>
+                                        @else
+                                            <span style="background-color: #f1f5f9; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-left: 8px; font-weight: 500; display: inline-block;">No auto-renew</span>
+                                        @endif
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-right: 8px;">
+                                        @if($sub['status'] !== 'None' && isset($sub['stripe_data']) && $sub['stripe_data'] && $sub['stripe_data']->status !== 'canceled')
+                                            <!-- Cancel Form -->
+                                            <form id="cancel-renew-form" action="{{ route('auth.account.subscriptions.cancel') }}" method="POST" style="margin: 0; display: {{ $isRecurring ? 'inline-block' : 'none' }}; vertical-align: middle;">
+                                                {{ csrf_field() }}
+                                                <label style="position: relative; display: inline-block; width: 44px; height: 24px; margin: 0; cursor: pointer;">
+                                                    <input type="checkbox" checked onchange="confirmAutoRenewToggle(this, false)" style="opacity: 0; width: 0; height: 0; position: absolute;">
+                                                    <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #10b981; transition: .3s; border-radius: 24px;">
+                                                        <span style="position: absolute; height: 16px; width: 16px; left: 24px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; display: block;"></span>
+                                                    </span>
+                                                </label>
+                                            </form>
+
+                                            <!-- Reactivate Form -->
+                                            <form id="reactivate-renew-form" action="{{ route('auth.account.subscriptions.reactivate_auto_renew') }}" method="POST" style="margin: 0; display: {{ !$isRecurring ? 'inline-block' : 'none' }}; vertical-align: middle;">
+                                                {{ csrf_field() }}
+                                                <label style="position: relative; display: inline-block; width: 44px; height: 24px; margin: 0; cursor: pointer;">
+                                                    <input type="checkbox" onchange="confirmAutoRenewToggle(this, true)" style="opacity: 0; width: 0; height: 0; position: absolute;">
+                                                    <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px;">
+                                                        <span style="position: absolute; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; display: block;"></span>
+                                                    </span>
+                                                </label>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
+
                         <tr>
                             <td class="subscription-info-label">Seats</td>
                             <td class="subscription-info-value"><span id="seats-summary-count">{{ count($sub['addons']) }}</span> of {{ (int) ($sub['base_account']->additional_online_users ?? 0) }} used</td>
@@ -319,6 +368,26 @@
                     </button>
                     <button type="button" class="btn-reassign btn-modal-danger" id="btn-remove-submit">
                         Remove
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto-Renew Toggle Confirmation Modal -->
+        <div id="auto-renew-modal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card modal-card-sm">
+                <div class="modal-header modal-header-confirm">
+                    <div class="flex-column-gap-4">
+                        <h3 class="modal-title" id="auto-renew-title">Turn Off Auto-Renew</h3>
+                        <p class="modal-body-text-confirm-p" id="auto-renew-body">Are you sure you want to turn off auto-renewal? Your subscription will remain active until the end of your billing cycle.</p>
+                    </div>
+                </div>
+                <div class="modal-footer modal-footer-confirm">
+                    <button type="button" class="btn-cancel btn-modal-cancel" id="btn-auto-renew-cancel">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-reassign btn-modal-danger" id="btn-auto-renew-submit">
+                        Turn Off
                     </button>
                 </div>
             </div>
@@ -987,6 +1056,109 @@
                     $('#invite-email').prop('disabled', false);
                     $('#btn-invite-submit').prop('disabled', false);
                     checkSeatLimit();
+                }
+            });
+        });
+
+        // Auto Renew Toggle Modal Handler
+        var autoRenewTargetForm = null;
+        var autoRenewTargetCheckbox = null;
+        
+        window.confirmAutoRenewToggle = function(input, turnOn) {
+            autoRenewTargetCheckbox = input;
+            autoRenewTargetForm = input.form;
+            
+            if (turnOn) {
+                $('#auto-renew-title').text('Turn On Auto-Renew');
+                $('#auto-renew-body').html('Are you sure you want to turn on auto-renewal for this subscription?');
+                $('#btn-auto-renew-submit')
+                    .text('Turn On')
+                    .removeClass('btn-modal-danger')
+                    .addClass('btn-modal-primary');
+            } else {
+                $('#auto-renew-title').text('Turn Off Auto-Renew');
+                $('#auto-renew-body').html('Are you sure you want to turn off auto-renewal? Your subscription will remain active until <strong>{{ $sub['end'] }}</strong>.');
+                $('#btn-auto-renew-submit')
+                    .text('Turn Off')
+                    .removeClass('btn-modal-primary')
+                    .addClass('btn-modal-danger');
+            }
+            
+            $('#auto-renew-modal').fadeIn(150).css('display', 'flex');
+        };
+        
+        $('#btn-auto-renew-cancel').on('click', function(e) {
+            e.preventDefault();
+            $('#auto-renew-modal').fadeOut(150);
+            if (autoRenewTargetCheckbox) {
+                autoRenewTargetCheckbox.checked = !autoRenewTargetCheckbox.checked;
+            }
+        });
+        
+        $('#btn-auto-renew-submit').on('click', function(e) {
+            e.preventDefault();
+            if (!autoRenewTargetForm) return;
+            
+            var $btn = $(this);
+            var originalText = $btn.text();
+            $btn.prop('disabled', true).text('Processing...');
+            
+            var url = $(autoRenewTargetForm).attr('action');
+            var data = $(autoRenewTargetForm).serialize();
+            
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: data,
+                success: function(response) {
+                    $btn.prop('disabled', false).text(originalText);
+                    $('#auto-renew-modal').fadeOut(150);
+                    
+                    if (response.success) {
+                        showToast('Success', response.message, false);
+                        
+                        var endVal = "{{ $sub['end'] ?? 'N/A' }}";
+                        
+                        // Toggle forms & status container dynamically
+                        if (url.indexOf('cancel') !== -1) {
+                            // Turn Off Succeeded
+                            $('#cancel-renew-form').hide();
+                            $('#reactivate-renew-form').show();
+                            $('#reactivate-renew-form').find('input[type="checkbox"]').prop('checked', false);
+                            
+                            $('#auto-renew-status-container').html(
+                                endVal + ' <span style="background-color: #f1f5f9; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-left: 8px; font-weight: 500; display: inline-block;">No auto-renew</span>'
+                            );
+                        } else {
+                            // Turn On Succeeded
+                            $('#reactivate-renew-form').hide();
+                            $('#cancel-renew-form').show();
+                            $('#cancel-renew-form').find('input[type="checkbox"]').prop('checked', true);
+                            
+                            $('#auto-renew-status-container').html(
+                                endVal + ' <span style="background-color: #d1fae5; color: #065f46; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-left: 8px; font-weight: 500; display: inline-block;">Auto-renews</span>'
+                            );
+                        }
+                    } else {
+                        showToast('Error', response.message || 'Operation failed.', true);
+                        if (autoRenewTargetCheckbox) {
+                            autoRenewTargetCheckbox.checked = !autoRenewTargetCheckbox.checked;
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    $btn.prop('disabled', false).text(originalText);
+                    $('#auto-renew-modal').fadeOut(150);
+                    
+                    var errorMsg = 'Failed to update auto-renewal settings.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    showToast('Error', errorMsg, true);
+                    
+                    if (autoRenewTargetCheckbox) {
+                        autoRenewTargetCheckbox.checked = !autoRenewTargetCheckbox.checked;
+                    }
                 }
             });
         });

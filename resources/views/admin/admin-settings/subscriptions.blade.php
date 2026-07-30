@@ -54,8 +54,8 @@
                     <select class="form-input-style as-subscriptions-18" id="filter-frequency">
                         <option value="all">All Terms</option>
                         <option value="0">Trial</option>
-                        <option value="12">12 Months</option>
-                        <option value="24">24 Months</option>
+                        <option value="12">1 Year</option>
+                        <option value="24">2 Year</option>
                     </select>
                 </div>
                 <div class="as-subscriptions-16">
@@ -151,9 +151,9 @@
 
             function formatFrequency(freq) {
                 if (freq === 0) return 'Trial';
-                if (freq === 12) return '12 Months';
-                if (freq === 24) return '24 Months';
-                return freq ? `${freq} Months` : '';
+                if (freq === 12) return '1 Year';
+                if (freq === 24) return '2 Year';
+                return freq ? `${freq}` : '';
             }
 
             function updateStats(stats) {

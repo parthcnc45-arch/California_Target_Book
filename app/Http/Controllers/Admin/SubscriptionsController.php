@@ -18,8 +18,97 @@ class SubscriptionsController extends Controller
 {
     //
 
-    public function index() {
-        return new SubscriptionCollection(Subscription::orderBy('created_at', 'desc')->get());
+    public function index(Request $request) {
+        $today = date('Y-m-d');
+        $query = Subscription::with(['cycles', 'users.company', 'book_subscriptions']);
+
+        // Apply search filter
+        if ($search = $request->input('search')) {
+            $query->whereHas('users', function($uq) use ($search) {
+                $uq->where('subscription_user.role', 'subscriber')
+                   ->where(function($q) use ($search) {
+                       $q->where('first_name', 'like', "%{$search}%")
+                         ->orWhere('last_name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%")
+                         ->orWhereHas('company', function($cq) use ($search) {
+                             $cq->where('name', 'like', "%{$search}%");
+                         });
+                   });
+            });
+        }
+
+        // Apply status filter
+        $statusVal = $request->input('status', 'all');
+        if ($statusVal !== 'all') {
+            if ($statusVal === 'active') {
+                $query->whereHas('cycles', function($cq) use ($today) {
+                    $cq->where('starts_on', '<=', $today)
+                      ->where('ends_on', '>=', $today);
+                });
+            } elseif ($statusVal === 'inactive') {
+                $query->whereDoesntHave('cycles', function($cq) use ($today) {
+                    $cq->where('starts_on', '<=', $today)
+                      ->where('ends_on', '>=', $today);
+                });
+            }
+        }
+
+        // Apply term/frequency filter
+        $frequencyVal = $request->input('frequency', 'all');
+        if ($frequencyVal !== 'all') {
+            $query->where('frequency', intval($frequencyVal));
+        }
+
+        // Apply starts_on date filter
+        if ($startsOn = $request->input('starts_on')) {
+            $query->whereHas('cycles', function($cq) use ($startsOn) {
+                $cq->where('starts_on', '>=', $startsOn);
+            });
+        }
+
+        // Apply ends_on date filter
+        if ($endsOn = $request->input('ends_on')) {
+            $query->whereHas('cycles', function($cq) use ($endsOn) {
+                $cq->where('ends_on', '<=', $endsOn);
+            });
+        }
+
+        // Order by created_at desc
+        $query->orderBy('created_at', 'desc');
+
+        // Global stats calculation
+        $totalCount = Subscription::count();
+        $activeCount = Subscription::whereHas('cycles', function($cq) use ($today) {
+            $cq->where('starts_on', '<=', $today)
+              ->where('ends_on', '>=', $today);
+        })->count();
+        $inactiveCount = $totalCount - $activeCount;
+
+        // Support export
+        if ($request->input('export') == 1) {
+            $subscriptions = $query->get();
+            return new SubscriptionCollection($subscriptions);
+        }
+
+        $limit = $request->input('limit', 10);
+        $paginated = $query->paginate($limit);
+
+        return response()->json([
+            'data' => new SubscriptionCollection($paginated->getCollection()),
+            'pagination' => [
+                'current_page' => $paginated->currentPage(),
+                'last_page' => $paginated->lastPage(),
+                'per_page' => $paginated->perPage(),
+                'total' => $paginated->total(),
+                'from' => $paginated->firstItem(),
+                'to' => $paginated->lastItem(),
+            ],
+            'stats' => [
+                'total' => $totalCount,
+                'active' => $activeCount,
+                'inactive' => $inactiveCount,
+            ]
+        ]);
     }
 
     // Get user by id
@@ -86,14 +175,112 @@ class SubscriptionsController extends Controller
         return $cycle;
     }
 
-    public function indexHardCopies() {
-        return new BookSubscriptionCollection(
-            BookSubscription::where(function($query) {
-                $query->whereNull('item_name')
-                      ->orWhere('item_name', 'not like', '%Deck%')
-                      ->where('item_name', 'not like', '%Presentation%');
-            })->orderBy('id', 'desc')->get()
-        );
+    public function indexHardCopies(Request $request) {
+        $today = date('Y-m-d');
+        
+        $query = BookSubscription::where(function($q) {
+            $q->whereNull('item_name')
+              ->orWhere('item_name', 'not like', '%Deck%')
+              ->where('item_name', 'not like', '%Presentation%');
+        })->with(['subscription.cycles', 'subscription.users.company', 'address', 'user.company']);
+
+        // Apply search filter
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('subscription.users', function($uq) use ($search) {
+                    $uq->where('first_name', 'like', "%{$search}%")
+                       ->orWhere('last_name', 'like', "%{$search}%")
+                       ->orWhere('email', 'like', "%{$search}%")
+                       ->orWhereHas('company', function($cq) use ($search) {
+                           $cq->where('name', 'like', "%{$search}%");
+                       });
+                })
+                ->orWhereHas('user', function($uq) use ($search) {
+                    $uq->where('first_name', 'like', "%{$search}%")
+                       ->orWhere('last_name', 'like', "%{$search}%")
+                       ->orWhere('email', 'like', "%{$search}%")
+                       ->orWhereHas('company', function($cq) use ($search) {
+                           $cq->where('name', 'like', "%{$search}%");
+                       });
+                })
+                ->orWhereHas('address', function($aq) use ($search) {
+                    $aq->where('line1', 'like', "%{$search}%")
+                      ->orWhere('line2', 'like', "%{$search}%")
+                      ->orWhere('city', 'like', "%{$search}%")
+                      ->orWhere('state', 'like', "%{$search}%")
+                      ->orWhere('zip_code', 'like', "%{$search}%")
+                      ->orWhere('special_instructions', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Apply status filter
+        $statusVal = $request->input('status', 'all');
+        if ($statusVal !== 'all') {
+            if ($statusVal === 'active') {
+                $query->whereHas('subscription.cycles', function($cq) use ($today) {
+                    $cq->where('starts_on', '<=', $today)
+                      ->where('ends_on', '>=', $today);
+                });
+            } elseif ($statusVal === 'inactive') {
+                $query->where(function($q) use ($today) {
+                    $q->whereNull('subscription_id')
+                      ->orWhereDoesntHave('subscription.cycles', function($cq) use ($today) {
+                          $cq->where('starts_on', '<=', $today)
+                             ->where('ends_on', '>=', $today);
+                      });
+                });
+            } else {
+                $query->where('status', $statusVal);
+            }
+        }
+
+        // Order by id desc
+        $query->orderBy('id', 'desc');
+
+        // Global stats calculation (always calculated on the base query filter)
+        $baseStatsQuery = BookSubscription::where(function($q) {
+            $q->whereNull('item_name')
+              ->orWhere('item_name', 'not like', '%Deck%')
+              ->where('item_name', 'not like', '%Presentation%');
+        });
+
+        $totalCount = (clone $baseStatsQuery)->count();
+        $activeCount = (clone $baseStatsQuery)->whereHas('subscription.cycles', function($cq) use ($today) {
+            $cq->where('starts_on', '<=', $today)
+              ->where('ends_on', '>=', $today);
+        })->count();
+        $inactiveCount = $totalCount - $activeCount;
+        $shippedCount = (clone $baseStatsQuery)->where('status', 'Shipped')->count();
+        $deliveredCount = (clone $baseStatsQuery)->where('status', 'Delivered')->count();
+
+        // Support export
+        if ($request->input('export') == 1) {
+            $bookSubscriptions = $query->get();
+            return new BookSubscriptionCollection($bookSubscriptions);
+        }
+
+        $limit = $request->input('limit', 10);
+        $paginated = $query->paginate($limit);
+
+        return response()->json([
+            'data' => new BookSubscriptionCollection($paginated->getCollection()),
+            'pagination' => [
+                'current_page' => $paginated->currentPage(),
+                'last_page' => $paginated->lastPage(),
+                'per_page' => $paginated->perPage(),
+                'total' => $paginated->total(),
+                'from' => $paginated->firstItem(),
+                'to' => $paginated->lastItem(),
+            ],
+            'stats' => [
+                'total' => $totalCount,
+                'active' => $activeCount,
+                'inactive' => $inactiveCount,
+                'shipped' => $shippedCount,
+                'delivered' => $deliveredCount,
+            ]
+        ]);
     }
 
     public function createHardCopy($id, Request $request) {

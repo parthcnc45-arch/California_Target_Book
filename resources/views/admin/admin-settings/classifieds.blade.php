@@ -12,54 +12,30 @@
         </button>
     </div>
 
-    <!-- Stats Grid Row -->
-    <div class="stats-grid-classifieds">
+    <!-- Stats Row -->
+    <div class="as-subscriptions-2">
         <!-- Card 1: Active Ads -->
-        <div class="stats-card-classified">
-            <div>
-                <div class="as-classifieds-3">Active Ads</div>
-                <div class="as-classifieds-4" id="stat-active">-</div>
-                <div class="as-classifieds-5">Currently live</div>
-            </div>
-            <div class="as-classifieds-6">
-                <i class="bi bi-pencil-square"></i>
-            </div>
+        <div class="portal-card as-subscriptions-6" style="border-top-color: #16a34a;">
+            <div class="as-subscriptions-4">Active Ads</div>
+            <div class="as-subscriptions-5" id="stat-active">-</div>
         </div>
 
         <!-- Card 2: Pending Review -->
-        <div class="stats-card-classified">
-            <div>
-                <div class="as-classifieds-3">Pending Review</div>
-                <div class="as-classifieds-4" id="stat-pending">-</div>
-                <div class="as-classifieds-5">Awaiting approval</div>
-            </div>
-            <div class="as-classifieds-7">
-                <i class="bi bi-clock"></i>
-            </div>
+        <div class="portal-card as-subscriptions-3" style="border-top-color: #f59e0b;">
+            <div class="as-subscriptions-4">Pending Review</div>
+            <div class="as-subscriptions-5" id="stat-pending">-</div>
         </div>
 
         <!-- Card 3: Expiring Soon -->
-        <div class="stats-card-classified">
-            <div>
-                <div class="as-classifieds-3">Expiring Soon</div>
-                <div class="as-classifieds-4" id="stat-expiring">-</div>
-                <div class="as-classifieds-5">Within 3 days</div>
-            </div>
-            <div class="as-classifieds-8">
-                <i class="bi bi-exclamation-triangle"></i>
-            </div>
+        <div class="portal-card as-subscriptions-7" style="border-top-color: #ef4444;">
+            <div class="as-subscriptions-4">Expiring Soon</div>
+            <div class="as-subscriptions-5" id="stat-expiring">-</div>
         </div>
 
         <!-- Card 4: Revenue -->
-        <div class="stats-card-classified">
-            <div>
-                <div class="as-classifieds-3">Revenue (Month)</div>
-                <div class="as-classifieds-4" id="stat-revenue">-</div>
-                <div class="as-classifieds-5" id="stat-revenue-month-label">{{ date('F Y') }}</div>
-            </div>
-            <div class="as-classifieds-9">
-                <i class="bi bi-currency-dollar"></i>
-            </div>
+        <div class="portal-card" style="flex: 1; padding: 20px; border-top: 4px solid #3b82f6;">
+            <div class="as-subscriptions-4">Revenue (<span id="stat-revenue-month-label">{{ date('F Y') }}</span>)</div>
+            <div class="as-subscriptions-5" id="stat-revenue">-</div>
         </div>
     </div>
 
@@ -563,11 +539,10 @@
                     const orgName = ad.organization_name || '';
                     const headline = ad.title || '';
                     
-                    const rowStyle = isPending ? 'background-color: #fffbeb !important;' : '';
-                    const rowClass = isExpired ? 'text-muted-expired' : '';
+                    const rowClass = '';
 
                     const rowHtml = `
-                        <tr style="${rowStyle}" class="${rowClass}">
+                        <tr class="${rowClass}">
                             <td>
                                 <div class="as-classifieds-70">${headline}</div>
                             </td>

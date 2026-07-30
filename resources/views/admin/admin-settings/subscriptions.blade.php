@@ -131,7 +131,7 @@
                 onChange: function(newSize) {
                     pageSize = newSize;
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadSubscriptions();
                 }
             });
 
@@ -156,19 +156,16 @@
                 return freq ? `${freq} Months` : '';
             }
 
-            function updateStats(subs) {
-                const total = subs.length;
-                const active = subs.filter(s => s.isActive).length;
-                const inactive = total - active;
-
-                $('#stat-total').text(total);
-                $('#stat-active').text(active);
-                $('#stat-inactive').text(inactive);
+            function updateStats(stats) {
+                if (!stats) return;
+                $('#stat-total').text(stats.total);
+                $('#stat-active').text(stats.active);
+                $('#stat-inactive').text(stats.inactive);
             }
 
-            function filterAndPaginate() {
-                const searchVal = $searchInput.val().toLowerCase().trim();
-                const statusVal = $statusFilter.val().toLowerCase();
+            function loadSubscriptions() {
+                const searchVal = $searchInput.val().trim();
+                const statusVal = $statusFilter.val();
                 const freqVal = $frequencyFilter.val();
                 const startsOnVal = $startsOnFilter.val();
                 const endsOnVal = $endsOnFilter.val();
@@ -181,170 +178,148 @@
                     $btnClearFilters.css('display', 'none');
                 }
 
-                // 1. Get filtered list of rows
-                const filteredRows = allSubscriptions.filter(sub => {
-                    const email = (sub.baseAccount ? sub.baseAccount.email : '').toLowerCase();
-                    const name = (sub.baseAccount ? sub.baseAccount.name : '').toLowerCase();
-                    const productName = (sub.productName || '').toLowerCase();
-                    const status = sub.isActive ? 'active' : 'inactive';
+                $tbody.html(`<tr><td class="as-subscriptions-32" colspan="7"><i class="bi bi-arrow-repeat spin as-subscriptions-38"></i> Loading subscriptions...</td></tr>`);
+
+                $.ajax({
+                    url: '/api/subscriptions',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiToken,
+                        'Accept': 'application/json'
+                    },
+                    data: {
+                        search: searchVal,
+                        status: statusVal,
+                        frequency: freqVal,
+                        starts_on: startsOnVal,
+                        ends_on: endsOnVal,
+                        page: currentPage,
+                        limit: pageSize
+                    },
+                    success: function(res) {
+                        allSubscriptions = res.data || [];
+                        updateStats(res.stats);
+                        renderSubscriptions(allSubscriptions, res.pagination);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching subscriptions:', error);
+                        $tbody.html(`<tr><td class="as-subscriptions-39" colspan="7">Failed to load subscriptions. Please try again later.</td></tr>`);
+                    }
+                });
+            }
+
+            function renderSubscriptions(data, pagination) {
+                $tbody.empty();
+                if (!data || data.length === 0) {
+                    $tbody.append(`<tr><td class="as-subscriptions-32" colspan="7">No subscriptions found</td></tr>`);
+                    $paginationInfo.text('Showing 0 to 0 of 0 entries');
+                    renderPaginationButtons(1);
+                    return;
+                }
+
+                data.forEach(sub => {
+                    const statusStyle = sub.isActive ? '' : 'background-color: #fef2f2; color: #ef4444;';
                     const startsOnStr = sub.cycle ? sub.cycle.starts_on : null;
                     const endsOnStr = sub.cycle ? sub.cycle.ends_on : null;
 
-                    const matchesSearch = email.includes(searchVal) || name.includes(searchVal) || productName.includes(searchVal);
-                    const matchesStatus = statusVal === 'all' || status === statusVal;
-                    const matchesFrequency = freqVal === 'all' || String(sub.frequency) === freqVal;
+                    const rowHtml = `
+                        <tr>
+                            <td><span class="status-pill-completed" style="${statusStyle}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
+                            <td class="as-digital-38">
+                                <div class="as-digital-39">${sub.baseAccount ? sub.baseAccount.name : 'N/A'}</div>
+                                <div class="as-digital-40">${sub.baseAccount ? sub.baseAccount.email : ''}</div>
+                              </td>
+                              <td class="as-subscriptions-35">${sub.productName || '—'}</td>
+                              <td class="as-subscriptions-36">${formatFrequency(sub.frequency)}</td>
+                              <td class="as-subscriptions-36">${formatDate(startsOnStr)}</td>
+                              <td class="as-subscriptions-36">${formatDate(endsOnStr)}</td>
+                              <td class="as-classifieds-76 text-center" style="text-align: center !important;">
+                                  <div class="dropdown table-dropdown-container" style="display: inline-block;">
+                                      <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
+                                          <i class="bi bi-three-dots"></i>
+                                      </button>
+                                      <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end as-classifieds-77">
+                                          <li><a class="dropdown-item as-classifieds-78" href="/ctb-admin/new/subscriptions/${sub.id}"><i class="bi bi-pencil as-classifieds-79"></i> Edit</a></li>
+                                      </ul>
+                                  </div>
+                              </td>
+                          </tr>
+                      `;
+                      $tbody.append(rowHtml);
+                  });
 
-                    let matchesDate = true;
-                    if (startsOnVal && !endsOnVal) {
-                        matchesDate = startsOnStr ? (startsOnStr === startsOnVal) : false;
-                    } else if (!startsOnVal && endsOnVal) {
-                        matchesDate = endsOnStr ? (endsOnStr === endsOnVal) : false;
-                    } else if (startsOnVal && endsOnVal) {
-                        matchesDate = (startsOnStr && endsOnStr) ? (startsOnStr >= startsOnVal && endsOnStr <= endsOnVal) : false;
-                    }
+                  $paginationInfo.text(`Showing ${pagination.from || 0} to ${pagination.to || 0} of ${pagination.total || 0} entries`);
+                  renderPaginationButtons(pagination.last_page);
+              }
 
-                    return matchesSearch && matchesStatus && matchesFrequency && matchesDate;
-                });
+              function renderPaginationButtons(totalPages) {
+                  $paginationButtons.empty();
 
-                // 2. Calculate pagination boundaries
-                const totalEntries = filteredRows.length;
-                const totalPages = Math.ceil(totalEntries / pageSize) || 1;
-                
-                // Adjust current page if out of bounds
-                if (currentPage > totalPages) {
-                    currentPage = totalPages;
-                }
-                if (currentPage < 1) {
-                    currentPage = 1;
-                }
+                  // Previous Button
+                  const $prevBtn = $('<button>').text('Previous');
+                  styleButton($prevBtn, currentPage === 1);
+                  if (currentPage > 1) {
+                      $prevBtn.on('click', () => {
+                          currentPage--;
+                          loadSubscriptions();
+                      });
+                  }
+                  $paginationButtons.append($prevBtn);
 
-                const startIndex = (currentPage - 1) * pageSize;
-                const endIndex = Math.min(startIndex + pageSize, totalEntries);
+                  // Determine pages to show
+                  const pages = [];
+                  const delta = 1;
+                  
+                  for (let i = 1; i <= totalPages; i++) {
+                      if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+                          pages.push(i);
+                      }
+                  }
 
-                // 3. Render only rows for current page
-                $tbody.empty();
-                if (totalEntries === 0) {
-                    $tbody.append(`<tr><td class="as-subscriptions-32" colspan="7">No subscriptions found</td></tr>`);
-                } else {
-                    const pageRows = filteredRows.slice(startIndex, endIndex);
-                    pageRows.forEach(sub => {
-                        const statusStyle = sub.isActive ? '' : 'background-color: #fef2f2; color: #ef4444;';
-                        const startsOnStr = sub.cycle ? sub.cycle.starts_on : null;
-                        const endsOnStr = sub.cycle ? sub.cycle.ends_on : null;
+                  let lastPage = 0;
+                  pages.forEach(page => {
+                      if (lastPage !== 0) {
+                          if (page - lastPage === 2) {
+                              const $pageBtn = $('<button>').text(lastPage + 1);
+                              styleButton($pageBtn, false, currentPage === lastPage + 1);
+                              const tempVal = lastPage + 1;
+                              $pageBtn.on('click', () => {
+                                  currentPage = tempVal;
+                                  loadSubscriptions();
+                              });
+                              $paginationButtons.append($pageBtn);
+                          } else if (page - lastPage > 2) {
+                              const $ellipsis = $('<span>').text('...').css({
+                                  padding: '6px 12px',
+                                  color: '#94a3b8',
+                                  fontSize: '13px'
+                              });
+                              $paginationButtons.append($ellipsis);
+                          }
+                      }
+                      
+                      const $pageBtn = $('<button>').text(page);
+                      styleButton($pageBtn, false, currentPage === page);
+                      $pageBtn.on('click', () => {
+                          currentPage = page;
+                          loadSubscriptions();
+                      });
+                      $paginationButtons.append($pageBtn);
+                      
+                      lastPage = page;
+                  });
 
-                        const rowHtml = `
-                            <tr>
-                                <td><span class="status-pill-completed" style="${statusStyle}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
-                                <td class="as-digital-38">
-                                    <div class="as-digital-39">${sub.baseAccount ? sub.baseAccount.name : 'N/A'}</div>
-                                    <div class="as-digital-40">${sub.baseAccount ? sub.baseAccount.email : ''}</div>
-                                </td>
-                                <td class="as-subscriptions-35">${sub.productName || '—'}</td>
-                                <td class="as-subscriptions-36">${formatFrequency(sub.frequency)}</td>
-                                <td class="as-subscriptions-36">${formatDate(startsOnStr)}</td>
-                                <td class="as-subscriptions-36">${formatDate(endsOnStr)}</td>
-                                <td class="as-classifieds-76 text-center" style="text-align: center !important;">
-                                    <div class="dropdown table-dropdown-container" style="display: inline-block;">
-                                        <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end as-classifieds-77">
-                                            <li><a class="dropdown-item as-classifieds-78" href="/ctb-admin/new/subscriptions/${sub.id}"><i class="bi bi-pencil as-classifieds-79"></i> Edit</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                        $tbody.append(rowHtml);
-                    });
-                }
-
-                // 4. Update pagination info text
-                if (totalEntries === 0) {
-                    $paginationInfo.text('Showing 0 to 0 of 0 entries');
-                } else {
-                    $paginationInfo.text(`Showing ${startIndex + 1} to ${endIndex} of ${totalEntries} entries`);
-                }
-
-                // 5. Render pagination buttons
-                renderPaginationButtons(totalPages);
-            }
-
-            function renderPaginationButtons(totalPages) {
-                $paginationButtons.empty();
-
-                // Previous Button
-                const $prevBtn = $('<button>').text('Previous');
-                styleButton($prevBtn, currentPage === 1);
-                if (currentPage > 1) {
-                    $prevBtn.on('click', () => {
-                        currentPage--;
-                        filterAndPaginate();
-                    });
-                }
-                $paginationButtons.append($prevBtn);
-
-                // Determine pages to show
-                const pages = [];
-                const delta = 1; // Number of pages to show before and after current page
-                
-                for (let i = 1; i <= totalPages; i++) {
-                    if (
-                        i === 1 || // Always show first page
-                        i === totalPages || // Always show last page
-                        (i >= currentPage - delta && i <= currentPage + delta) // Show pages around current
-                    ) {
-                        pages.push(i);
-                    }
-                }
-
-                // Render pages with ellipses
-                let lastPage = 0;
-                pages.forEach(page => {
-                    if (lastPage !== 0) {
-                        if (page - lastPage === 2) {
-                            // If gap is exactly 1 page (e.g. between 1 and 3), fill it with page 2
-                            const $pageBtn = $('<button>').text(lastPage + 1);
-                            styleButton($pageBtn, false, currentPage === lastPage + 1);
-                            const tempVal = lastPage + 1;
-                            $pageBtn.on('click', () => {
-                                currentPage = tempVal;
-                                filterAndPaginate();
-                            });
-                            $paginationButtons.append($pageBtn);
-                        } else if (page - lastPage > 2) {
-                            // Add ellipsis span
-                            const $ellipsis = $('<span>').text('...').css({
-                                padding: '6px 12px',
-                                color: '#94a3b8',
-                                fontSize: '13px'
-                            });
-                            $paginationButtons.append($ellipsis);
-                        }
-                    }
-                    
-                    const $pageBtn = $('<button>').text(page);
-                    styleButton($pageBtn, false, currentPage === page);
-                    $pageBtn.on('click', () => {
-                        currentPage = page;
-                        filterAndPaginate();
-                    });
-                    $paginationButtons.append($pageBtn);
-                    
-                    lastPage = page;
-                });
-
-                // Next Button
-                const $nextBtn = $('<button>').text('Next');
-                styleButton($nextBtn, currentPage === totalPages);
-                if (currentPage < totalPages) {
-                    $nextBtn.on('click', () => {
-                        currentPage++;
-                        filterAndPaginate();
-                    });
-                }
-                $paginationButtons.append($nextBtn);
-            }
+                  // Next Button
+                  const $nextBtn = $('<button>').text('Next');
+                  styleButton($nextBtn, currentPage === totalPages);
+                  if (currentPage < totalPages) {
+                      $nextBtn.on('click', () => {
+                          currentPage++;
+                          loadSubscriptions();
+                      });
+                  }
+                  $paginationButtons.append($nextBtn);
+              }
 
             function styleButton($btn, isDisabled, isActive = false) {
                 $btn.css({
@@ -394,12 +369,12 @@
             if ($searchInput.length) {
                 $searchInput.on('input', () => {
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadSubscriptions();
                 });
             }
             $('#filter-status, #filter-frequency, #filter-starts-on, #filter-ends-on').on('change', () => {
                 currentPage = 1;
-                filterAndPaginate();
+                loadSubscriptions();
             });
             if ($btnClearFilters.length) {
                 $btnClearFilters.on('click', () => {
@@ -409,13 +384,11 @@
                     $('#filter-starts-on').val('');
                     $('#filter-ends-on').val('');
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadSubscriptions();
                 });
             }
 
             // Load data from API
-            $tbody.html(`<tr><td class="as-subscriptions-32" colspan="7"><i class="bi bi-arrow-repeat spin as-subscriptions-38"></i> Loading subscriptions...</td></tr>`);
-
             $('<style>')
                 .prop('type', 'text/css')
                 .html(`
@@ -426,23 +399,7 @@
                 `)
                 .appendTo('head');
 
-            $.ajax({
-                url: '/api/subscriptions',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + apiToken,
-                    'Accept': 'application/json'
-                },
-                success: function(res) {
-                    allSubscriptions = res.data || res;
-                    updateStats(allSubscriptions);
-                    filterAndPaginate();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching subscriptions:', error);
-                    $tbody.html(`<tr><td class="as-subscriptions-39" colspan="7">Failed to load subscriptions. Please try again later.</td></tr>`);
-                }
-            });
+            loadSubscriptions();
         });
     </script>
 @endsection

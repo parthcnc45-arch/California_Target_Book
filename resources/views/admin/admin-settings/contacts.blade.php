@@ -269,7 +269,7 @@
                 onChange: function(newSize) {
                     pageSize = newSize;
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadContacts();
                 }
             });
 
@@ -290,20 +290,17 @@
                 return `${month} ${day}${suffix}, ${date.getFullYear()}`;
             }
 
-            function updateStats(items) {
-                const total = items.length;
-                const active = items.filter(item => item.hasActiveSubscription).length;
-                const inactive = total - active;
-
-                $('#stat-total').text(total);
-                $('#stat-active').text(active);
-                $('#stat-inactive').text(inactive);
+            function updateStats(stats) {
+                if (!stats) return;
+                $('#stat-total').text(stats.total);
+                $('#stat-active').text(stats.active);
+                $('#stat-inactive').text(stats.inactive);
             }
 
-            function filterAndPaginate() {
-                const searchVal = $searchInput.val().toLowerCase().trim();
-                const statusVal = $statusFilter.val().toLowerCase();
-                const roleVal = $roleFilter.val().toLowerCase();
+            function loadContacts() {
+                const searchVal = $searchInput.val().trim();
+                const statusVal = $statusFilter.val();
+                const roleVal = $roleFilter.val();
 
                 // Toggle Clear Filters button visibility
                 const isFiltered = searchVal !== '' || statusVal !== 'all' || roleVal !== 'all';
@@ -313,82 +310,76 @@
                     $clearFiltersBtn.css('display', 'none');
                 }
 
-                // 1. Get filtered list of rows
-                const filteredRows = allContacts.filter(item => {
-                    const status = item.hasActiveSubscription ? 'active' : 'inactive';
-                    const name = (item.name || '').toLowerCase();
-                    const email = (item.email || '').toLowerCase();
-                    const company = (item.company || '').toLowerCase();
-                    const role = (item.role || '').toLowerCase();
+                $tbody.html(`<tr><td class="as-contacts-67" colspan="6"><i class="bi bi-arrow-repeat spin as-contacts-72"></i> Loading contacts...</td></tr>`);
 
-                    const matchesSearch = name.includes(searchVal) || email.includes(searchVal) || company.includes(searchVal) || role.includes(searchVal);
-                    const matchesStatus = statusVal === 'all' || status === statusVal;
-                    const matchesRole = roleVal === 'all' || role === roleVal;
+                $.ajax({
+                    url: '/api/users',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiToken,
+                        'Accept': 'application/json'
+                    },
+                    data: {
+                        search: searchVal,
+                        status: statusVal,
+                        role: roleVal,
+                        page: currentPage,
+                        limit: pageSize
+                    },
+                    success: function(res) {
+                        allContacts = res.data || [];
+                        updateStats(res.stats);
+                        renderContacts(allContacts, res.pagination);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching contacts:', error);
+                        $tbody.html(`<tr><td class="as-contacts-73" colspan="6">Failed to load contacts. Please try again later.</td></tr>`);
+                    }
+                });
+            }
 
-                    return matchesSearch && matchesStatus && matchesRole;
+            function renderContacts(data, pagination) {
+                $tbody.empty();
+                if (!data || data.length === 0) {
+                    $tbody.append(`<tr><td class="as-contacts-67" colspan="6">No contacts found</td></tr>`);
+                    $paginationInfo.text('Showing 0 to 0 of 0 entries');
+                    renderPaginationButtons(1);
+                    return;
+                }
+
+                data.forEach(item => {
+                    const statusStyle = item.hasActiveSubscription ? '' : 'background-color: #fef2f2; color: #ef4444;';
+                    const roleText = item.role ? item.role.charAt(0).toUpperCase() + item.role.slice(1) : 'Subscriber';
+                    
+                    const rowHtml = `
+                        <tr data-id="${item.id}">
+                            <td><span class="status-pill-completed" style="${statusStyle}">${item.hasActiveSubscription ? 'Active' : 'Inactive'}</span></td>
+                            <td class="as-digital-38">
+                                <div class="as-digital-39">${item.name || 'Not Specified'}</div>
+                                <div class="as-digital-40">${item.email}</div>
+                            </td>
+                            <td class="as-contacts-68">${item.company || 'Not Specified'}</td>
+                            <td class="as-contacts-68">${roleText}</td>
+                            <td class="as-contacts-68">${formatDate(item.createdAt)}</td>
+                            <td class="as-classifieds-76 text-center" style="text-align: center !important;">
+                                <div class="dropdown table-dropdown-container" style="display: inline-block;">
+                                    <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end as-classifieds-77">
+                                        <li><a class="dropdown-item view-contact-btn as-classifieds-78" href="javascript:void(0)" data-id="${item.id}"><i class="bi bi-eye as-classifieds-79"></i> View</a></li>
+                                        <li><a class="dropdown-item edit-contact-btn as-classifieds-78" href="javascript:void(0)" data-id="${item.id}"><i class="bi bi-pencil as-classifieds-79"></i> Edit</a></li>
+                                        <li><a class="dropdown-item change-password-btn as-classifieds-78" href="javascript:void(0)" data-id="${item.id}"><i class="bi bi-key as-classifieds-79"></i> Change Password</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    $tbody.append(rowHtml);
                 });
 
-                // 2. Calculate pagination boundaries
-                const totalEntries = filteredRows.length;
-                const totalPages = Math.ceil(totalEntries / pageSize) || 1;
-                
-                if (currentPage > totalPages) {
-                    currentPage = totalPages;
-                }
-                if (currentPage < 1) {
-                    currentPage = 1;
-                }
-
-                const startIndex = (currentPage - 1) * pageSize;
-                const endIndex = Math.min(startIndex + pageSize, totalEntries);
-
-                // 3. Render only rows for current page
-                $tbody.empty();
-                if (totalEntries === 0) {
-                    $tbody.append(`<tr><td class="as-contacts-67" colspan="6">No contacts found</td></tr>`);
-                } else {
-                    const pageRows = filteredRows.slice(startIndex, endIndex);
-                    pageRows.forEach(item => {
-                        const statusStyle = item.hasActiveSubscription ? '' : 'background-color: #fef2f2; color: #ef4444;';
-                        const roleText = item.role ? item.role.charAt(0).toUpperCase() + item.role.slice(1) : 'Subscriber';
-                        
-                        const rowHtml = `
-                            <tr data-id="${item.id}">
-                                <td><span class="status-pill-completed" style="${statusStyle}">${item.hasActiveSubscription ? 'Active' : 'Inactive'}</span></td>
-                                <td class="as-digital-38">
-                                    <div class="as-digital-39">${item.name || 'Not Specified'}</div>
-                                    <div class="as-digital-40">${item.email}</div>
-                                </td>
-                                <td class="as-contacts-68">${item.company || 'Not Specified'}</td>
-                                <td class="as-contacts-68">${roleText}</td>
-                                <td class="as-contacts-68">${formatDate(item.createdAt)}</td>
-                                <td class="as-classifieds-76 text-center" style="text-align: center !important;">
-                                    <div class="dropdown table-dropdown-container" style="display: inline-block;">
-                                        <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end as-classifieds-77">
-                                            <li><a class="dropdown-item view-contact-btn as-classifieds-78" href="javascript:void(0)" data-id="${item.id}"><i class="bi bi-eye as-classifieds-79"></i> View</a></li>
-                                            <li><a class="dropdown-item edit-contact-btn as-classifieds-78" href="javascript:void(0)" data-id="${item.id}"><i class="bi bi-pencil as-classifieds-79"></i> Edit</a></li>
-                                            <li><a class="dropdown-item change-password-btn as-classifieds-78" href="javascript:void(0)" data-id="${item.id}"><i class="bi bi-key as-classifieds-79"></i> Change Password</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                        $tbody.append(rowHtml);
-                    });
-                }
-
-                // 4. Update pagination info text
-                if (totalEntries === 0) {
-                    $paginationInfo.text('Showing 0 to 0 of 0 entries');
-                } else {
-                    $paginationInfo.text(`Showing ${startIndex + 1} to ${endIndex} of ${totalEntries} entries`);
-                }
-
-                // 5. Render pagination buttons
-                renderPaginationButtons(totalPages);
+                $paginationInfo.text(`Showing ${pagination.from || 0} to ${pagination.to || 0} of ${pagination.total || 0} entries`);
+                renderPaginationButtons(pagination.last_page);
             }
 
             function renderPaginationButtons(totalPages) {
@@ -400,7 +391,7 @@
                 if (currentPage > 1) {
                     $prevBtn.on('click', () => {
                         currentPage--;
-                        filterAndPaginate();
+                        loadContacts();
                     });
                 }
                 $paginationButtons.append($prevBtn);
@@ -424,7 +415,7 @@
                             const tempVal = lastPage + 1;
                             $pageBtn.on('click', () => {
                                 currentPage = tempVal;
-                                filterAndPaginate();
+                                loadContacts();
                             });
                             $paginationButtons.append($pageBtn);
                         } else if (page - lastPage > 2) {
@@ -441,7 +432,7 @@
                     styleButton($pageBtn, false, currentPage === page);
                     $pageBtn.on('click', () => {
                         currentPage = page;
-                        filterAndPaginate();
+                        loadContacts();
                     });
                     $paginationButtons.append($pageBtn);
                     
@@ -454,7 +445,7 @@
                 if (currentPage < totalPages) {
                     $nextBtn.on('click', () => {
                         currentPage++;
-                        filterAndPaginate();
+                        loadContacts();
                     });
                 }
                 $paginationButtons.append($nextBtn);
@@ -508,19 +499,19 @@
             if ($searchInput.length) {
                 $searchInput.on('input', () => {
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadContacts();
                 });
             }
             if ($statusFilter.length) {
                 $statusFilter.on('change', () => {
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadContacts();
                 });
             }
             if ($roleFilter.length) {
                 $roleFilter.on('change', () => {
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadContacts();
                 });
             }
             if ($clearFiltersBtn.length) {
@@ -529,63 +520,90 @@
                     $statusFilter.val('all');
                     $roleFilter.val('all');
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadContacts();
                 });
             }
 
             // Export to CSV functionality
             $('.btn-export-csv').on('click', function() {
-                if (!allContacts || allContacts.length === 0) {
-                    alert('No contacts available to export.');
-                    return;
-                }
+                const btn = $(this);
+                const originalHtml = btn.html();
+                btn.prop('disabled', true).html('<i class="bi bi-arrow-repeat spin"></i> Exporting...');
 
-                // Headers
-                const headers = ['Name', 'Email', 'Company', 'Role', 'Subscribed On', 'Is Active'];
-                 
-                // Rows
-                const rows = allContacts.map(u => [
-                    u.name || '',
-                    u.email || '',
-                    u.company || '',
-                    u.role ? u.role.charAt(0).toUpperCase() + u.role.slice(1) : 'Subscriber',
-                    formatDate(u.createdAt),
-                    u.hasActiveSubscription ? 'Yes' : 'No'
-                ]);
-
-                // Build CSV content
-                let csvContent = headers.join(',') + '\n';
-                rows.forEach(row => {
-                    const escapedRow = row.map(val => {
-                        let escaped = String(val).replace(/"/g, '""');
-                        if (escaped.includes(',') || escaped.includes('"') || escaped.includes('\n')) {
-                            escaped = `"${escaped}"`;
+                $.ajax({
+                    url: '/api/users',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiToken,
+                        'Accept': 'application/json'
+                    },
+                    data: {
+                        search: $searchInput.val().trim(),
+                        status: $statusFilter.val(),
+                        role: $roleFilter.val(),
+                        export: 1
+                    },
+                    success: function(res) {
+                        btn.prop('disabled', false).html(originalHtml);
+                        const exportData = res.data || res;
+                        if (!exportData || exportData.length === 0) {
+                            alert('No contacts available to export.');
+                            return;
                         }
-                        return escaped;
-                    });
-                    csvContent += escapedRow.join(',') + '\n';
-                });
 
-                // Download file
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const date = new Date();
-                const mm = String(date.getMonth() + 1).padStart(2, '0');
-                const dd = String(date.getDate()).padStart(2, '0');
-                const yyyy = date.getFullYear();
-                const filename = `ctb_contacts_${mm}-${dd}-${yyyy}.csv`;
+                        // Headers
+                        const headers = ['Name', 'Email', 'Company', 'Role', 'Subscribed On', 'Is Active'];
+                         
+                        // Rows
+                        const rows = exportData.map(u => [
+                            u.name || '',
+                            u.email || '',
+                            u.company || '',
+                            u.role ? u.role.charAt(0).toUpperCase() + u.role.slice(1) : 'Subscriber',
+                            formatDate(u.createdAt),
+                            u.hasActiveSubscription ? 'Yes' : 'No'
+                        ]);
 
-                if (navigator.msSaveBlob) {
-                    navigator.msSaveBlob(blob, filename);
-                } else {
-                    const $link = $('<a>', {
-                        href: URL.createObjectURL(blob),
-                        download: filename
-                    }).hide().appendTo('body');
-                    if ($link[0].download !== undefined) {
-                        $link[0].click();
-                        $link.remove();
+                        // Build CSV content
+                        let csvContent = headers.join(',') + '\n';
+                        rows.forEach(row => {
+                            const escapedRow = row.map(val => {
+                                let escaped = String(val).replace(/"/g, '""');
+                                if (escaped.includes(',') || escaped.includes('"') || escaped.includes('\n')) {
+                                    escaped = `"${escaped}"`;
+                                }
+                                return escaped;
+                            });
+                            csvContent += escapedRow.join(',') + '\n';
+                        });
+
+                        // Download file
+                        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                        const date = new Date();
+                        const mm = String(date.getMonth() + 1).padStart(2, '0');
+                        const dd = String(date.getDate()).padStart(2, '0');
+                        const yyyy = date.getFullYear();
+                        const filename = `ctb_contacts_${mm}-${dd}-${yyyy}.csv`;
+
+                        if (navigator.msSaveBlob) {
+                            navigator.msSaveBlob(blob, filename);
+                        } else {
+                            const $link = $('<a>', {
+                                href: URL.createObjectURL(blob),
+                                download: filename
+                            }).hide().appendTo('body');
+                            if ($link[0].download !== undefined) {
+                                $link[0].click();
+                                $link.remove();
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        btn.prop('disabled', false).html(originalHtml);
+                        console.error('Error exporting contacts:', error);
+                        alert('Failed to export contacts. Please try again.');
                     }
-                }
+                });
             });
 
             // View Contact Modal Logic
@@ -953,8 +971,6 @@
             });
 
             // Load data from API
-            $tbody.html(`<tr><td class="as-contacts-67" colspan="6"><i class="bi bi-arrow-repeat spin as-contacts-72"></i> Loading contacts...</td></tr>`);
-
             $('<style>')
                 .prop('type', 'text/css')
                 .html(`
@@ -965,23 +981,7 @@
                 `)
                 .appendTo('head');
 
-            $.ajax({
-                url: '/api/users',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + apiToken,
-                    'Accept': 'application/json'
-                },
-                success: function(res) {
-                    allContacts = res.data || res;
-                    updateStats(allContacts);
-                    filterAndPaginate();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching contacts:', error);
-                    $tbody.html(`<tr><td class="as-contacts-73" colspan="6">Failed to load contacts. Please try again later.</td></tr>`);
-                }
-            });
+            loadContacts();
 
             $(document).on('keydown', function(e) {
                 if (e.key === 'Escape') {

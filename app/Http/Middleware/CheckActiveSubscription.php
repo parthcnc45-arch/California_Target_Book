@@ -42,7 +42,6 @@ class CheckActiveSubscription
 
             return $next($request);
         }
-        return redirect()->route('auth.account.subscriptions')
-            ->with('message', 'Your subscription is not active. It is either pending, or you may need to renew it.');
+        return redirect()->route('auth.account.subscriptions');
     }
 }

@@ -148,7 +148,7 @@
                 onChange: function(newSize) {
                     pageSize = newSize;
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadData();
                 }
             });
 
@@ -188,109 +188,97 @@
                 });
             }
 
-            function updateStats(items) {
-                const total = items.length;
-                const paid = items.filter(x => x.payment_status.toLowerCase() === 'paid').length;
-                const refunded = items.filter(x => x.payment_status.toLowerCase() === 'refunded').length;
-                const sent = items.filter(x => x.delivery_status.toLowerCase() === 'sent').length;
-
-                $('#stat-total').text(total);
-                $('#stat-paid').text(paid);
-                $('#stat-refunded').text(refunded);
-                $('#stat-sent').text(sent);
+            function updateStats(stats) {
+                if (!stats) return;
+                $('#stat-total').text(stats.total);
+                $('#stat-paid').text(stats.paid);
+                $('#stat-refunded').text(stats.refunded);
+                $('#stat-sent').text(stats.sent);
             }
 
-            function filterAndPaginate() {
-                const searchVal = $searchInput.val().toLowerCase().trim();
-                const itemVal = $itemFilter.val().toLowerCase();
-                const paymentVal = ($paymentFilter.length && $paymentFilter.val()) ? $paymentFilter.val().toLowerCase() : 'all';
+            function loadData() {
+                const searchVal = $searchInput.val().trim();
+                const itemVal = $itemFilter.val();
 
-                const isFiltered = searchVal !== '' || itemVal !== 'all' || paymentVal !== 'all';
+                const isFiltered = searchVal !== '' || itemVal !== 'all';
                 $clearFiltersBtn.css('display', isFiltered ? 'inline-flex' : 'none');
 
-                const filtered = allOrders.filter(order => {
-                    const name = order.customer_name.toLowerCase();
-                    const email = order.customer_email.toLowerCase();
-                    const company = order.company_name.toLowerCase();
-                    const item = order.item.toLowerCase();
+                $tbody.html(`<tr><td class="as-digital-36" colspan="7"><i class="bi bi-arrow-repeat spin as-digital-37"></i> Loading orders...</td></tr>`);
+                $.ajax({
+                    url: '/api/subscriptions/digital-orders',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiToken,
+                        'Accept': 'application/json'
+                    },
+                    data: {
+                        search: searchVal,
+                        item: itemVal,
+                        page: currentPage,
+                        limit: pageSize
+                    },
+                    success: function (res) {
+                        allOrders = res.data || [];
+                        updateStats(res.stats);
+                        renderOrders(allOrders, res.pagination);
+                    },
+                    error: function (xhr) {
+                        showToast('Error', 'Failed to fetch digital addon orders.', true);
+                    }
+                });
+            }
 
-                    const matchesSearch = name.includes(searchVal) || email.includes(searchVal) || company.includes(searchVal) || item.includes(searchVal);
+            function renderOrders(data, pagination) {
+                $tbody.empty();
+                if (!data || data.length === 0) {
+                    $tbody.append(`<tr><td class="as-digital-36" colspan="7">No digital addon orders found</td></tr>`);
+                    $paginationInfo.text('Showing 0 to 0 of 0 entries');
+                    renderPaginationButtons(1);
+                    return;
+                }
 
-                    let matchesItem = true;
-                    if (itemVal !== 'all') {
-                        matchesItem = item.includes(itemVal);
+                data.forEach(order => {
+                    const amountStr = '$' + (order.amount / 100).toFixed(2);
+                    
+                    let payPillColor = 'background-color: #dcfce7; color: #16a34a;'; // Paid
+                    if (order.payment_status.toLowerCase() === 'refunded') {
+                        payPillColor = 'background-color: #fee2e2; color: #ef4444;';
                     }
 
-                    let matchesPayment = true;
-                    if (paymentVal !== 'all') {
-                        matchesPayment = order.payment_status.toLowerCase() === paymentVal;
+                    let delPillColor = 'background-color: #dbeafe; color: #2563eb;'; // Sent
+                    if (order.delivery_status.toLowerCase() === 'failed') {
+                        delPillColor = 'background-color: #fee2e2; color: #ef4444;';
                     }
 
-                    return matchesSearch && matchesItem && matchesPayment;
+                    const resendDisabled = order.payment_status.toLowerCase() === 'refunded';
+                    const refundDisabled = order.payment_status.toLowerCase() === 'refunded';
+
+                    const rowHtml = `
+                        <tr>
+                            <td class="as-digital-38">
+                                <div class="as-digital-39">${order.customer_name}</div>
+                                <div class="as-digital-40">${order.customer_email}</div>
+                            </td>
+                            <td class="as-digital-41">${order.company_name}</td>
+                            <td class="as-digital-38">
+                                <div class="as-digital-42">${order.item}</div>
+                                <div class="as-digital-43">${amountStr}</div>
+                            </td>
+                            <td class="as-digital-41">${formatDate(order.order_date)}</td>
+                            <td class="as-digital-38"><span class="as-digital-44" style="${payPillColor}">${order.payment_status}</span></td>
+                            <td class="as-digital-38"><span class="as-digital-44" style="${delPillColor}">${order.delivery_status}</span></td>
+                            <td class="as-digital-45 text-center">
+                                <button onclick="resendEmail(${order.id})" class="table-action-btn btn-resend" title="Resend Delivery Email" ${resendDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                                    <i class="bi bi-envelope-at"></i> Resend
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    $tbody.append(rowHtml);
                 });
 
-                const totalEntries = filtered.length;
-                const totalPages = Math.ceil(totalEntries / pageSize) || 1;
-
-                if (currentPage > totalPages) currentPage = totalPages;
-                if (currentPage < 1) currentPage = 1;
-
-                const startIndex = (currentPage - 1) * pageSize;
-                const endIndex = Math.min(startIndex + pageSize, totalEntries);
-
-                $tbody.empty();
-                if (totalEntries === 0) {
-                    $tbody.append(`<tr><td class="as-digital-36" colspan="7">No digital addon orders found</td></tr>`);
-                } else {
-                    const pageRows = filtered.slice(startIndex, endIndex);
-                    pageRows.forEach(order => {
-                        const amountStr = '$' + (order.amount / 100).toFixed(2);
-                        
-                        let payPillColor = 'background-color: #dcfce7; color: #16a34a;'; // Paid
-                        if (order.payment_status.toLowerCase() === 'refunded') {
-                            payPillColor = 'background-color: #fee2e2; color: #ef4444;';
-                        }
-
-                        let delPillColor = 'background-color: #dbeafe; color: #2563eb;'; // Sent
-                        if (order.delivery_status.toLowerCase() === 'failed') {
-                            delPillColor = 'background-color: #fee2e2; color: #ef4444;';
-                        }
-
-                        const resendDisabled = order.payment_status.toLowerCase() === 'refunded';
-                        const refundDisabled = order.payment_status.toLowerCase() === 'refunded';
-
-                        const rowHtml = `
-                            <tr>
-                                <td class="as-digital-38">
-                                    <div class="as-digital-39">${order.customer_name}</div>
-                                    <div class="as-digital-40">${order.customer_email}</div>
-                                </td>
-                                <td class="as-digital-41">${order.company_name}</td>
-                                <td class="as-digital-38">
-                                    <div class="as-digital-42">${order.item}</div>
-                                    <div class="as-digital-43">${amountStr}</div>
-                                </td>
-                                <td class="as-digital-41">${formatDate(order.order_date)}</td>
-                                <td class="as-digital-38"><span class="as-digital-44" style="${payPillColor}">${order.payment_status}</span></td>
-                                <td class="as-digital-38"><span class="as-digital-44" style="${delPillColor}">${order.delivery_status}</span></td>
-                                <td class="as-digital-45 text-center">
-                                    <button onclick="resendEmail(${order.id})" class="table-action-btn btn-resend" title="Resend Delivery Email" ${resendDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
-                                        <i class="bi bi-envelope-at"></i> Resend
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                        $tbody.append(rowHtml);
-                    });
-                }
-
-                if (totalEntries === 0) {
-                    $paginationInfo.text('Showing 0 to 0 of 0 entries');
-                } else {
-                    $paginationInfo.text(`Showing ${startIndex + 1} to ${endIndex} of ${totalEntries} entries`);
-                }
-
-                renderPaginationButtons(totalPages);
+                $paginationInfo.text(`Showing ${pagination.from || 0} to ${pagination.to || 0} of ${pagination.total || 0} entries`);
+                renderPaginationButtons(pagination.last_page);
             }
 
             function renderPaginationButtons(totalPages) {
@@ -301,7 +289,7 @@
                 if (currentPage > 1) {
                     $prevBtn.on('click', () => {
                         currentPage--;
-                        filterAndPaginate();
+                        loadData();
                     });
                 }
                 $paginationButtons.append($prevBtn);
@@ -311,7 +299,7 @@
                     styleButton($pageBtn, false, currentPage === i);
                     $pageBtn.on('click', () => {
                         currentPage = i;
-                        filterAndPaginate();
+                        loadData();
                     });
                     $paginationButtons.append($pageBtn);
                 }
@@ -321,7 +309,7 @@
                 if (currentPage < totalPages) {
                     $nextBtn.on('click', () => {
                         currentPage++;
-                        filterAndPaginate();
+                        loadData();
                     });
                 }
                 $paginationButtons.append($nextBtn);
@@ -411,16 +399,16 @@
             // Event Listeners
             $searchInput.on('input', () => {
                 currentPage = 1;
-                filterAndPaginate();
+                loadData();
             });
             $itemFilter.on('change', () => {
                 currentPage = 1;
-                filterAndPaginate();
+                loadData();
             });
             if ($paymentFilter.length) {
                 $paymentFilter.on('change', () => {
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadData();
                 });
             }
             $clearFiltersBtn.on('click', () => {
@@ -430,7 +418,7 @@
                     $paymentFilter.val('all');
                 }
                 currentPage = 1;
-                filterAndPaginate();
+                loadData();
             });
 
             // Initial load

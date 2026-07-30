@@ -406,16 +406,8 @@
                     data: JSON.stringify(payload),
                     success: function(res) {
                         btn.prop('disabled', false).text('Save');
-                        // Update local data
-                        const updated = res.data || res;
-                        const index = allHardCopies.findIndex(x => x.id == id);
-                        if (index !== -1) {
-                            allHardCopies[index] = { ...allHardCopies[index], ...updated };
-                        }
-                        
                         closeEditModal();
-                        updateStats(allHardCopies);
-                        filterAndPaginate();
+                        loadHardCopies();
                         showToast('Success', 'Shipment updated successfully.', false);
                     },
                     error: function(xhr) {
@@ -451,7 +443,7 @@
                 onChange: function(newSize) {
                     pageSize = newSize;
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadHardCopies();
                 }
             });
 
@@ -480,23 +472,18 @@
                 return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             }
 
-            function updateStats(items) {
-                const total = items.length;
-                const active = items.filter(item => item.subscription && item.subscription.isActive).length;
-                const inactive = items.filter(item => !item.subscription || !item.subscription.isActive).length;
-                const shipped = items.filter(item => (item.status || '').toLowerCase() === 'shipped').length;
-                const delivered = items.filter(item => (item.status || '').toLowerCase() === 'delivered').length;
-
-                $('#stat-total').text(total);
-                $('#stat-active').text(active);
-                $('#stat-inactive').text(inactive);
-                $('#stat-shipped').text(shipped);
-                $('#stat-delivered').text(delivered);
+            function updateStats(stats) {
+                if (!stats) return;
+                $('#stat-total').text(stats.total);
+                $('#stat-active').text(stats.active);
+                $('#stat-inactive').text(stats.inactive);
+                $('#stat-shipped').text(stats.shipped);
+                $('#stat-delivered').text(stats.delivered);
             }
 
-            function filterAndPaginate() {
-                const searchVal = $searchInput.val().toLowerCase().trim();
-                const statusVal = $statusFilter.val().toLowerCase();
+            function loadHardCopies() {
+                const searchVal = $searchInput.val().trim();
+                const statusVal = $statusFilter.val();
 
                 // Toggle Clear Filters button visibility
                 const isFiltered = searchVal !== '' || statusVal !== 'all';
@@ -506,107 +493,88 @@
                     $clearFiltersBtn.css('display', 'none');
                 }
 
-                // 1. Get filtered list of rows
-                const filteredRows = allHardCopies.filter(item => {
+                $tbody.html(`<tr><td class="as-hardcopies-50" colspan="10"><i class="bi bi-arrow-repeat spin as-hardcopies-59"></i> Loading hard copies...</td></tr>`);
+
+                $.ajax({
+                    url: '/api/subscriptions/hard-copies',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiToken,
+                        'Accept': 'application/json'
+                    },
+                    data: {
+                        search: searchVal,
+                        status: statusVal,
+                        page: currentPage,
+                        limit: pageSize
+                    },
+                    success: function(res) {
+                        allHardCopies = res.data || [];
+                        updateStats(res.stats);
+                        renderHardCopies(allHardCopies, res.pagination);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching hard copies:', error);
+                        $tbody.html(`<tr><td class="as-hardcopies-60" colspan="10">Failed to load hard copy subscriptions. Please try again later.</td></tr>`);
+                    }
+                });
+            }
+
+            function renderHardCopies(data, pagination) {
+                $tbody.empty();
+                if (!data || data.length === 0) {
+                    $tbody.append(`<tr><td class="as-hardcopies-50" colspan="10">No hard copy subscriptions found</td></tr>`);
+                    $paginationInfo.text('Showing 0 to 0 of 0 entries');
+                    renderPaginationButtons(1);
+                    return;
+                }
+
+                data.forEach(item => {
                     const sub = item.subscription || {};
                     const addr = item.address || {};
                     
-                    const company = (sub.company || '').toLowerCase();
-                    const itemStatus = (item.status || 'pending').toLowerCase();
-                    const contactName = (sub.baseAccount ? sub.baseAccount.name : '').toLowerCase();
-                    const specialInstructions = (addr.special_instructions || '').toLowerCase();
+                    const contactName = sub.baseAccount ? sub.baseAccount.name : 'Not Specified';
+                    const specialInstructions = addr.special_instructions || '';
                     
-                    const addrText = formatAddress(addr).toLowerCase();
+                    const shipmentStatus = item.status ? (item.status.charAt(0).toUpperCase() + item.status.slice(1)) : 'Processing';
 
-                    const matchesSearch = company.includes(searchVal) || 
-                                          addrText.includes(searchVal) || 
-                                          contactName.includes(searchVal) || 
-                                          specialInstructions.includes(searchVal);
-                    
-                    let matchesStatus = false;
-                    if (statusVal === 'all') {
-                        matchesStatus = true;
-                    } else if (statusVal === 'active') {
-                        matchesStatus = sub.isActive === true;
-                    } else if (statusVal === 'inactive') {
-                        matchesStatus = !sub.isActive;
-                    } else {
-                        matchesStatus = itemStatus === statusVal;
+                    let pillColor = 'background-color: #f1f5f9; color: #475569;'; // default processing/pending
+                    const statusLower = (item.status || 'pending').toLowerCase();
+                    if (statusLower === 'delivered') {
+                        pillColor = 'background-color: #dcfce7; color: #16a34a;';
+                    } else if (statusLower === 'shipped' || statusLower === 'in transit' || statusLower === 'ready to ship') {
+                        pillColor = 'background-color: #dbeafe; color: #2563eb;';
                     }
 
-                    return matchesSearch && matchesStatus;
+                    const rowHtml = `
+                        <tr>
+                            <td class="as-hardcopies-51"><span class="as-hardcopies-52" style="${sub.isActive ? 'background-color: #e6f4ea; color: #137333;' : 'background-color: #fce8e6; color: #c5221f;'}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
+                            <td class="fw-semibold as-hardcopies-53">SH-${item.id}</td>
+                            <td class="as-hardcopies-54">${contactName}</td>
+                            <td class="as-hardcopies-53">${item.item_name || ''}</td>
+                            <td class="as-hardcopies-55">${item.carrier || '-'}</td>
+                            <td class="as-hardcopies-55">${item.tracking_url ? `<a class="as-hardcopies-56" href="${item.tracking_url}" target="_blank">${item.tracking_id || 'Link'}</a>` : (item.tracking_id || '-')}</td>
+                            <td class="as-hardcopies-55">${formatDate(item.ship_date)}</td>
+                            <td class="as-hardcopies-55">${formatDate(item.estimated_delivery)}</td>
+                            <td><span class="as-hardcopies-57" style="${pillColor}">${shipmentStatus}</span></td>
+                            <td class="as-classifieds-76 text-center" style="text-align: center !important;">
+                                <div class="dropdown table-dropdown-container" style="display: inline-block;">
+                                    <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end as-classifieds-77">
+                                        <li><a class="dropdown-item as-classifieds-78" href="javascript:void(0)" onclick="openViewModal(${item.id})"><i class="bi bi-eye as-classifieds-79"></i> View</a></li>
+                                        <li><a class="dropdown-item as-classifieds-78" href="javascript:void(0)" onclick="openEditModal(${item.id})"><i class="bi bi-pencil as-classifieds-79"></i> Edit</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    $tbody.append(rowHtml);
                 });
 
-                // 2. Calculate pagination boundaries
-                const totalEntries = filteredRows.length;
-                const totalPages = Math.ceil(totalEntries / pageSize) || 1;
-                
-                if (currentPage > totalPages) currentPage = totalPages;
-                if (currentPage < 1) currentPage = 1;
-
-                const startIndex = (currentPage - 1) * pageSize;
-                const endIndex = Math.min(startIndex + pageSize, totalEntries);
-
-                // 3. Render only rows for current page
-                $tbody.empty();
-                if (totalEntries === 0) {
-                    $tbody.append(`<tr><td class="as-hardcopies-50" colspan="10">No hard copy subscriptions found</td></tr>`);
-                } else {
-                    const pageRows = filteredRows.slice(startIndex, endIndex);
-                    pageRows.forEach(item => {
-                        const sub = item.subscription || {};
-                        const addr = item.address || {};
-                        
-                        const contactName = sub.baseAccount ? sub.baseAccount.name : 'Not Specified';
-                        const specialInstructions = addr.special_instructions || '';
-                        
-                        const shipmentStatus = item.status ? (item.status.charAt(0).toUpperCase() + item.status.slice(1)) : 'Processing';
-
-                        let pillColor = 'background-color: #f1f5f9; color: #475569;'; // default processing/pending
-                        const statusLower = (item.status || 'pending').toLowerCase();
-                        if (statusLower === 'delivered') {
-                            pillColor = 'background-color: #dcfce7; color: #16a34a;';
-                        } else if (statusLower === 'shipped' || statusLower === 'in transit' || statusLower === 'ready to ship') {
-                            pillColor = 'background-color: #dbeafe; color: #2563eb;';
-                        }
-
-                        const rowHtml = `
-                            <tr>
-                                <td class="as-hardcopies-51"><span class="as-hardcopies-52" style="${sub.isActive ? 'background-color: #e6f4ea; color: #137333;' : 'background-color: #fce8e6; color: #c5221f;'}">${sub.isActive ? 'Active' : 'Inactive'}</span></td>
-                                <td class="fw-semibold as-hardcopies-53">SH-${item.id}</td>
-                                <td class="as-hardcopies-54">${contactName}</td>
-                                <td class="as-hardcopies-53">${item.item_name || ''}</td>
-                                <td class="as-hardcopies-55">${item.carrier || '-'}</td>
-                                <td class="as-hardcopies-55">${item.tracking_url ? `<a class="as-hardcopies-56" href="${item.tracking_url}" target="_blank">${item.tracking_id || 'Link'}</a>` : (item.tracking_id || '-')}</td>
-                                <td class="as-hardcopies-55">${formatDate(item.ship_date)}</td>
-                                <td class="as-hardcopies-55">${formatDate(item.estimated_delivery)}</td>
-                                <td><span class="as-hardcopies-57" style="${pillColor}">${shipmentStatus}</span></td>
-                                <td class="as-classifieds-76 text-center" style="text-align: center !important;">
-                                    <div class="dropdown table-dropdown-container" style="display: inline-block;">
-                                        <button class="table-action-edit" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end as-classifieds-77">
-                                            <li><a class="dropdown-item as-classifieds-78" href="javascript:void(0)" onclick="openViewModal(${item.id})"><i class="bi bi-eye as-classifieds-79"></i> View</a></li>
-                                            <li><a class="dropdown-item as-classifieds-78" href="javascript:void(0)" onclick="openEditModal(${item.id})"><i class="bi bi-pencil as-classifieds-79"></i> Edit</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                        $tbody.append(rowHtml);
-                    });
-                }
-
-                // 4. Update pagination info text
-                if (totalEntries === 0) {
-                    $paginationInfo.text('Showing 0 to 0 of 0 entries');
-                } else {
-                    $paginationInfo.text(`Showing ${startIndex + 1} to ${endIndex} of ${totalEntries} entries`);
-                }
-
-                // 5. Render pagination buttons
-                renderPaginationButtons(totalPages);
+                $paginationInfo.text(`Showing ${pagination.from || 0} to ${pagination.to || 0} of ${pagination.total || 0} entries`);
+                renderPaginationButtons(pagination.last_page);
             }
 
             function renderPaginationButtons(totalPages) {
@@ -618,14 +586,14 @@
                 if (currentPage > 1) {
                     $prevBtn.on('click', () => {
                         currentPage--;
-                        filterAndPaginate();
+                        loadHardCopies();
                     });
                 }
                 $paginationButtons.append($prevBtn);
 
                 // Determine pages to show
                 const pages = [];
-                const delta = 1; 
+                const delta = 1;
                 
                 for (let i = 1; i <= totalPages; i++) {
                     if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
@@ -642,7 +610,7 @@
                             const tempVal = lastPage + 1;
                             $pageBtn.on('click', () => {
                                 currentPage = tempVal;
-                                filterAndPaginate();
+                                loadHardCopies();
                             });
                             $paginationButtons.append($pageBtn);
                         } else if (page - lastPage > 2) {
@@ -659,7 +627,7 @@
                     styleButton($pageBtn, false, currentPage === page);
                     $pageBtn.on('click', () => {
                         currentPage = page;
-                        filterAndPaginate();
+                        loadHardCopies();
                     });
                     $paginationButtons.append($pageBtn);
                     
@@ -672,7 +640,7 @@
                 if (currentPage < totalPages) {
                     $nextBtn.on('click', () => {
                         currentPage++;
-                        filterAndPaginate();
+                        loadHardCopies();
                     });
                 }
                 $paginationButtons.append($nextBtn);
@@ -726,13 +694,13 @@
             if ($searchInput.length) {
                 $searchInput.on('input', () => {
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadHardCopies();
                 });
             }
             if ($statusFilter.length) {
                 $statusFilter.on('change', () => {
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadHardCopies();
                 });
             }
             if ($clearFiltersBtn.length) {
@@ -740,13 +708,11 @@
                     $searchInput.val('');
                     $statusFilter.val('all');
                     currentPage = 1;
-                    filterAndPaginate();
+                    loadHardCopies();
                 });
             }
 
             // Load data from API
-            $tbody.html(`<tr><td class="as-hardcopies-50" colspan="10"><i class="bi bi-arrow-repeat spin as-hardcopies-59"></i> Loading hard copies...</td></tr>`);
-
             $('<style>')
                 .prop('type', 'text/css')
                 .html(`
@@ -757,24 +723,7 @@
                 `)
                 .appendTo('head');
 
-            $.ajax({
-                url: '/api/subscriptions/hard-copies',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + apiToken,
-                    'Accept': 'application/json'
-                },
-                success: function(res) {
-                    console.log(res);
-                    allHardCopies = res.data || res;
-                    updateStats(allHardCopies);
-                    filterAndPaginate();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching hard copies:', error);
-                    $tbody.html(`<tr><td class="as-hardcopies-60" colspan="10">Failed to load hard copy subscriptions. Please try again later.</td></tr>`);
-                }
-            });
+            loadHardCopies();
 
             $(document).on('keydown', function(e) {
                 if (e.key === 'Escape') {

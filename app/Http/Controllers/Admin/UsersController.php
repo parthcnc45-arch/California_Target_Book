@@ -29,9 +29,103 @@ class UsersController extends Controller
     use CreatesUser;
 
     // List all users
-    public function index()
+    public function index(Request $request)
     {
-        return new UserCollection(User::with(['subscriptions', 'bookSubscriptions'])->orderBy('created_at', 'desc')->get());
+        $today = date('Y-m-d');
+        
+        $query = User::with(['subscriptions.cycles', 'bookSubscriptions', 'company']);
+
+        // Apply search filter
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhereHas('company', function($c) use ($search) {
+                      $c->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Apply status filter
+        $statusVal = $request->input('status', 'all');
+        if ($statusVal !== 'all') {
+            if ($statusVal === 'active') {
+                $query->whereHas('subscriptions.cycles', function($q) use ($today) {
+                    $q->where('starts_on', '<=', $today)
+                      ->where('ends_on', '>=', $today);
+                });
+            } elseif ($statusVal === 'inactive') {
+                $query->whereDoesntHave('subscriptions.cycles', function($q) use ($today) {
+                    $q->where('starts_on', '<=', $today)
+                      ->where('ends_on', '>=', $today);
+                });
+            }
+        }
+
+        // Apply role filter (matches getDisplayRole() rules)
+        $roleVal = $request->input('role', 'all');
+        if ($roleVal !== 'all') {
+            if ($roleVal === 'admin') {
+                $query->where('role', 'admin');
+            } elseif ($roleVal === 'editor') {
+                $query->where('role', 'editor');
+            } elseif ($roleVal === 'subscriber') {
+                // Not admin, not editor, and has subscriptions
+                $query->whereNotIn('role', ['admin', 'editor'])
+                      ->whereHas('subscriptions');
+            } elseif ($roleVal === 'book buyer') {
+                // Not admin, not editor, no active subscriber role, and has book subscriptions
+                $query->whereNotIn('role', ['admin', 'editor'])
+                      ->whereHas('bookSubscriptions')
+                      ->whereDoesntHave('subscriptions.cycles', function($q) use ($today) {
+                          $q->where('starts_on', '<=', $today)
+                            ->where('ends_on', '>=', $today);
+                      });
+            } elseif ($roleVal === 'registered user') {
+                // Not admin, not editor, no subscriptions, no book subscriptions
+                $query->whereNotIn('role', ['admin', 'editor'])
+                      ->whereDoesntHave('subscriptions')
+                      ->whereDoesntHave('bookSubscriptions');
+            }
+        }
+
+        // Order by created_at desc
+        $query->orderBy('created_at', 'desc');
+
+        // Stats calculation (based on ALL users, regardless of search/filter)
+        $totalCount = User::count();
+        $activeCount = User::whereHas('subscriptions.cycles', function($q) use ($today) {
+            $q->where('starts_on', '<=', $today)
+              ->where('ends_on', '>=', $today);
+        })->count();
+        $inactiveCount = $totalCount - $activeCount;
+
+        // Support export
+        if ($request->input('export') == 1) {
+            $users = $query->get();
+            return new UserCollection($users);
+        }
+
+        $limit = $request->input('limit', 10);
+        $paginated = $query->paginate($limit);
+
+        return response()->json([
+            'data' => new UserCollection($paginated->getCollection()),
+            'pagination' => [
+                'current_page' => $paginated->currentPage(),
+                'last_page' => $paginated->lastPage(),
+                'per_page' => $paginated->perPage(),
+                'total' => $paginated->total(),
+                'from' => $paginated->firstItem(),
+                'to' => $paginated->lastItem(),
+            ],
+            'stats' => [
+                'total' => $totalCount,
+                'active' => $activeCount,
+                'inactive' => $inactiveCount,
+            ]
+        ]);
     }
 
     // Get user by id

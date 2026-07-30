@@ -25,7 +25,7 @@
 
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-	<link href="css/app.css" rel="stylesheet">
+	<link href="/css/app.css" rel="stylesheet">
 
         @yield('styles')
 

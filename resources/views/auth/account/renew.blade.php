@@ -54,7 +54,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Organization</th>
-                                                <td>{{ $user->company()->first()->name }}</td>
+                                                <td>{{ $user->company->name ?? 'N/A' }}</td>
                                             </tr>
 
                                             <tr>
@@ -81,7 +81,7 @@
 
                                                     <span class="pl-md">
                                                 {{ config('subscriptions.duration_one_year') }} Month Subscription
-                                                <span class="pull-right">$@{{ pricing['{{ config('subscriptions.duration_one_year') }}'].base | currency }}</span>
+                                                <span class="pull-right">${{ '{' }}{{ '{' }} pricing[{{ config('subscriptions.duration_one_year') }}].base | currency {{ '}' }}{{ '}' }}</span>
                                             </span>
                                                 </label>
                                             </div>
@@ -91,7 +91,7 @@
                                                             value="{{ config('subscriptions.duration_two_year') }}" v-model="subLength"/>
                                                     <span class="pl-md">
                                                         {{ config('subscriptions.duration_two_year') }} Month Subscription
-                                                        <span class="pull-right"> $@{{ pricing['{{ config('subscriptions.duration_two_year') }}'].base | currency }} </span>
+                                                        <span class="pull-right"> ${{ '{' }}{{ '{' }} pricing[{{ config('subscriptions.duration_two_year') }}].base | currency {{ '}' }}{{ '}' }} </span>
                                                     </span>
                                                 </label>
                                             </div>

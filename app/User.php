@@ -115,6 +115,9 @@ class User extends Authenticatable
     public function settings() {
         return $this->hasOne('App\UserSettings');
     }
+    public function notificationSettings() {
+        return $this->hasOne('App\UserNotification', 'user_id');
+    }
     public function company() {
         return $this->belongsTo('App\Company');
     }

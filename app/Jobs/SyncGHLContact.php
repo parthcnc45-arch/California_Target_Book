@@ -26,7 +26,7 @@ class SyncGHLContact implements ShouldQueue
      * @param  array  $customTags
      * @return void
      */
-    public function __construct(User $user, $customTags = null)
+    public function __construct($user, $customTags = null)
     {
         $this->user = $user;
         $this->customTags = $customTags;
@@ -86,6 +86,29 @@ class SyncGHLContact implements ShouldQueue
                     ];
                 }
             }
+        }
+
+        // Fetch user notification settings and prepare GHL custom fields
+        $notificationSettings = $user->notificationSettings()->first();
+        $renewalRemindersVal = $notificationSettings ? $notificationSettings->renewal_reminders : 1;
+        $shippingEmailsVal = $notificationSettings ? $notificationSettings->shipping_emails : 1;
+
+        $renewalRemindersFieldId = config('app.GHL_RENEWAL_REMINDERS_FIELD_ID');
+        if ($renewalRemindersFieldId) {
+            $fieldKey = (strpos($renewalRemindersFieldId, 'contact.') === 0) ? 'key' : 'id';
+            $customFields[] = [
+                $fieldKey => $renewalRemindersFieldId,
+                'fieldValue' => $renewalRemindersVal ? 'Yes' : 'No'
+            ];
+        }
+
+        $shippingEmailsFieldId = config('app.GHL_SHIPPING_EMAILS_FIELD_ID');
+        if ($shippingEmailsFieldId) {
+            $fieldKey = (strpos($shippingEmailsFieldId, 'contact.') === 0) ? 'key' : 'id';
+            $customFields[] = [
+                $fieldKey => $shippingEmailsFieldId,
+                'fieldValue' => $shippingEmailsVal ? 'Yes' : 'No'
+            ];
         }
 
         // Try creating contact with Active Subscriber tags

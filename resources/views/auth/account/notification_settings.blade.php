@@ -1,5 +1,29 @@
+@php
+    $notificationSettings = $user->notificationSettings()->first();
+    $renewalRemindersVal = $notificationSettings ? $notificationSettings->renewal_reminders : 1;
+    $shippingEmailsVal = $notificationSettings ? $notificationSettings->shipping_emails : 1;
+@endphp
+
 @extends('layouts.portal')
 @section('portal_content')
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+    </style>
+
     <section id="section-settings" class="portal-section active">
         <header class="section-header">
             <div>
@@ -24,7 +48,7 @@
                             </div>
                             <div>
                                 <label class="switch">
-                                    <input type="checkbox" id="settings-billing-reminders" checked>
+                                    <input type="checkbox" id="settings-billing-reminders" {{ $renewalRemindersVal ? 'checked' : '' }}>
                                     <span class="slider"></span>
                                 </label>
                             </div>
@@ -36,10 +60,17 @@
                             </div>
                             <div>
                                 <label class="switch">
-                                    <input type="checkbox" id="settings-shipping-emails" checked>
+                                    <input type="checkbox" id="settings-shipping-emails" {{ $shippingEmailsVal ? 'checked' : '' }}>
                                     <span class="slider"></span>
                                 </label>
                             </div>
+                        </div>
+
+                        <!-- Save Actions -->
+                        <div style="display: flex; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                            <button type="button" id="btn-save-notifications" class="btn-save-changes" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                                Save Changes
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -63,6 +94,12 @@
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="custom-toast" class="portal-toast" style="display: none;">
+            <h4 class="portal-toast-title" id="toast-title"></h4>
+            <p class="portal-toast-body" id="toast-body"></p>
         </div>
     </section>
 @endsection
@@ -98,17 +135,67 @@
                     if (response.success) {
                         window.location.href = '/'; // Redirect to home page
                     } else {
-                        alert('Failed to delete account.');
+                        showToast('Error', 'Failed to delete account.', true);
                         $btn.prop('disabled', false).text('Delete');
                         $deleteModal.fadeOut(200);
                     }
                 },
                 error: function() {
-                    alert('An error occurred while deleting your account.');
+                    showToast('Error', 'An error occurred while deleting your account.', true);
                     $btn.prop('disabled', false).text('Delete');
                     $deleteModal.fadeOut(200);
                 }
             });
+        });
+
+        function showToast(title, body, isError = false) {
+            $('#toast-title').text(title).css('color', isError ? '#ef4444' : '#10b981');
+            $('#toast-body').text(body);
+            $('#custom-toast').stop(true, true).fadeIn(300).delay(4000).fadeOut(300);
+        }
+
+        function updateNotificationSettings() {
+            var renewalReminders = $('#settings-billing-reminders').is(':checked') ? 1 : 0;
+            var shippingEmails = $('#settings-shipping-emails').is(':checked') ? 1 : 0;
+            var $btn = $('#btn-save-notifications');
+
+            // Disable UI inputs and show loading state
+            $('#settings-billing-reminders, #settings-shipping-emails').prop('disabled', true);
+            $btn.prop('disabled', true).html('<span class="loading-spinner"></span>Saving...');
+
+            $.ajax({
+                url: '{{ route("auth.account.notification_settings.update") }}',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    renewal_reminders: renewalReminders,
+                    shipping_emails: shippingEmails
+                },
+                success: function(response) {
+                    // Re-enable UI inputs
+                    $('#settings-billing-reminders, #settings-shipping-emails').prop('disabled', false);
+                    $btn.prop('disabled', false).html('Save Changes');
+
+                    if (response.success) {
+                        showToast('Success', 'Notification settings updated successfully.', false);
+                    } else {
+                        showToast('Error', response.message || 'Failed to update notification settings.', true);
+                    }
+                },
+                error: function() {
+                    // Re-enable UI inputs
+                    $('#settings-billing-reminders, #settings-shipping-emails').prop('disabled', false);
+                    $btn.prop('disabled', false).html('Save Changes');
+                    showToast('Error', 'An error occurred while updating your notification settings.', true);
+                }
+            });
+        }
+
+        $('#btn-save-notifications').on('click', function() {
+            updateNotificationSettings();
         });
 
         $(document).on('keydown', function(e) {

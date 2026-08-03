@@ -254,6 +254,11 @@ Route::group([
         'as' => 'auth.account.notification_settings',
     ]);
 
+    Route::post('/notification-settings', [
+        'uses' => 'Auth\AccountController@updateNotificationSettings',
+        'as' => 'auth.account.notification_settings.update',
+    ]);
+
     Route::get('/help-support', [
         'uses' => 'Auth\AccountController@helpSupport',
         'as' => 'auth.account.help_support',

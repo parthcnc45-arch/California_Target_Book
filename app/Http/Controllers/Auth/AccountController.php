@@ -496,6 +496,39 @@ class AccountController extends Controller
         return view('auth.account.notification_settings', $data);
     }
 
+    public function updateNotificationSettings(Request $request) {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $validated = $request->validate([
+            'renewal_reminders' => 'required|boolean',
+            'shipping_emails' => 'required|boolean',
+        ]);
+
+        $settings = $user->notificationSettings()->first();
+        if (!$settings) {
+            $settings = new \App\UserNotification();
+            $settings->user_id = $user->id;
+        }
+        $settings->renewal_reminders = $validated['renewal_reminders'];
+        $settings->shipping_emails = $validated['shipping_emails'];
+        $settings->save();
+
+        // Dispatch GHL Sync contact job
+        try {
+            dispatch_now(new \App\Jobs\SyncGHLContact($user));
+        } catch (\Exception $e) {
+            \Log::error('SyncGHLContact failed in updateNotificationSettings: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification settings updated successfully.'
+        ]);
+    }
+
     public function helpSupport() {
         $data = $this->getAccountData();
         if ($data === null) {

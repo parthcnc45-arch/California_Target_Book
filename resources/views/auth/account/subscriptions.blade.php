@@ -222,8 +222,8 @@
                     @else
                         <div style="text-align: center; padding: 48px 0; color: #64748b; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; margin-top: 16px;">
                             <div style="font-size: 24px; color: #94a3b8; margin-bottom: 12px;"><i class="bi bi-people"></i></div>
-                            <p style="margin: 0 0 8px 0; font-size: 15px; font-weight: 500; color: #475569;">You do not have any additional team seats.</p>
-                            <p style="margin: 0; font-size: 13.5px;">Click <strong>Purchase Additional Seats</strong> above to add members to your team.</p>
+                            <p style="margin: 0 0 8px 0; font-size: 15px; font-weight: 500; color: #475569;">No additional seats available</p>
+                            <p style="margin: 0; font-size: 13.5px;">Your subscription is currently using all available seats. Purchase additional seats to invite more team members.</p>
                         </div>
                     @endif
                 </div>
@@ -287,8 +287,8 @@
                     @else
                         <div style="text-align: center; padding: 48px 0; color: #64748b; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
                             <div style="font-size: 24px; color: #94a3b8; margin-bottom: 12px;"><i class="bi bi-gift"></i></div>
-                            <p style="margin: 0 0 8px 0; font-size: 15px; font-weight: 500; color: #475569;">You do not have any purchased add-ons.</p>
-                            <p style="margin: 0; font-size: 13.5px;">Purchase add-ons to enhance your subscription.</p>
+                            <p style="margin: 0 0 8px 0; font-size: 15px; font-weight: 500; color: #475569;">No add-ons purchased yet</p>
+                            <p style="margin: 0; font-size: 13.5px;">Enhance your subscription with optional add-ons designed to extend your subscription with additional features.</p>
                         </div>
                     @endif
                 </div>

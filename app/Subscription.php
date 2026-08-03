@@ -34,6 +34,10 @@ class Subscription extends Model
     }
 
     public function isActive() {
+        if ($this->status === self::STATUS_EXPIRED || $this->status === 'cancelled' || $this->status === 'paused') {
+            return false;
+        }
+
         return $this->cycles()
             ->get()
             ->contains(function ($cycle) {
@@ -147,3 +151,4 @@ class Subscription extends Model
     }
 
 }
+// 03-08-2026

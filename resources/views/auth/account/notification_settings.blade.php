@@ -4,7 +4,7 @@
         <header class="section-header">
             <div>
                 <div class="header-title-container">
-                    <h1 class="header-title">Settings</h1>
+                    <h1 class="header-title">Notifications</h1>
                 </div>
                 <p class="header-subtitle">Configure notification and account preferences.</p>
             </div>
@@ -19,36 +19,12 @@
                     <div class="portal-flex-col">
                         <div class="settings-row">
                             <div>
-                                <h4 class="settings-row-title">Email Notifications</h4>
-                                <p class="settings-row-description">Receive runtime event alerts and information</p>
-                            </div>
-                            <div>
-                                <label class="switch">
-                                    <input type="checkbox" id="settings-release-notif" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="settings-row">
-                            <div>
                                 <h4 class="settings-row-title">Renewal Reminders</h4>
                                 <p class="settings-row-description">Get notifications for plan renewal</p>
                             </div>
                             <div>
                                 <label class="switch">
                                     <input type="checkbox" id="settings-billing-reminders" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="settings-row">
-                            <div>
-                                <h4 class="settings-row-title">Marketing Emails</h4>
-                                <p class="settings-row-description">Product updates and newsletters</p>
-                            </div>
-                            <div>
-                                <label class="switch">
-                                    <input type="checkbox" id="settings-marketing-emails">
                                     <span class="slider"></span>
                                 </label>
                             </div>
@@ -68,18 +44,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- <div class="portal-card portal-mt-0" id="danger-zone" style="display: none;">
-                <div class="card-header-custom card-header-no-border">
-                    <h2 class="card-title-custom text-red-danger">Danger Zone</h2>
-                </div>
-                <div class="card-body-custom settings-danger-body">
-                    <p class="settings-danger-text">
-                        Permanently delete your account and all associated data. This action cannot be undone.
-                    </p>
-                    <button type="button" class="btn-delete-account" id="open-delete-modal">Delete account</button>
-                </div>
-            </div> -->
         </div>
         <!-- Delete Account Modal -->
         <div id="delete-account-modal" class="modal-backdrop" style="display: none;">

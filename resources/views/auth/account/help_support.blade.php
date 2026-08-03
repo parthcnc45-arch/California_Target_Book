@@ -92,7 +92,7 @@
                         </div>
                         <div class="portal-mb-16">
                             <label class="form-label-style">Message </label>
-                            <textarea id="contact-message" name="message" required rows="4" class="form-input-style" placeholder="Describe your question or issue in detail…"></textarea>
+                            <textarea id="contact-message" name="message" required rows="4" class="form-input-style" style="resize: vertical; overflow-x: hidden;" placeholder="Describe your question or issue in detail…"></textarea>
                         </div>
                         <button type="submit" id="submit-contact-btn" class="btn-submit-support">Submit Message</button>
                     </form>

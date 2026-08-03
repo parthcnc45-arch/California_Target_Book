@@ -1205,6 +1205,11 @@
                         let html = '<div class="as-classifieds-82">';
                         fields.forEach((f) => {
                             let val = ad[f.key];
+                            
+                            if ((f.key === 'created_at' || f.key === 'updated_at') && val && typeof val === 'string') {
+                                val = val.split('T')[0];
+                            }
+
                             if (val === null || val === undefined || val === '') val = '<span class="as-classifieds-83">-</span>';
                             
                             // Make body and notes full width

@@ -512,6 +512,7 @@ $(document).ready(function () {
                     send_invoice: false,
                     deck_qty: bookQty,
                     deck_types: selectedAddons.map(a => a.id),
+                    deck_title: selectedAddons.find(a => a.id.endsWith('_book')) ? selectedAddons.find(a => a.id.endsWith('_book')).title : null,
                     deck_addresses: deckAddresses,
                     subscription_cost: basePrice * 100,
                     custom_total_amount: currentTotal * 100

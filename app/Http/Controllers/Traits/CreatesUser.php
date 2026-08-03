@@ -383,7 +383,7 @@ trait CreatesUser {
         $addr['item_name'] = 'California Target Book';
     }
     foreach ($deckAddresses as &$addr) {
-        $addr['item_name'] = $data['deck_title'] ?? '-';
+        $addr['item_name'] = $data['deck_title'] ?? config('subscriptions.names.additional_printed_book', 'Additional Printed Book');
     }
 
     $addresses = collect(array_merge($bookAddresses, $deckAddresses));
@@ -1215,4 +1215,4 @@ trait CreatesUser {
   }
 
 }
-//  27/07/2026
+//  31/07/2026

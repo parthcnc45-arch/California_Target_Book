@@ -132,6 +132,12 @@ class User extends Authenticatable
             });
     }
 
+    public function latestSubscriptionIncludingExpired() {
+        return $this->subscriptions()
+            ->orderBy('id', 'desc')
+            ->first();
+    }
+
     public function bookSubscriptions() {
         return $this->hasMany('App\BookSubscription');
     }

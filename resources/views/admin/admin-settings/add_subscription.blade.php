@@ -605,12 +605,12 @@
                 const btn = $('#btn-submit');
                 if (isLoading) {
                     btn.prop('disabled', true).css({
-                        'background-color': '#818cf8',
+                        'background-color': '#ef9a9a',
                         'cursor': 'not-allowed'
                     }).text('SUBMITTING...');
                 } else {
                     btn.prop('disabled', false).css({
-                        'background-color': '#4f46e5',
+                        'background-color': '#d32f2f',
                         'cursor': 'pointer'
                     }).text('SUBMIT');
                 }

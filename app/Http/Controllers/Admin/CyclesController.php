@@ -41,15 +41,30 @@ class CyclesController extends Controller
             return $cycle;
         }
 
-        $in = \Stripe\Invoice::retrieve($cycle->invoice_id);
-        $in->closed = true;
-        $in->forgiven = true;
-        $in->save();
+        if (!empty($cycle->invoice_id)) {
+            try {
+                \Stripe\Stripe::setApiKey(config('app.STRIPE_KEY'));
+                $in = \Stripe\Invoice::retrieve($cycle->invoice_id);
+                $in->closed = true;
+                $in->forgiven = true;
+                $in->save();
+                
+                $u = User::where('stripe_id', $in->customer)->first();
+                if ($u) {
+                    dispatch(new SendSubscriptionMarkedPaid($u));
+                }
+            } catch (\Exception $e) {
+                \Log::error("Failed to update Stripe invoice {$cycle->invoice_id} for cycle {$cycleId}: " . $e->getMessage());
+            }
+        } else {
+            $sub = $cycle->subscription()->first();
+            $u = $sub ? $sub->users()->wherePivot('role', 'subscriber')->first() : null;
+            if ($u) {
+                dispatch(new SendSubscriptionMarkedPaid($u));
+            }
+        }
+
         $cycle->activate();
-
-        $u = User::where('stripe_id', $in->customer)->first();
-
-        dispatch(new SendSubscriptionMarkedPaid($u));
 
         return $cycle;
     }

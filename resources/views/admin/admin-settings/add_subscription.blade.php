@@ -158,7 +158,7 @@
                         </div>
                         <div class="as-addsub-17">
                             <span class="as-addsub-18">$</span>
-                            <input type="number" id="book-cost-input" class="form-input-style as-addsub-19" value="1000">
+                            <input type="number" id="book-cost-input" class="form-input-style as-addsub-19" value="300">
                             <span class="as-addsub-20">Book Cost (Per Book)</span>
                         </div>
                     </div>
@@ -514,9 +514,9 @@
                 const method = $(this).val();
                 const container = $('#stripe-input-container');
                 if (method === 'stripe') {
-                    container.slideDown(1000);
+                    container.slideDown(300);
                 } else {
-                    container.slideUp(1000);
+                    container.slideUp(300);
                 }
             });
 

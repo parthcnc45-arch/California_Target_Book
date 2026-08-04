@@ -67,7 +67,7 @@
         <div class="premium-card">
             <div class="premium-card-header">
                 <h2 class="premium-card-title">
-                    <i class="bi bi-book text-brand-red as-sub-detail-3"></i> Book Subscriptions
+                    <i class="bi bi-book text-brand-red as-sub-detail-3"></i> Printed Book
                 </h2>
                 <button type="button" class="btn-premium" id="btn-trigger-create-book-sub">CREATE</button>
             </div>
@@ -339,6 +339,20 @@
             // Utilities
             function formatDate(dateStr) {
                 if (!dateStr) return 'TBD';
+                const parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    const year = parseInt(parts[0], 10);
+                    const monthIndex = parseInt(parts[1], 10) - 1; // 0-based
+                    const day = parseInt(parts[2], 10);
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const monthName = months[monthIndex] || 'Jan';
+                    let suffix = 'th';
+                    if (day === 1 || day === 21 || day === 31) suffix = 'st';
+                    else if (day === 2 || day === 22) suffix = 'nd';
+                    else if (day === 3 || day === 23) suffix = 'rd';
+                    return `${monthName} ${day}${suffix}, ${year}`;
+                }
+                
                 const date = new Date(dateStr);
                 if (isNaN(date.getTime())) return dateStr;
                 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -706,7 +720,9 @@
 
             // ---------- 2. CREATE CYCLE / RENEWAL ----------
             $('#btn-trigger-create-cycle').on('click', function() {
-                $('#cycle-create-starts').val(new Date().toISOString().substring(0, 10));
+                const localDate = new Date();
+                const localDateStr = localDate.getFullYear() + '-' + String(localDate.getMonth() + 1).padStart(2, '0') + '-' + String(localDate.getDate()).padStart(2, '0');
+                $('#cycle-create-starts').val(localDateStr);
                 $('#cycle-create-error').hide().text('');
                 $('#cycle-create-success').hide().text('');
                 $('#create-cycle-modal').css('display', 'flex');
@@ -1134,6 +1150,7 @@
                         $btn.prop('disabled', false).text('Remove');
                         let msg = 'Failed to remove book subscription.';
                         if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                        $('#remove-book-sub-error').text(msg).show();
                     }
                 });
             });

@@ -15,7 +15,7 @@
  * Public Routes
  */
 Route::get('/', function () {
-    return view('new');
+    return view('new_home');
 })->name('home');
 
 Route::get('/subscriptions', function () {
@@ -35,10 +35,6 @@ Route::get('/subscriptions/book-only', function () {
 })->name('subscriptions.book-only');
 
 Route::get('/home', 'HomeController@index')->name('home.dashboard');
-
-Route::get('/new', function () {
-    return view('new');
-});
 
 Route::get('/test-bio', function () {
     Util::require_ctb_api();
